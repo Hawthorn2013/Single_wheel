@@ -36,7 +36,6 @@ extern struct
 extern void init_modes_and_clock(void);
 extern void disable_watchdog(void);
 extern void initEMIOS_0MotorAndSteer(void);
-extern void initEMIOS_0Image(void);
 extern void init_led(void);
 extern void init_pit(void);
 extern void init_encoder(void);
@@ -51,6 +50,7 @@ void test_init_RFID();
 void read_display_helm();
 void read_DIP_mode();
 void init_speed_control();
+void init_DSPI_1(void);
 
 
 

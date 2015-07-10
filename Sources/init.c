@@ -428,24 +428,13 @@ void init_all_and_POST(void)
 	disable_watchdog();
 	init_modes_and_clock();
 	initEMIOS_0MotorAndSteer();
-	initEMIOS_0Image();/* 摄像头输入中断初始化 */
 	init_pit();
 	init_led();
 
 	init_DIP();
-	init_serial_port_0();
-//	init_serial_port_1();
-	init_serial_port_2();
+	init_serial_port_1();
 //	init_ADC();
 	//init_serial_port_3();
-//	init_supersonic_receive_0();
-//	init_supersonic_receive_1();
-//	init_supersonic_receive_2();
-//	init_supersonic_receive_3();
-//	init_supersonic_trigger_0();
-//	init_supersonic_trigger_1();
-//	init_supersonic_trigger_2();
-//	init_supersonic_trigger_3();
 	init_optical_encoder();
 
 	//init_DSPI_2();
@@ -475,10 +464,10 @@ void init_all_and_POST(void)
 	read_device_no();
 	
 	/* 初始化陀螺仪 */
-	test_xyz_gyro();
+	init_MPU9250();
 	
 	/* 开启RFID读卡器主动模式 */
-	test_init_RFID();
+	//test_init_RFID();
 	
 	delay_ms(1000);
 	/* 换屏 */
@@ -504,6 +493,30 @@ void init_all_and_POST(void)
 	LCD_Fill(0x00);
 
 }
+//
+
+/*-----------------------------------------------------------------------*/
+/* 初始SPI总线	                                                        */
+/*-----------------------------------------------------------------------*/
+void init_DSPI_1(void)
+{
+	DSPI_1.MCR.R = 0x803f0001;     /* Configure DSPI_1 as master */
+	DSPI_1.CTAR[0].R = 0x3E0A7724;	//陀螺仪 用于发送8bits MSB先发,调整极性为1，相位为1，调整波特率为1m/s
+	DSPI_1.CTAR[1].R = 0x38087726;  //TF 极性为0，相位为0，baud rate=625k/s
+	DSPI_1.CTAR[2].R = 0x3E0A7724;  //L3G4200D 极性为1，相位为1，baud rate=1m/s
+	DSPI_1.CTAR[3].R = 0x380A7720;	//OLED 极性为0，相位为0，baud rate=8m/s
+	DSPI_1.MCR.B.HALT = 0x0;	     /* Exit HALT mode: go from STOPPED to RUNNING state*/
+	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
+	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
+	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1
+	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1
+	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1
+	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	L3G
+	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
+	DSPI_1.RSER.B.TCFRE = 0;	//关闭传输完成中断
+}
+
 //
 
 /*-----------------------------------------------------------------------*/

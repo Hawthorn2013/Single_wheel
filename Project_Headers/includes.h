@@ -50,6 +50,7 @@ typedef unsigned short word;
 #include "L3G4200D.h"
 #include "mag.h"
 #include "IntcInterrupts.h"
+#include "MPU9250.h"
 
 
 
