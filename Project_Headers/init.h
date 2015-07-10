@@ -51,6 +51,7 @@ void read_device_no();
 void read_display_helm();
 void read_DIP_mode();
 void init_speed_control();
+void init_DSPI_1(void);
 
 
 
