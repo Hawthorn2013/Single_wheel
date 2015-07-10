@@ -90,7 +90,7 @@ void init_DIP(void)
 /* 初始化PIT中断                                                         */
 /* 10ms                                                                  */
 /*-----------------------------------------------------------------------*/
-void init_pit(void)
+void init_pit_10ms(void)
 {
 	/* NOTE:  DIVIDER FROM SYSCLK TO PIT ASSUMES DEFAULT DIVIDE BY 1 */
 	PIT.PITMCR.R = 0x00000001;	/* Enable PIT and configure timers to stop in debug modem */
@@ -99,7 +99,18 @@ void init_pit(void)
 	INTC_InstallINTCInterruptHandler(PitISR,60,1);	/* PIT 1 interrupt vector with priority 1 */
 }
 
-
+/*-----------------------------------------------------------------------*/
+/* 初始化PIT中断                                                         */
+/* 1ms                                                                  */
+/*-----------------------------------------------------------------------*/
+void init_pit_1ms(void)
+{
+	/* NOTE:  DIVIDER FROM SYSCLK TO PIT ASSUMES DEFAULT DIVIDE BY 1 */
+	PIT.PITMCR.R = 0x00000001;	/* Enable PIT and configure timers to stop in debug modem */
+	PIT.CH[2].LDVAL.R = 80000;	/* 80000==1ms */
+	PIT.CH[2].TCTRL.R = 0x00000003;	/* Enable PIT1 interrupt and make PIT active to count */
+	INTC_InstallINTCInterruptHandler(Pit_1ms,61,3);	/* PIT 2 interrupt vector with priority 3 */
+}
 /*-----------------------------------------------------------------------*/
 /* 初始化eMIOS0                                                          */
 /* 初始化电机和舵机                                                      */
@@ -373,6 +384,27 @@ void test_xyz_gyro()
 */
 
 /*-----------------------------------------------------------------------*/
+/* 初始化AD                                                              */
+/*-----------------------------------------------------------------------*/
+void init_ADC(void)
+{
+	ADC.MCR.R = 0x20000100;     //Conversion times for 80MHz ADClock  连续模式
+	ADC.NCMR[1].R = 0x000000FF; //Select ANS0 ANS1 ANS2 ANS3 inputs for conversion 
+								//channel 32~39 sampling enable
+	ADC.CTR[1].R = 0x00008606;  //Conversion times for 32MHz ADClock？？ 
+	ADC.MCR.B.NSTART=1;       //Trigger normal conversions for ADC0
+	SIU.PCR[24].R = 0x2100;     //MPC56xxB: Initialize PB[8] as ANS0 CDR32 电磁双路输入
+	SIU.PCR[25].R = 0x2100;     //MPC56xxB: Initialize PB[9] as ANS1 CDR33
+	SIU.PCR[26].R = 0x2100;     //MPC56xxB: Initialize PB[10] as ANS2 34 单轴陀螺仪双参数输入
+	SIU.PCR[27].R = 0x2100;     //MPC56xxB: Initialize PB[11] as ANS3 35
+//	SIU.PCR[60].R = 0x2100;     //MPC56xxB: Initialize PD[12] as ANS4 36
+//	SIU.PCR[61].R = 0x2100;     //MPC56xxB: Initialize PD[13] as ANS5 37
+//	SIU.PCR[62].R = 0x2100;     //MPC56xxB: Initialize PD[14] as ANS6 38
+//	SIU.PCR[63].R = 0x2100;     //MPC56xxB: Initialize PD[15] as ANS7 39
+}
+
+
+/*-----------------------------------------------------------------------*/
 /* 延时 xus                                                              */
 /* 依赖总线80M                                                           */
 /*-----------------------------------------------------------------------*/
@@ -409,33 +441,26 @@ void init_all_and_POST(void)
 {
 	int i = 0;
 
-	
 	disable_watchdog();
 	init_modes_and_clock();
 	initEMIOS_0MotorAndSteer();
-	initEMIOS_0Image();/* 摄像头输入中断初始化 */
-	init_pit();
+	
+	/* PIT：光编读值&速度控制 */
+	init_pit_10ms();
+	
+	/* PIT：步进电机控制&角度控制标志位 */
+	init_pit_1ms();	
+	
+	
+	init_Stepmotor();		/* 初始化步进电机 */
 	init_led();
+	init_DIP();				/* 拨码开关 */
+	init_serial_port_1();	/* BlueTooth */
+	init_ADC();				/* 陀螺仪读值 */
+	init_optical_encoder();	/* 光编 */
 
-	init_DIP();
-	init_serial_port_0();
-//	init_serial_port_1();
-	init_serial_port_2();
-//	init_ADC();
-	//init_serial_port_3();
-//	init_supersonic_receive_0();
-//	init_supersonic_receive_1();
-//	init_supersonic_receive_2();
-//	init_supersonic_receive_3();
-//	init_supersonic_trigger_0();
-//	init_supersonic_trigger_1();
-//	init_supersonic_trigger_2();
-//	init_supersonic_trigger_3();
-	init_optical_encoder();
-
-	//init_DSPI_2();
 	//init_I2C();
-	init_choose_mode();
+	init_choose_mode();		/* 拨码开关模式选择 */
 	
 	
 	/* 初始化SPI总线 */
@@ -459,11 +484,8 @@ void init_all_and_POST(void)
 	/* 读取设备号 */
 	read_device_no();
 	
-	/* 初始化陀螺仪 */
-	test_xyz_gyro();
-	
-	/* 开启RFID读卡器主动模式 */
-	test_init_RFID();
+//	/* 初始化陀螺仪 */
+//	test_xyz_gyro();
 	
 	delay_ms(1000);
 	/* 换屏 */
