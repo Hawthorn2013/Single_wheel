@@ -39,8 +39,10 @@
 //#define	WHO_AM_I		0x75	//IIC地址寄存器(默认数值0x68，只读)
 #define DETECT_CTRL      0x6a
 
-extern int Reg_Read(uint8_t reg,uint16_t* Data);
-extern int Reg_Write(uint8_t reg,uint16_t Data);
+
+extern int Reg_Read(uint8_t reg,uint8_t* Data);
+extern int Reg_Write(uint8_t reg,uint8_t Data);
 extern void init_MPU9250(void);
+extern int Read_GYRO_ACC(int32_t *Data);
 
 #endif /* INIT_MPU9250_H_ */

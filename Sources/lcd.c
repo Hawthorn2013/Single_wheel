@@ -876,6 +876,63 @@ void LCD_Write_Num(unsigned char X,unsigned char Y,int num,unsigned char N)
 }
 
 /***********************************************************************
+* 函数名称：LCD_Write_Num()
+* 函数功能：显示变量
+* 入口参数：X:行;Y:列;num:变量;N(uint16_t):要显示的变量的位数
+* 出口参数：无
+/**********************************************************************/
+void LCD_Write_Num16(unsigned char X,unsigned char Y,uint16_t num,unsigned char N)
+{
+  unsigned char line;
+  unsigned char i=0;
+  unsigned int n[5]={0};
+  
+  if(num>=0)
+  {
+      LCD_Set_Pos(X-4,Y);//光标定位
+  	  LCD_WrDat(0x00);
+  	  LCD_WrDat(0x00);
+  	  LCD_WrDat(0x00);
+  	  LCD_WrDat(0x00);
+	  n[0]= num%10;
+	  n[1]=(num/10)%10;
+	  n[2]=(num/100)%10;
+	  n[3]=(num/1000)%10;
+	  n[4]=(num/10000)%10;
+	  for(i=0;i<5;i++) n[i]=n[i]+16;
+	  for(i=N;i>0;i--) 
+	  {
+	    LCD_Set_Pos(X+(N-i)*6,Y);//光标定位
+	    for (line=0; line<6; line++)
+	     LCD_WrDat(F6x8[n[i-1]][line]);//从ACSII码表中读取字节，然后写入液晶
+	  }
+  	
+  }
+  else
+  {
+  	  LCD_Set_Pos(X-4,Y);//光标定位
+  	  LCD_WrDat(0x10);
+  	  LCD_WrDat(0x10);
+  	  LCD_WrDat(0x10);
+  	  LCD_WrDat(0x10);
+  	  num=-num;
+  	  n[0]= num%10;
+	  n[1]=(num/10)%10;
+	  n[2]=(num/100)%10;
+	  n[3]=(num/1000)%10;
+	  n[4]=(num/10000)%10;
+	  for(i=0;i<5;i++) n[i]=n[i]+16;
+	  
+	  for(i=N;i>0;i--) 
+	  {
+	  	LCD_Set_Pos(X+(N-i)*6,Y);//光标定位
+	    for (line=0; line<6; line++)
+	    LCD_WrDat(F6x8[n[i-1]][line]);//从ACSII码表中读取字节，然后写入液晶
+	  }
+  	
+  }
+}
+/***********************************************************************
 * 函数名称：LCD_write_char()
 * 函数功能：写入1个字符
 * 入口参数：c   要写入的数据

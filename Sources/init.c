@@ -54,14 +54,14 @@ void disable_watchdog(void)
 void init_led(void)
 {
 	//2015第一版载LED
-#if 0	
+#if 1	
  	SIU.PCR[40].R = 0x0203;	/* PC8  */
   	SIU.PCR[45].R = 0x0203; /* PC13 */
  	SIU.PCR[44].R = 0x0203; /* PC12 */
 	SIU.PCR[71].R = 0x0203;	/* PE7  */
 #endif
 
-#if 1
+#if 0
 	//第二版板载LED
 	SIU.PCR[12].R = 0x0203;/* PA12  */
 	SIU.PCR[13].R = 0x0203;/* PA13  */
@@ -69,6 +69,10 @@ void init_led(void)
 	SIU.PCR[15].R = 0x0203;/* PA15  */
 #endif
 
+	D0=1;
+	D1=1;
+	D2=1;
+	D3=1;
 	D5 = 1;
 	D6 = 1;
 	D7 = 1;
@@ -412,26 +416,26 @@ void init_all_and_POST(void)
 	
 	disable_watchdog();
 	init_modes_and_clock();
-	initEMIOS_0MotorAndSteer();
-	init_pit();
+	//initEMIOS_0MotorAndSteer();
+	//init_pit();
 	init_led();
 
-	init_DIP();
-	init_serial_port_1();
+	//init_DIP();
+	//init_serial_port_1();
 //	init_ADC();
 	//init_serial_port_3();
-	init_optical_encoder();
+	//init_optical_encoder();
 
 	//init_DSPI_2();
 	//init_I2C();
-	init_choose_mode();
+	//init_choose_mode();
 	
 	
 	/* 初始化SPI总线 */
 	init_DSPI_1();
 	
 	/* 开启外部总中断 */
-	enable_irq();
+	//enable_irq();
 	
 	/* 初始化显示屏 */
 	initLCD();
@@ -443,10 +447,10 @@ void init_all_and_POST(void)
 	delay_ms(50);
 	
 	/* 初始化TF卡 */
-	test_init_TF();
+	//test_init_TF();
 	
 	/* 读取设备号 */
-	read_device_no();
+	//read_device_no();
 	
 	/* 初始化陀螺仪 */
 	init_MPU9250();
@@ -454,28 +458,28 @@ void init_all_and_POST(void)
 	/* 开启RFID读卡器主动模式 */
 	//test_init_RFID();
 	
-	delay_ms(1000);
+	//delay_ms(1000);
 	/* 换屏 */
-	LCD_Fill(0x00);
+	//LCD_Fill(0x00);
 
 
 	/* 读取舵机参数 */
-	read_display_helm();
+	//read_display_helm();
 	
 	/* 读取拨码开关模式号 */
-	read_DIP_mode();
+	//read_DIP_mode();
 
-	delay_ms(1000);
+	//delay_ms(1000);
 	/* 换屏 */
-	LCD_Fill(0x00);
+	//LCD_Fill(0x00);
 
 	/* 速度闭环开启及测试 速度=0 */	
-	init_speed_control();
+	//init_speed_control();
 //	g_f_enable_supersonic=1;
-	delay_ms(2000);
+	//delay_ms(2000);
 	
 	/* 换屏 */
-	LCD_Fill(0x00);
+	//LCD_Fill(0x00);
 
 }
 //
