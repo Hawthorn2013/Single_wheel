@@ -62,32 +62,17 @@ void init_led(void)
 #endif
 
 #if 1
-	//第二版车灯
- 	SIU.PCR[16].R = 0x0203;	/* PB0  */
-  	SIU.PCR[17].R = 0x0203; /* PB1 */
- 	SIU.PCR[72].R = 0x0203; /* PE8 */
-	SIU.PCR[73].R = 0x0203;	/* PE9  */	
-
 	//第二版板载LED
 	SIU.PCR[12].R = 0x0203;/* PA12  */
 	SIU.PCR[13].R = 0x0203;/* PA13  */
 	SIU.PCR[14].R = 0x0203;/* PA14  */
 	SIU.PCR[15].R = 0x0203;/* PA15  */
 #endif
-	D0 = 1;	/* 1=熄灭 */
-	D1 = 1;
-	D2 = 1;
-	D3 = 1;
+
 	D5 = 1;
 	D6 = 1;
 	D7 = 1;
 	D8 = 1;
-
-//车灯全亮
-	LeftL = 1;	/* 0=熄灭 */
-	RightL = 1;
-	StopL = 1;
-	RunL = 1;
 }
 
 
