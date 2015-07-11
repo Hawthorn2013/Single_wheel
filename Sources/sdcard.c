@@ -16,28 +16,6 @@ BYTE Camera2[3]={0xFF,0xAA,0x55};
 BYTE g_device_NO = 1;	/* 设备号 即WiFi地址 */
 
 
-void init_DSPI_1(void)
-{
-	DSPI_1.MCR.R = 0x803f0001;     /* Configure DSPI_1 as master，空闲时为高，HALT MODE */
-	DSPI_1.CTAR[0].R = 0x3E0A7729;	//未使用 用于发送8bits 调整极性为1，相位为1，调整波特率为低速31.25kbit/s
-	DSPI_1.CTAR[1].R = 0x38087726;  //TF 发送8bits 极性为0，相位为0，baud rate=625k/s
-	DSPI_1.CTAR[2].R = 0x3E0A7724;  //L3G4200D 发送8bits 极性为1，相位为1，baud rate=1m/s
-	DSPI_1.CTAR[3].R = 0x380A7720;	//OLED 发送8bits 极性为0，相位为0，baud rate=8m/s
-	DSPI_1.MCR.B.HALT = 0x0;	     /* Exit HALT mode: go from STOPPED to RUNNING state*/
-	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
-	//SIU.PSMI[7].R = 0;	//SCK_1 PCR[34]
-	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1 TF
-	//SIU.PSMI[9].R = 0;	//CS0_1 PCR[35]
-	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
-	//SIU.PSMI[8].R = 0;	//SIN_1 PCR[36]
-	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1 OLED
-	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1
-	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1
-	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1 L3G
-	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
-	DSPI_1.RSER.B.TCFRE = 0;	//关闭传输完成中断
-}
-
 
 static void SD_SPI_to_4M(void)
 {

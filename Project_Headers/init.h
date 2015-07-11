@@ -36,21 +36,22 @@ extern struct
 extern void init_modes_and_clock(void);
 extern void disable_watchdog(void);
 extern void initEMIOS_0MotorAndSteer(void);
-extern void initEMIOS_0Image(void);
 extern void init_led(void);
-extern void init_pit(void);
+extern void init_pit_10ms(void);
+extern void init_pit_1ms(void);
 extern void init_encoder(void);
 extern void enable_irq(void);
 extern int is_big_endian();
 extern void init_DIP(void);
 extern void init_choose_mode(void);
+extern void init_ADC(void);
 void test_init_TF();
 void test_xyz_gyro();
 void read_device_no();
-void test_init_RFID();
 void read_display_helm();
 void read_DIP_mode();
 void init_speed_control();
+void init_DSPI_1(void);
 
 
 

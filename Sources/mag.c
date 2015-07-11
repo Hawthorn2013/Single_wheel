@@ -9,26 +9,6 @@ WORD mag_left_old=0;
 WORD ab_s=0;
 
 
-/*-----------------------------------------------------------------------*/
-/* 初始化AD                                                              */
-/*-----------------------------------------------------------------------*/
-void init_ADC(void)
-{
-	ADC.MCR.R = 0x20000100;     //Conversion times for 80MHz ADClock  连续模式
-	ADC.NCMR[1].R = 0x000000FF; //Select ANS0 ANS1 ANS2 ANS3 inputs for conversion 
-								//channel 32~39 sampling enable
-	ADC.CTR[1].R = 0x00008606;  //Conversion times for 32MHz ADClock？？ 
-	ADC.MCR.B.NSTART=1;       //Trigger normal conversions for ADC0
-	SIU.PCR[24].R = 0x2100;     //MPC56xxB: Initialize PB[8] as ANS0 CDR32
-	SIU.PCR[25].R = 0x2100;     //MPC56xxB: Initialize PB[9] as ANS1 CDR33
-//	SIU.PCR[26].R = 0x2100;     //MPC56xxB: Initialize PB[10] as ANS2 34
-//	SIU.PCR[27].R = 0x2100;     //MPC56xxB: Initialize PB[11] as ANS3 35
-//	SIU.PCR[60].R = 0x2100;     //MPC56xxB: Initialize PD[12] as ANS4 36
-//	SIU.PCR[61].R = 0x2100;     //MPC56xxB: Initialize PD[13] as ANS5 37
-//	SIU.PCR[62].R = 0x2100;     //MPC56xxB: Initialize PD[14] as ANS6 38
-//	SIU.PCR[63].R = 0x2100;     //MPC56xxB: Initialize PD[15] as ANS7 39
-}
-
 
 /*-----------------------------------------------------------------------*/
 /* 电磁读值函数                                                          */

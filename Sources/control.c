@@ -41,7 +41,6 @@ DWORD tmp_a, tmp_b;
 void PitISR(void)
 {
 	g_f_pit = 1;
-	//D0=~D0;
 	g_time_basis_PIT++;	/* 计时 */
 	counter++;	
 	
@@ -53,15 +52,7 @@ void PitISR(void)
 		contorl_speed_encoder_pid();
 	}
 
-#if 0
-	/* 发送位置 */
-	{
-		BYTE data[7];
-		
-		generate_remote_net_frame_to_send_site(WIFI_NET_CMD_CAR_REPORT_CURRENT_SITE, RFID_site_data.site, data);
-		generate_remote_frame(WIFI_CMD_NET, data, sizeof(data));
-	}
-#endif
+
 	PIT.CH[1].TFLG.B.TIF = 1;	// MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }
 
