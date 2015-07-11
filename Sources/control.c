@@ -216,27 +216,26 @@ static SWORD get_e0()
 void contorl_speed_encoder_pid(void)
 {
 	
-	float e0;
-	static float e1=0;
-	static float speed_I=0;
-	
+	SWORD d_speed_pwm;
+	SWORD e0;
+	static SWORD e1=0;
+	static SWORD e2=0;
+	static SWORD speed_pwm=SPEED_PWM_MIN;
 	e0=get_e0();
-	d_speed_pwm=(float)(data_speed_pid.p*e0);       //P控制
-	d_speed_pwm+=(float)(data_speed_pid.d*(e0-e1));
-	speed_I+=e0;
-	if(speed_I>70) speed_I=70;
-	if(speed_I<-70) speed_I=-70;
-	d_speed_pwm+=(SWORD)(data_speed_pid.i*(speed_I));	
-	
+	d_speed_pwm=(SWORD)(data_speed_pid.p*(e0-e1));       //P控制
+	d_speed_pwm+=(SWORD)(data_speed_pid.d*(e0+e2-2*e1));
+	d_speed_pwm+=(SWORD)(data_speed_pid.i*(e0));		
 	if(d_speed_pwm>200)
 	      d_speed_pwm=200;
 	if(d_speed_pwm<-200)
-	      d_speed_pwm=-200;   //限制pwm变化量
+	     d_speed_pwm=-200;   //限制pwm变化量
+
+	e2=e1;
 	e1=e0;	
 }
 void set_speed_pwm(void)
 {
-	speed_pwm+=d_speed_pwm/100;
+	speed_pwm+=(d_speed_pwm/100);
 }
 
 /*-----------------------------------------------------------------------*/
