@@ -243,7 +243,7 @@ void read_device_no()
 /*----------------------------------------------------------------------*/
 void read_display_helm()
 {
-	LCD_P8x16Str(0, 0, (BYTE*)"StH.L=");
+	/*LCD_P8x16Str(0, 0, (BYTE*)"StH.L=");
 	if (read_steer_helm_data_from_TF())
 	{
 		suicide();
@@ -258,7 +258,7 @@ void read_display_helm()
 	delay_ms(500);
 	LCD_P8x16Str(0, 4, (BYTE*)"StH.C=");
 	LCD_PrintoutInt(48, 4, data_steer_helm_basement.center);
-	set_steer_helm_basement(data_steer_helm_basement.center);
+	set_steer_helm_basement(data_steer_helm_basement.center);*/
 }
 /*----------------------------------------------------------------------*/
 /*读取拨码开关选择模式                                            	 */

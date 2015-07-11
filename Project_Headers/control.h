@@ -125,6 +125,22 @@ extern struct
 	float d;
 } data_speed_pid;
 #endif
+/* 角度PID数据 */
+#ifdef __CONTROL_C_
+struct
+{
+	float p;
+	float i;
+	float d;
+} data_angle_pid = { 15, 1, 5 };
+#else
+extern struct
+{
+	float p;
+	float i;
+	float d;
+} data_angle_pid;
+#endif
 
 /* 速度设置数据 */
 #ifdef __CONTROL_C_
@@ -132,12 +148,14 @@ struct
 {
 	SWORD speed_pwm;
 	SWORD speed_target;
+	SWORD speed_target_now;
 } data_speed_settings = { 0x0000, 0x0000, };
 #else
 extern struct
 {
 	SWORD speed_pwm;
 	SWORD speed_target;
+	SWORD speed_target_now;
 } data_speed_settings;
 #endif
 
@@ -147,26 +165,25 @@ WORD helm_data_record = STEER_HELM_CENTER;
 #endif
 
 extern void PitISR(void);
-extern void set_speed_pwm(int16_t speed_pwm);
 extern void get_speed_now();
+extern void set_motor_pwm(int16_t speed_pwm);
+extern void motor_control(void);
 extern void contorl_speed_encoder_bb(void);
-extern void set_speed_target(SWORD speed_target);
-extern void set_pwm_target(SWORD speed_pwm);
-extern void set_speed_KP(WORD kp);
-extern void set_speed_KI(WORD ki);
-extern void set_speed_KD(WORD kd);
-extern void set_steer_helm(SWORD helmData);
+extern void  AngleControl(void);
 extern void contorl_speed_encoder_pid(void);
+extern void set_speed_pwm(void);
+extern void set_speed_target(SWORD speed_target);
+extern void set_speed_PID(void);
+extern void set_speed_KP(float kp);
+extern void set_speed_KI(float ki);
+extern void set_speed_KD(float kd);
+
 extern DWORD diff_time_basis_PIT(const DWORD new_time, const DWORD old_time);
-extern void set_steer_helm_basement_center(WORD helmData);
-extern void set_steer_helm_basement_left_limit(WORD helmData);
-extern void set_steer_helm_basement_right_limit(WORD helmData);
-extern int update_steer_helm_basement_to_steer_helm(void);
-extern void set_steer_helm_basement(WORD helmData);
-extern void control_angle_steer_helm(int angle_target);
-extern void control_speed_motor(int speed_target);
 extern int abs(int data);
-extern void set_steer_helm(SWORD helmData);
+
+#define CarSpeedConstant 10
+#define SPEED_CONTROL_PERIOD 100
+
 
 
 
