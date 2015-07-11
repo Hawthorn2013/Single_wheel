@@ -1,6 +1,7 @@
 ﻿#include "includes.h"
 
 BYTE count=0;
+BYTE  SpeedCountFlag;
 extern uint16_t Data=0x00;
 
 void main(void)
@@ -21,10 +22,27 @@ void main(void)
 			g_Control=0;
 			count++;
 			angle_read(AngleResult);
-			angle_calculate();
+			//angle_calculate();
+			set_speed_pwm();
+			AngleControl();
+			if(AngleCalculate[0]<27&&AngleCalculate[0]>-48)
+			{ 
+				motor_control();
+			} 
+			else
+			   {
+				set_motor_pwm(0);
+			   }
 			if(count==4)
 			{
-				
+				get_speed_now();
+				SpeedCountFlag++;
+				if(SpeedCountFlag>=20) 
+				{
+					set_speed_PID();
+					contorl_speed_encoder_pid();
+					SpeedCountFlag=0;
+				}
 			}
 			else if(count==5)
 			{

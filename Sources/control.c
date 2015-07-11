@@ -15,6 +15,7 @@ int counter=0;
 //速度控制全局变量
 float d_speed_pwm=0;
 float speed_pwm=SPEED_PWM_MIN;
+extern unsigned char g_nSpeedControlPeriod;
 //角度控制全局变量
 float fDelta;
 float g_fCarAngle;
@@ -22,8 +23,8 @@ float g_fGyroscopeAngleSpeed;
 float g_fGyroscopeTurnSpeed;
 float CarAngleInitial=0;
 float CarAnglespeedInitial=0;
-extern float  AngleCalculateResult[4];
-extern unsigned char g_nSpeedControlPeriod;
+extern float  AngleCalculate[4];
+
 // float AngleControlOutMax=0.2, AngleControlOutMin=-0.2;
 float  angle_pwm;
 
@@ -45,13 +46,7 @@ void PitISR(void)
 	counter++;	
 	
 	get_speed_now();//光编读值
-
 	/* 开始执行速度控制算法 */
-	if (g_f_enable_speed_control)
-	{
-		contorl_speed_encoder_pid();
-	}
-
 
 	PIT.CH[1].TFLG.B.TIF = 1;	// MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }
@@ -150,10 +145,10 @@ void AngleControl(void)
    float temp_angle, temp_anglespeed;
    float currentanglespeed, lastanglespeed=0;
    float last_angle=0;
-  // AngleCalculate();
+   angle_calculate();
    
-   g_fCarAngle= AngleCalculateResult[0];
-   g_fGyroscopeAngleSpeed= -AngleCalculateResult[1];
+   g_fCarAngle= AngleCalculate[0];
+   g_fGyroscopeAngleSpeed= -AngleCalculate[1];
  // g_fGyroscopeTurnSpeed= AngleCalculateResult[2];
  
    temp_angle=CarAngleInitial - g_fCarAngle;
