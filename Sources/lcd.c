@@ -881,7 +881,7 @@ void LCD_Write_Num(unsigned char X,unsigned char Y,int num,unsigned char N)
 * 入口参数：X:行;Y:列;num:变量;N(uint16_t):要显示的变量的位数
 * 出口参数：无
 /**********************************************************************/
-void LCD_Write_Num16(unsigned char X,unsigned char Y,uint16_t num,unsigned char N)
+void LCD_Write_Num16(unsigned char X,unsigned char Y,int16_t num,unsigned char N)
 {
   unsigned char line;
   unsigned char i=0;
