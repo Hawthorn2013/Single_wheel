@@ -395,8 +395,8 @@ void init_ADC(void)
 	ADC.MCR.B.NSTART=1;       //Trigger normal conversions for ADC0
 	SIU.PCR[24].R = 0x2100;     //MPC56xxB: Initialize PB[8] as ANS0 CDR32 电磁双路输入
 	SIU.PCR[25].R = 0x2100;     //MPC56xxB: Initialize PB[9] as ANS1 CDR33
-	SIU.PCR[26].R = 0x2100;     //MPC56xxB: Initialize PB[10] as ANS2 34 单轴陀螺仪双参数输入
-	SIU.PCR[27].R = 0x2100;     //MPC56xxB: Initialize PB[11] as ANS3 35
+	SIU.PCR[26].R = 0x2100;     //MPC56xxB: Initialize PB[10] as ANS2 34 单轴陀螺仪双参数输入角度
+	SIU.PCR[27].R = 0x2100;     //MPC56xxB: Initialize PB[11] as ANS3 35 角速度
 //	SIU.PCR[60].R = 0x2100;     //MPC56xxB: Initialize PD[12] as ANS4 36
 //	SIU.PCR[61].R = 0x2100;     //MPC56xxB: Initialize PD[13] as ANS5 37
 //	SIU.PCR[62].R = 0x2100;     //MPC56xxB: Initialize PD[14] as ANS6 38
@@ -446,22 +446,22 @@ void init_all_and_POST(void)
 	initEMIOS_0MotorAndSteer();
 	
 	/* PIT：光编读值&速度控制 */
-	init_pit_10ms();
+	//init_pit_10ms();
 	
 	/* PIT：步进电机控制&角度控制标志位 */
 	init_pit_1ms();	
 	
 	
-	init_Stepmotor();		/* 初始化步进电机 */
+	//init_Stepmotor();		/* 初始化步进电机 */
 
 	init_led();
-	init_DIP();				/* 拨码开关 */
-	init_serial_port_1();	/* BlueTooth */
+	//init_DIP();				/* 拨码开关 */
+	//init_serial_port_1();	/* BlueTooth */
 	init_ADC();				/* 陀螺仪读值 */
-	init_optical_encoder();	/* 光编 */
+	//init_optical_encoder();	/* 光编 */
 
 	//init_I2C();
-	init_choose_mode();		/* 拨码开关模式选择 */
+	//init_choose_mode();		/* 拨码开关模式选择 */
 	
 	
 	/* 初始化SPI总线 */
@@ -473,46 +473,46 @@ void init_all_and_POST(void)
 	/* 初始化显示屏 */
 	initLCD();
 
-	//LCD_DISPLAY();
+	LCD_DISPLAY();
 	LCD_Fill(0xFF);	/* 亮屏 */
 	delay_ms(50);
 	LCD_Fill(0x00);	/* 黑屏 */
 	delay_ms(50);
 	
 	/* 初始化TF卡 */
-	test_init_TF();
+	//test_init_TF();
 	
 	/* 读取设备号 */
-	read_device_no();
+	//read_device_no();
 	
 
 	/* 初始化陀螺仪 */
-	init_MPU9250();
+	//init_MPU9250();
 	
 
 	
-	delay_ms(1000);
-	/* 换屏 */
-	LCD_Fill(0x00);
+//	delay_ms(1000);
+//	/* 换屏 */
+//	LCD_Fill(0x00);
 
 
 	/* 读取舵机参数 */
-	read_display_helm();
+	//read_display_helm();
 	
 	/* 读取拨码开关模式号 */
-	read_DIP_mode();
+	//read_DIP_mode();
 
-	delay_ms(1000);
+	//delay_ms(1000);
 	/* 换屏 */
-	LCD_Fill(0x00);
+	//LCD_Fill(0x00);
 
 	/* 速度闭环开启及测试 速度=0 */	
-	init_speed_control();
+	//init_speed_control();
 //	g_f_enable_supersonic=1;
-	delay_ms(2000);
-	
-	/* 换屏 */
-	LCD_Fill(0x00);
+//	delay_ms(2000);
+//	
+//	/* 换屏 */
+//	LCD_Fill(0x00);
 
 }
 //

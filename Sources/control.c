@@ -103,7 +103,7 @@ void set_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向后
 }
 void motor_control(void)
 {
-	int motor_pwm;
+	int16_t motor_pwm;
 	motor_pwm=angle_pwm+speed_pwm;
 	set_motor_pwm(motor_pwm);
 }
@@ -216,11 +216,10 @@ static SWORD get_e0()
 void contorl_speed_encoder_pid(void)
 {
 	
-	SWORD d_speed_pwm;
+	
 	SWORD e0;
 	static SWORD e1=0;
 	static SWORD e2=0;
-	static SWORD speed_pwm=SPEED_PWM_MIN;
 	e0=get_e0();
 	d_speed_pwm=(SWORD)(data_speed_pid.p*(e0-e1));       //P控制
 	d_speed_pwm+=(SWORD)(data_speed_pid.d*(e0+e2-2*e1));
