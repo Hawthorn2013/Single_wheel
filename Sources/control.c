@@ -136,7 +136,7 @@ void contorl_speed_encoder_bb(void)
 }
 
 /*-----------------------------------------------------------------------*/
-/* 角度控制                                                             */
+/* 前后角度控制                                                             */
 /*-----------------------------------------------------------------------*/
 void AngleControl(void)
 
@@ -155,19 +155,19 @@ void AngleControl(void)
    temp_anglespeed= CarAnglespeedInitial - g_fGyroscopeAngleSpeed;
   
    if(temp_angle<-20)
-	   data_angle_pid.p=0.045; //0.012
+	   data_angle_pid.p=45; //0.012
    else if(temp_angle>=-20&temp_angle<=0)
-	   data_angle_pid.p=0.054; //0.0135
+	   data_angle_pid.p=54; //0.0135
    else if(temp_angle>0&temp_angle<=30)
-	   data_angle_pid.p=0.054;// 0.02    
+	   data_angle_pid.p=54;// 0.02    
    else
-	   data_angle_pid.p=0.042;  //  0.015
+	   data_angle_pid.p=42;  //  0.015
                                                     
   
    if(temp_anglespeed>=80||temp_anglespeed<=-80)
-	   data_angle_pid.d=0.0003;
+	   data_angle_pid.d=0.3;
    else
-	   data_angle_pid.d=0.0001;
+	   data_angle_pid.d=0.1;
   
    currentanglespeed=g_fCarAngle;
    delta_anglespeed=currentanglespeed-lastanglespeed;
@@ -186,6 +186,14 @@ void AngleControl(void)
   
   angle_pwm=delta_angle;
   
+}
+
+/*-----------------------------------------------------------------------*/
+/* 左右平衡控制                                                             */
+/*-----------------------------------------------------------------------*/
+void BalanceControl(void)
+{
+	
 }
 
 /*-----------------------------------------------------------------------*/

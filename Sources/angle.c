@@ -21,6 +21,10 @@ void angle_read(unsigned int *AngleGra)
 		temp[0]+=jos[0];//PB10
 		jos[1]=(unsigned int)ADC.CDR[35].B.CDATA;
 		temp[1]+=jos[1];//PB11
+		jos[2]=(unsigned int)ADC.CDR[37].B.CDATA;
+		temp[2]+=jos[2];
+		jos[3]=(unsigned int)ADC.CDR[39].B.CDATA;
+		temp[3]+=jos[3];
 	}
 	ADResult[0]=5000/1024*(temp[0]/20);
 	ADResult[1]=5000/1024*(temp[1]/20);
@@ -36,8 +40,8 @@ void angle_read(unsigned int *AngleGra)
 /*-----------------------------------------------------------------------*/
 void angle_calculate(void)
 {
-	AngleCalculate[0]=((float)AngleResult[0]-1848)/5.4; //陀螺仪的角度  前倾的角度//1380   
-	AngleCalculate[1]=((float)AngleResult[1]-972)/0.67;//陀螺仪角速度
+	AngleCalculate[0]=((float)AngleResult[0]-1836)/5.51; //陀螺仪的角度  前倾的角度//1380   
+	AngleCalculate[1]=((float)AngleResult[1]-968)/0.67;//陀螺仪角速度
 //	AngleCalculate[2]=((float)AngleResult[2]-1532)/5; // 转向角度
 //	AngleCalculate[3]=((float)AngleResult[3]-1378)/0.67; //加速度z轴  //1380
 }

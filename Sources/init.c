@@ -395,12 +395,12 @@ void init_ADC(void)
 	ADC.MCR.B.NSTART=1;       //Trigger normal conversions for ADC0
 	SIU.PCR[24].R = 0x2100;     //MPC56xxB: Initialize PB[8] as ANS0 CDR32 电磁双路输入
 	SIU.PCR[25].R = 0x2100;     //MPC56xxB: Initialize PB[9] as ANS1 CDR33
-	SIU.PCR[26].R = 0x2100;     //MPC56xxB: Initialize PB[10] as ANS2 34 单轴陀螺仪双参数输入角度
-	SIU.PCR[27].R = 0x2100;     //MPC56xxB: Initialize PB[11] as ANS3 35 角速度
+	SIU.PCR[26].R = 0x2100;     //MPC56xxB: Initialize PB[10] as ANS2 34	前后单轴陀螺仪双参数输入：角度
+	SIU.PCR[27].R = 0x2100;     //MPC56xxB: Initialize PB[11] as ANS3 35	前后单轴陀螺仪双参数输入：角速度
 //	SIU.PCR[60].R = 0x2100;     //MPC56xxB: Initialize PD[12] as ANS4 36
-//	SIU.PCR[61].R = 0x2100;     //MPC56xxB: Initialize PD[13] as ANS5 37
+	SIU.PCR[61].R = 0x2100;     //MPC56xxB: Initialize PD[13] as ANS5 37	左右单轴陀螺仪双参数输入：角度
 //	SIU.PCR[62].R = 0x2100;     //MPC56xxB: Initialize PD[14] as ANS6 38
-//	SIU.PCR[63].R = 0x2100;     //MPC56xxB: Initialize PD[15] as ANS7 39
+	SIU.PCR[63].R = 0x2100;     //MPC56xxB: Initialize PD[15] as ANS7 39	左右单轴陀螺仪双参数输入：角速度
 }
 
 
@@ -457,7 +457,7 @@ void init_all_and_POST(void)
 	init_led();
 	//init_DIP();				/* 拨码开关 */
 	//init_serial_port_1();	/* BlueTooth */
-	init_ADC();				/* 陀螺仪读值 */
+	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
 	//init_optical_encoder();	/* 光编 */
 
 	//init_I2C();
