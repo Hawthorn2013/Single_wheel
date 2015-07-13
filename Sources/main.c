@@ -9,7 +9,7 @@ void main(void)
 //	uint16_t Data_H=0x0000;
 //	uint16_t Data_L=0x0000;
 	init_all_and_POST();
-//	set_speed_target(0);
+	set_speed_target(0);
 	for(;;)
 	{
 	/*	delay_ms(20);
@@ -40,14 +40,13 @@ void main(void)
 			if(count==4)
 			{
 				get_speed_now();
-
-//				SpeedCountFlag++;
-//				if(SpeedCountFlag>=20) 
-//				{
-//					set_speed_PID();
-//					contorl_speed_encoder_pid();
-//					SpeedCountFlag=0;
-//				}
+				SpeedCountFlag++;
+				if(SpeedCountFlag>=20) 
+				{
+					set_speed_PID();
+					contorl_speed_encoder_pid();
+					SpeedCountFlag=0;
+				}
 			}
 			else if(count==5)
 			{

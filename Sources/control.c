@@ -149,14 +149,14 @@ void AngleControl(void)
    temp_angle=CarAngleInitial - g_fCarAngle;
    temp_anglespeed= CarAnglespeedInitial - g_fGyroscopeAngleSpeed;
   
-   if(temp_angle<-15)//20
-	   data_angle_pid.p=100; //45
+   if(temp_angle<-15)
+	   data_angle_pid.p=100; //100开环
    else if(temp_angle>=-15&temp_angle<=0)
-	   data_angle_pid.p=195; //130
-   else if(temp_angle>0&temp_angle<=15)//30
-	   data_angle_pid.p=165;// 110   
+	   data_angle_pid.p=200; //200
+   else if(temp_angle>0&temp_angle<=15)
+	   data_angle_pid.p=170;// 170   
    else
-	   data_angle_pid.p=100;  //42
+	   data_angle_pid.p=100;  //100
                                                     
   
    if(temp_anglespeed>=50||temp_anglespeed<=-50)
