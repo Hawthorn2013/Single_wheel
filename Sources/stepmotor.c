@@ -36,8 +36,6 @@ void Pit_1ms(void)
 	}
 	else
 		timer++;
-	D6=~D6;
-	D8=~D8;
 		
 	PIT.CH[2].TFLG.B.TIF = 1;	// MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }
