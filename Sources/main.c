@@ -24,10 +24,13 @@ void main(void)
 			angle_read(AngleResult);
 //			set_speed_pwm();
 			AngleControl();
+			LCD_PrintoutInt(0, 0, AngleResult[1]);
+			LCD_PrintoutInt(0, 2, AngleCalculate[1]);
+			LCD_PrintoutInt(0, 4, AngleResult[0]);
 			LCD_PrintoutInt(0, 6, AngleCalculate[0]);
-
-			if(AngleCalculate[0]<25&&AngleCalculate[0]>-34)
+			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
 			{ 
+				LCD_PrintoutInt(65, 2, angle_pwm);
 				motor_control();
 			} 
 			else
@@ -37,7 +40,6 @@ void main(void)
 			if(count==4)
 			{
 				get_speed_now();
-				LCD_PrintoutInt(0, 4,data_encoder.speed_now );
 
 //				SpeedCountFlag++;
 //				if(SpeedCountFlag>=20) 

@@ -14,7 +14,7 @@ int counter=0;
 
 //速度控制全局变量
 static float d_speed_pwm=0;
-static float speed_pwm=SPEED_PWM_MIN;
+static float speed_pwm=0;
 extern unsigned char g_nSpeedControlPeriod;
 //角度控制全局变量
 float fDelta;
@@ -150,27 +150,27 @@ void AngleControl(void)
    temp_anglespeed= CarAnglespeedInitial - g_fGyroscopeAngleSpeed;
   
    if(temp_angle<-15)//20
-	   data_angle_pid.p=50; //45
+	   data_angle_pid.p=100; //45
    else if(temp_angle>=-15&temp_angle<=0)
-	   data_angle_pid.p=60; //54
-   else if(temp_angle>0&temp_angle<=25)//30
-	   data_angle_pid.p=60;// 54    
+	   data_angle_pid.p=195; //130
+   else if(temp_angle>0&temp_angle<=15)//30
+	   data_angle_pid.p=165;// 110   
    else
-	   data_angle_pid.p=50;  //42
+	   data_angle_pid.p=100;  //42
                                                     
   
-   if(temp_anglespeed>=80||temp_anglespeed<=-80)
-	   data_angle_pid.d=0;//0.3
+   if(temp_anglespeed>=50||temp_anglespeed<=-50)
+	   data_angle_pid.d=2;//0.3
    else
-	   data_angle_pid.d=0;//0.1
+	   data_angle_pid.d=0.5;//0.1
   
    currentanglespeed=g_fCarAngle;
    delta_anglespeed=currentanglespeed-lastanglespeed;
    lastanglespeed=currentanglespeed;
   
    delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle);
-   delta_angle+=data_angle_pid.d*0.8*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed);
-   delta_angle+=data_angle_pid.d*0.2*delta_anglespeed;
+   delta_angle+=data_angle_pid.d*0.6*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed);
+   delta_angle+=data_angle_pid.d*0.4*delta_anglespeed;
   //delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle) /5000 +data_angle_pid.d*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed) /15000; // 1000 与10000是否根据实际需要调整 
   //angle_pwm=delta_angle;
   

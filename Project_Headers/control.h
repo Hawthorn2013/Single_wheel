@@ -15,7 +15,7 @@
 
 /* 速度PWM */
 #define SPEED_PWM_MIN (1)
-#define SPEED_PWM_MAX (1500)
+#define SPEED_PWM_MAX (1000)
 #define SPEED_PWM_TEST (20)
 
 /* 速度光编 */
@@ -45,6 +45,9 @@ extern int find_mag_back_car1;
 extern int g_f_big_U;
 extern int g_f_big_U_2;
 extern int counter;
+extern float  angle_pwm;
+
+
 
 
 /* 时间基准 */
