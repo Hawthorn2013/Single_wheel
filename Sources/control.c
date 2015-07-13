@@ -6,12 +6,28 @@ int g_f_pit = 0;
 int g_f_enable_mag_steer_control = 0;
 int g_f_enable_speed_control = 0;	/* 启用闭环速度控制标志位 */
 int g_f_enable_pwm_control = 0;	/* 启用开环速度控制标志位 */
-int g_f_enable_supersonic=0;	/* 启用超声探测标志位 */
 int speed = 0;
 int update_steer_helm_basement_to_steer_helm(void);
 int g_f_big_U=0;
 int g_f_big_U_2=0;
 int counter=0;
+
+//速度控制全局变量
+static float d_speed_pwm=0;
+static float speed_pwm=0;
+extern unsigned char g_nSpeedControlPeriod;
+//角度控制全局变量
+float fDelta;
+float g_fCarAngle;
+float g_fGyroscopeAngleSpeed;
+float g_fGyroscopeTurnSpeed;
+float CarAngleInitial=0;
+float CarAnglespeedInitial=0;
+extern float  AngleCalculate[4];
+
+// float AngleControlOutMax=0.2, AngleControlOutMin=-0.2;
+float  angle_pwm;
+
 
 DWORD tmp_a, tmp_b;
 
@@ -25,45 +41,8 @@ DWORD tmp_a, tmp_b;
 /*-----------------------------------------------------------------------*/
 void PitISR(void)
 {
-	g_f_pit = 1;
-	//D0=~D0;
-	g_time_basis_PIT++;	/* 计时 */
-	counter++;	
-	
 	get_speed_now();//光编读值
-
 	/* 开始执行速度控制算法 */
-	if (g_f_enable_speed_control)
-	{
-		contorl_speed_encoder_pid();
-	}
-//	if(g_f_enable_pwm_control)
-//	{
-//		set_speed_pwm(data_speed_settings.speed_pwm);
-//	}
-//	if(counter==3)
-//	{
-//		if (g_f_enable_supersonic)
-//		{
-//			trigger_supersonic_0();
-//			get_supersonic_time_0();
-//			LCD_Write_Num(96,4,(ABS((WORD)(tmp_time.R))),5);
-//			trigger_supersonic_1();
-//			get_supersonic_time_1();
-//			LCD_Write_Num(96,5,(ABS((WORD)(tmp_time.R))/100),5);
-//		}
-//		counter=0;
-//	}
-#if 0
-	/* 发送位置 */
-	{
-		BYTE data[7];
-		
-		generate_remote_net_frame_to_send_site(WIFI_NET_CMD_CAR_REPORT_CURRENT_SITE, RFID_site_data.site, data);
-		generate_remote_frame(WIFI_CMD_NET, data, sizeof(data));
-	}
-#endif
-	EMIOS_0.CH[3].CSR.B.FLAG = 1;//清场中断标志位
 	PIT.CH[1].TFLG.B.TIF = 1;	// MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }
 
@@ -72,7 +51,7 @@ void PitISR(void)
 /*-----------------------------------------------------------------------*/
 void get_speed_now()
 {
-	data_encoder.is_forward = SIU.GPDI[46].B.PDI;//PC14
+	data_encoder.is_forward = SIU.GPDI[28].B.PDI;//PC14
 	data_encoder.cnt_old = data_encoder.cnt_new;
 	data_encoder.cnt_new = (WORD)EMIOS_0.CH[24].CCNTR.R;//PD12
 	if (data_encoder.cnt_new >= data_encoder.cnt_old)
@@ -83,32 +62,34 @@ void get_speed_now()
 	{
 		data_encoder.speed_now = 0xffff - (data_encoder.cnt_old - data_encoder.cnt_new);
 	}
+	
 }
 /*-----------------------------------------------------------------------*/
-/* 设置速度PWM                                                                    */
+/* 设置电机PWM                                                                    */
 /*-----------------------------------------------------------------------*/
-void set_speed_pwm(int16_t speed_pwm)	//speed_pwm正为向前，负为向后
+
+void set_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向后
 {
-	if (speed_pwm>0)	//forward
+	if (motor_pwm>0)	//forward
 	{
-		if (speed_pwm>SPEED_PWM_MAX)
+		if (motor_pwm>SPEED_PWM_MAX)
 		{
-			speed_pwm = SPEED_PWM_MAX;
+			motor_pwm = SPEED_PWM_MAX;
 		}
-		EMIOS_0.CH[21].CBDR.R = speed_pwm;
+		EMIOS_0.CH[21].CBDR.R = motor_pwm;
 		EMIOS_0.CH[22].CBDR.R = 1;
 		
 	}
-	else if (speed_pwm<0)	//backward
+	else if (motor_pwm<0)	//backward
 	{
-		speed_pwm = 0-speed_pwm;
-		if (speed_pwm>SPEED_PWM_MAX)
+		motor_pwm = 0-motor_pwm;
+		if (motor_pwm>SPEED_PWM_MAX)
 		{
-			speed_pwm = SPEED_PWM_MAX;
+			motor_pwm = SPEED_PWM_MAX;
 		}
 
 		EMIOS_0.CH[21].CBDR.R = 1;
-		EMIOS_0.CH[22].CBDR.R = speed_pwm;	
+		EMIOS_0.CH[22].CBDR.R = motor_pwm;	
 	}
 	else
 	{
@@ -116,7 +97,12 @@ void set_speed_pwm(int16_t speed_pwm)	//speed_pwm正为向前，负为向后
 		EMIOS_0.CH[22].CBDR.R = 1;	
 	}
 }
-
+void motor_control(void)
+{
+	int16_t motor_pwm;
+	motor_pwm=angle_pwm+speed_pwm;
+	set_motor_pwm(motor_pwm);
+}
 
 /*-----------------------------------------------------------------------*/
 /* BangBang速度控制                                                             */
@@ -137,14 +123,73 @@ void contorl_speed_encoder_bb(void)
 	
 	if (tmp_speed_now > data_speed_settings.speed_target)
 	{
-		set_speed_pwm(0 - SPEED_PWM_MAX);
+		set_motor_pwm(0 - SPEED_PWM_MAX);
 	}
 	else if (tmp_speed_now < data_speed_settings.speed_target)
 	{
-		set_speed_pwm(SPEED_PWM_MAX);
+		set_motor_pwm(SPEED_PWM_MAX);
 	}
 }
 
+/*-----------------------------------------------------------------------*/
+/* 前后角度控制                                                             */
+/*-----------------------------------------------------------------------*/
+void AngleControl(void)
+
+{  float delta_angle;
+   float delta_anglespeed;
+   float temp_angle, temp_anglespeed;
+   float currentanglespeed, lastanglespeed=0;
+   float last_angle=0;
+   angle_calculate();
+   g_fCarAngle= AngleCalculate[0];
+   g_fGyroscopeAngleSpeed= -AngleCalculate[1];
+ // g_fGyroscopeTurnSpeed= AngleCalculateResult[2];
+ 
+   temp_angle=CarAngleInitial - g_fCarAngle;
+   temp_anglespeed= CarAnglespeedInitial - g_fGyroscopeAngleSpeed;
+  
+   if(temp_angle<-15)
+	   data_angle_pid.p=100; //100开环
+   else if(temp_angle>=-15&temp_angle<=0)
+	   data_angle_pid.p=200; //200
+   else if(temp_angle>0&temp_angle<=15)
+	   data_angle_pid.p=170;// 170   
+   else
+	   data_angle_pid.p=100;  //100
+                                                    
+  
+   if(temp_anglespeed>=50||temp_anglespeed<=-50)
+	   data_angle_pid.d=2;//0.3
+   else
+	   data_angle_pid.d=0.5;//0.1
+  
+   currentanglespeed=g_fCarAngle;
+   delta_anglespeed=currentanglespeed-lastanglespeed;
+   lastanglespeed=currentanglespeed;
+  
+   delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle);
+   delta_angle+=data_angle_pid.d*0.6*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed);
+   delta_angle+=data_angle_pid.d*0.4*delta_anglespeed;
+  //delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle) /5000 +data_angle_pid.d*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed) /15000; // 1000 与10000是否根据实际需要调整 
+  //angle_pwm=delta_angle;
+  
+ /* if(delta_angle>AngleControlOutMax)
+  delta_angle=AngleControlOutMax;
+  else if(delta_angle<AngleControlOutMin)
+  delta_angle=AngleControlOutMin;*/
+  
+  angle_pwm=delta_angle;
+  
+}
+
+/*-----------------------------------------------------------------------*/
+/* 左右平衡控制                                                             */
+/*-----------------------------------------------------------------------*/
+void BalanceControl(void)
+{
+	
+}
 
 /*-----------------------------------------------------------------------*/
 /* 获得速度偏差                                                                      */
@@ -167,18 +212,15 @@ static SWORD get_e0()
 	
 }
 
-
 /*-----------------------------------------------------------------------*/
 /* PID速度控制                                                                       */
 /* 有问题找叶川                                                                      */                                                          
 /*-----------------------------------------------------------------------*/
 void contorl_speed_encoder_pid(void)
 {
-	SWORD d_speed_pwm;
 	SWORD e0;
 	static SWORD e1=0;
 	static SWORD e2=0;
-	static SWORD speed_pwm=SPEED_PWM_MIN;
 	e0=get_e0();
 	d_speed_pwm=(SWORD)(data_speed_pid.p*(e0-e1));       //P控制
 	d_speed_pwm+=(SWORD)(data_speed_pid.d*(e0+e2-2*e1));
@@ -186,17 +228,18 @@ void contorl_speed_encoder_pid(void)
 	if(d_speed_pwm>200)
 	      d_speed_pwm=200;
 	if(d_speed_pwm<-200)
-	      d_speed_pwm=-200;   //限制pwm变化量
-	speed_pwm+=d_speed_pwm;
-	if(speed_pwm>SPEED_PWM_MAX)
-			speed_pwm = SPEED_PWM_MAX;
-	else if (speed_pwm<0-SPEED_PWM_MAX)
-			speed_pwm =0- SPEED_PWM_MAX;    //防止溢出（造成负数）
-	set_speed_pwm(speed_pwm);
+	     d_speed_pwm=-200;   //限制pwm变化量
+//	LCD_PrintoutInt(5, 2,d_speed_pwm);
 	e2=e1;
 	e1=e0;	
 }
-
+void set_speed_pwm(void)
+{
+	speed_pwm+=(d_speed_pwm/10);
+	
+//	LCD_PrintoutInt(5, 4,speed_pwm);
+//	LCD_PrintoutInt(5, 6,d_speed_pwm/100);
+}
 
 /*-----------------------------------------------------------------------*/
 /* 设置目标速度                                                                      */
@@ -205,19 +248,80 @@ void set_speed_target(SWORD speed_target)
 {
 	data_speed_settings.speed_target = speed_target;
 }
+
 /*-----------------------------------------------------------------------*/
-/* 设置目标占空比                                                                      */
+/* 设置速度PID控制PID值 根据目标速度设置 speed_now                                                            */
 /*-----------------------------------------------------------------------*/
-void set_pwm_target(SWORD speed_pwm)
-{
-	data_speed_settings.speed_pwm = speed_pwm;
+void set_speed_PID(void) 
+{ 
+	int speed_target=data_speed_settings.speed_target;
+	int speed_now=data_speed_settings.speed_target_now;
+	if(speed_target==0)//420 
+	{
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;         
+	}
+	else if(speed_target>=450&&speed_target<=500)//420 
+	{
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;          
+
+		if(speed_now<speed_target)
+			speed_now+=25;
+		else if(speed_now>speed_target)
+			speed_now-=25;
+		else
+			speed_now=speed_target;
+	}
+
+	else if(speed_target>500&&speed_target<=560)//420 
+	{
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;         
+		if(speed_now<speed_target)
+			speed_now+=30;          //30可调 值越大初始时速度变化快
+		else if(speed_now>speed_target)
+			speed_now-=30;
+		else
+			speed_now=speed_target;
+	} 
+
+	else if(speed_target>560&&speed_target<=620 )
+	{
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;          
+		if(speed_now<speed_target)
+			speed_now+=30;
+		else if(speed_now>speed_target)
+			speed_now-=30;
+		else
+			speed_now=speed_target;
+	} 
+
+	else
+	{
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;          
+		if(speed_now<speed_target)
+			speed_now+=30;
+		else if(speed_now>speed_target)
+			speed_now-=30;
+		else
+			speed_now=speed_target;
+	} 
+
 }
 
 
 /*-----------------------------------------------------------------------*/
 /* 设置速度PID控制P值                                                            */
 /*-----------------------------------------------------------------------*/
-void set_speed_KP(WORD kp)
+void set_speed_KP(float kp)
 {
 	data_speed_pid.p = kp;
 }
@@ -226,7 +330,7 @@ void set_speed_KP(WORD kp)
 /*-----------------------------------------------------------------------*/
 /* 设置速度PID控制I值                                                             */
 /*-----------------------------------------------------------------------*/
-void set_speed_KI(WORD ki)
+void set_speed_KI(float ki)
 {
 	data_speed_pid.i = ki;
 }
@@ -235,114 +339,11 @@ void set_speed_KI(WORD ki)
 /*-----------------------------------------------------------------------*/
 /* 设置速度PID控制D值                                                            */
 /*-----------------------------------------------------------------------*/
-void set_speed_KD(WORD kd)
+void set_speed_KD(float kd)
 {
 	data_speed_pid.d = kd;
 }
 
-
-/*-----------------------------------------------------------------------*/
-/* 设置方向舵机位置                                                                */
-/* 统一舵机访问接口                                                                */
-/* 负数左舵，正数右舵，零中值                                                 */
-/*-----------------------------------------------------------------------*/
-void set_steer_helm(SWORD helmData)
-{
-	if(helmData <= data_steer_helm.left_limit)
-	{
-		helmData = data_steer_helm.left_limit;
-	}
-	else if(helmData >= data_steer_helm.right_limit)
-	{
-		helmData = data_steer_helm.right_limit;
-	}
-	helm_data_record = helmData;
-	helmData = (WORD)(helmData*data_steer_helm_basement.direction + data_steer_helm_basement.center);
-	set_steer_helm_basement(helmData);
-}
-
-/*-----------------------------------------------------------------------*/
-/* 设置方向舵机位置                                                                */
-/* 对于白色信号线的舵机：                                                       */
-/* 面对舵机轴，占空比增大，舵机逆时针旋转，对我们的车是左舵    */
-/* 对于橙色信号线的舵机：                                                       */
-/* 相反                                                                                  */
-/* 直接方向舵机寄存器                                                             */
-/* 有限幅                                                                               */
-/*-----------------------------------------------------------------------*/
-void set_steer_helm_basement(WORD helmData)
-{
-	if(helmData <= 1500)
-	{
-		helmData = 1500;
-	}
-	else if(helmData >= 5000)
-	{
-		helmData = 5000;
-	}
-	EMIOS_0.CH[9].CBDR.R = helmData;
-}
-
-
-/*-----------------------------------------------------------------------*/
-/* 设置方向舵机底层数据 中值                                                   */
-/* 更改方向舵机寄存器                                                             */
-/*-----------------------------------------------------------------------*/
-void set_steer_helm_basement_center(WORD helmData)
-{
-	data_steer_helm_basement.center = helmData;
-	set_steer_helm_basement(helmData);
-}
-
-
-/*-----------------------------------------------------------------------*/
-/* 设置方向舵机底层数据 左极限                                                */
-/* 更改方向舵机寄存器                                                             */
-/*-----------------------------------------------------------------------*/
-void set_steer_helm_basement_left_limit(WORD helmData)
-{
-	data_steer_helm_basement.left_limit = helmData;
-	set_steer_helm_basement(helmData);
-}
-
-
-/*-----------------------------------------------------------------------*/
-/* 设置方向舵机底层数据 右极限                                                */
-/* 更改方向舵机寄存器                                                             */
-/*-----------------------------------------------------------------------*/
-void set_steer_helm_basement_right_limit(WORD helmData)
-{
-	data_steer_helm_basement.right_limit = helmData;
-	set_steer_helm_basement(helmData);
-}
-
-
-/*-----------------------------------------------------------------------*/
-/* 将方向舵机底层数据更新到方向舵机上层数据                            */
-/* 校验数据是否合理                                                                */
-/* 合理则修改 返回0                                                                */
-/* 不合理拒绝修改 返回1                                                          */
-/*-----------------------------------------------------------------------*/
-int update_steer_helm_basement_to_steer_helm(void)
-{
-	if(data_steer_helm_basement.left_limit < data_steer_helm_basement.center && data_steer_helm_basement.center < data_steer_helm_basement.right_limit)
-	{
-		data_steer_helm_basement.direction = 1;
-		data_steer_helm.left_limit = (SWORD)(data_steer_helm_basement.left_limit - data_steer_helm_basement.center);
-		data_steer_helm.right_limit = (SWORD)(data_steer_helm_basement.right_limit - data_steer_helm_basement.center);
-	}
-	else if (data_steer_helm_basement.left_limit > data_steer_helm_basement.center && data_steer_helm_basement.center > data_steer_helm_basement.right_limit)
-	{
-		data_steer_helm_basement.direction = -1;
-		data_steer_helm.left_limit = (SWORD)(data_steer_helm_basement.center - data_steer_helm_basement.left_limit);
-		data_steer_helm.right_limit = (SWORD)(data_steer_helm_basement.center - data_steer_helm_basement.right_limit);
-	}
-	else
-	{
-		return 1;
-	}
-	return 0;
-}
 
 
 /*-----------------------------------------------------------------------*/

@@ -1,46 +1,56 @@
 ﻿#include "includes.h"
 
-int32_t Data[6];
-float a=0;
-float v=0;
-float s=0;
-
-#define g 9.8
-#define stime 0.02		//采样时间 单位s
-
-void Mode0_DebugCamera(void);
-void Mode1_SendVideo(void);
-void Mode2_GO(void);
-void Mode3_Andriod(void);
+BYTE count=0;
+BYTE  SpeedCountFlag;
 
 void main(void)
 {
-	int i=0;
-	int32_t xdev;
 	init_all_and_POST();
 	D0=0;
-	deviation_adjust_accx(&xdev);
+	set_speed_target(0);
 	for(;;)
 	{
-
-		Read_GYRO_ACC(Data);
-		a=-(Data[3]-xdev)*2*g/65536;
-		v=v+a*stime;
-		s=s+v*stime;
-		if(s>=2)
-			D1=0;
-//		for(i=0;i<6;i++)
-//		{
-//			LCD_Write_Num(85,i,Data[i],5);
-//		}
+	/*	delay_ms(20);
+		while(!Reg_Read(ACCEL_XOUT_H,&Data_H)){}
+		while(!Reg_Read(ACCEL_XOUT_L,&Data_L)){}
+		Data_H=Data_H<<8;
+		Data=Data_H|Data_L;*/
+		if(g_Control)
 		{
-			LCD_Write_Num(45,1,Data[3]-xdev,5);
-			LCD_Write_Num(45,2,Data[4],5);
-			LCD_Write_Num(45,3,Data[5],5);
-			LCD_PrintoutFloat(45, 4, v);
-			LCD_PrintoutFloat(45, 6, s);
+			g_Control=0;
+			count++;
+			angle_read(AngleResult);
+//			set_speed_pwm();
+			AngleControl();
+			LCD_PrintoutInt(0, 0, AngleResult[1]);
+			LCD_PrintoutInt(0, 2, AngleCalculate[1]);
+			LCD_PrintoutInt(0, 4, AngleResult[0]);
+			LCD_PrintoutInt(0, 6, AngleCalculate[0]);
+			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
+			{ 
+				LCD_PrintoutInt(65, 2, angle_pwm);
+				motor_control();
+			} 
+			else
+			{
+				set_motor_pwm(0);
+			}
+			if(count==4)
+			{
+				get_speed_now();
+				SpeedCountFlag++;
+				if(SpeedCountFlag>=20) 
+				{
+					set_speed_PID();
+					contorl_speed_encoder_pid();
+					SpeedCountFlag=0;
+				}
+			}
+			else if(count==5)
+			{
+				count=0;
+			}
 		}
-		i++;
-		delay_ms(20);
 	}
+
 }

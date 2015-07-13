@@ -48,11 +48,12 @@ typedef unsigned short word;
 #include "lcd.h"
 #include "UART.h"
 #include "L3G4200D.h"
-#include "mag.h"
+//#include "mag.h"
 #include "IntcInterrupts.h"
+#include "stepmotor.h"
+#include "angle.h"
 #include "MPU9250.h"
-//#include "stepmotor.h"
-
+#include "analyse.h"
 
 
 

@@ -94,7 +94,7 @@ void init_DIP(void)
 /* 初始化PIT中断                                                         */
 /* 10ms                                                                  */
 /*-----------------------------------------------------------------------*/
-void init_pit(void)
+void init_pit_10ms(void)
 {
 	/* NOTE:  DIVIDER FROM SYSCLK TO PIT ASSUMES DEFAULT DIVIDE BY 1 */
 	PIT.PITMCR.R = 0x00000001;	/* Enable PIT and configure timers to stop in debug modem */
@@ -103,7 +103,18 @@ void init_pit(void)
 	INTC_InstallINTCInterruptHandler(PitISR,60,1);	/* PIT 1 interrupt vector with priority 1 */
 }
 
-
+/*-----------------------------------------------------------------------*/
+/* 初始化PIT中断                                                         */
+/* 1ms                                                                  */
+/*-----------------------------------------------------------------------*/
+void init_pit_1ms(void)
+{
+	/* NOTE:  DIVIDER FROM SYSCLK TO PIT ASSUMES DEFAULT DIVIDE BY 1 */
+	PIT.PITMCR.R = 0x00000001;	/* Enable PIT and configure timers to stop in debug modem */
+	PIT.CH[2].LDVAL.R = 80000;	/* 80000==1ms */
+	PIT.CH[2].TCTRL.R = 0x00000003;	/* Enable PIT1 interrupt and make PIT active to count */
+	INTC_InstallINTCInterruptHandler(Pit_1ms,61,3);	/* PIT 2 interrupt vector with priority 3 */
+}
 /*-----------------------------------------------------------------------*/
 /* 初始化eMIOS0                                                          */
 /* 初始化电机和舵机                                                      */
@@ -236,7 +247,7 @@ void read_device_no()
 /*----------------------------------------------------------------------*/
 void read_display_helm()
 {
-	LCD_P8x16Str(0, 0, (BYTE*)"StH.L=");
+	/*LCD_P8x16Str(0, 0, (BYTE*)"StH.L=");
 	if (read_steer_helm_data_from_TF())
 	{
 		suicide();
@@ -251,7 +262,7 @@ void read_display_helm()
 	delay_ms(500);
 	LCD_P8x16Str(0, 4, (BYTE*)"StH.C=");
 	LCD_PrintoutInt(48, 4, data_steer_helm_basement.center);
-	set_steer_helm_basement(data_steer_helm_basement.center);
+	set_steer_helm_basement(data_steer_helm_basement.center);*/
 }
 /*----------------------------------------------------------------------*/
 /*读取拨码开关选择模式                                            	 */
@@ -377,6 +388,27 @@ void test_xyz_gyro()
 */
 
 /*-----------------------------------------------------------------------*/
+/* 初始化AD                                                              */
+/*-----------------------------------------------------------------------*/
+void init_ADC(void)
+{
+	ADC.MCR.R = 0x20000100;     //Conversion times for 80MHz ADClock  连续模式
+	ADC.NCMR[1].R = 0x000000FF; //Select ANS0 ANS1 ANS2 ANS3 inputs for conversion 
+								//channel 32~39 sampling enable
+	ADC.CTR[1].R = 0x00008606;  //Conversion times for 32MHz ADClock？？ 
+	ADC.MCR.B.NSTART=1;       //Trigger normal conversions for ADC0
+	SIU.PCR[24].R = 0x2100;     //MPC56xxB: Initialize PB[8] as ANS0 CDR32 电磁双路输入
+	SIU.PCR[25].R = 0x2100;     //MPC56xxB: Initialize PB[9] as ANS1 CDR33
+	SIU.PCR[26].R = 0x2100;     //MPC56xxB: Initialize PB[10] as ANS2 34	前后单轴陀螺仪双参数输入：角度
+	SIU.PCR[27].R = 0x2100;     //MPC56xxB: Initialize PB[11] as ANS3 35	前后单轴陀螺仪双参数输入：角速度
+//	SIU.PCR[60].R = 0x2100;     //MPC56xxB: Initialize PD[12] as ANS4 36
+	SIU.PCR[61].R = 0x2100;     //MPC56xxB: Initialize PD[13] as ANS5 37	左右单轴陀螺仪双参数输入：角度
+//	SIU.PCR[62].R = 0x2100;     //MPC56xxB: Initialize PD[14] as ANS6 38
+	SIU.PCR[63].R = 0x2100;     //MPC56xxB: Initialize PD[15] as ANS7 39	左右单轴陀螺仪双参数输入：角速度
+}
+
+
+/*-----------------------------------------------------------------------*/
 /* 延时 xus                                                              */
 /* 依赖总线80M                                                           */
 /*-----------------------------------------------------------------------*/
@@ -413,22 +445,27 @@ void init_all_and_POST(void)
 {
 	int i = 0;
 
-	
 	disable_watchdog();
 	init_modes_and_clock();
-	//initEMIOS_0MotorAndSteer();
-	//init_pit();
+	initEMIOS_0MotorAndSteer();
+	
+	/* PIT：光编读值&速度控制 */
+//	init_pit_10ms();
+	
+	/* PIT：步进电机控制&角度控制标志位 */
+	init_pit_1ms();	
+	
+	
+	//init_Stepmotor();		/* 初始化步进电机 */
+
 	init_led();
+	//init_DIP();				/* 拨码开关 */
+	//init_serial_port_1();	/* BlueTooth */
+	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
+	init_optical_encoder();	/* 光编 */
 
-	//init_DIP();
-	//init_serial_port_1();
-//	init_ADC();
-	//init_serial_port_3();
-	//init_optical_encoder();
-
-	//init_DSPI_2();
 	//init_I2C();
-	//init_choose_mode();
+	//init_choose_mode();		/* 拨码开关模式选择 */
 	
 	
 	/* 初始化SPI总线 */
@@ -440,7 +477,7 @@ void init_all_and_POST(void)
 	/* 初始化显示屏 */
 	initLCD();
 
-	//LCD_DISPLAY();
+	LCD_DISPLAY();
 	LCD_Fill(0xFF);	/* 亮屏 */
 	delay_ms(50);
 	LCD_Fill(0x00);	/* 黑屏 */
@@ -452,12 +489,13 @@ void init_all_and_POST(void)
 	/* 读取设备号 */
 	//read_device_no();
 	
+
 	/* 初始化陀螺仪 */
-	init_MPU9250();
+	//init_MPU9250();
 	
-	/* 开启RFID读卡器主动模式 */
-	//test_init_RFID();
+
 	
+
 	//delay_ms(1000);
 	/* 换屏 */
 	//LCD_Fill(0x00);
@@ -476,6 +514,7 @@ void init_all_and_POST(void)
 	/* 速度闭环开启及测试 速度=0 */	
 	//init_speed_control();
 //	g_f_enable_supersonic=1;
+	
 	//delay_ms(2000);
 	
 	/* 换屏 */
@@ -498,10 +537,10 @@ void init_DSPI_1(void)
 	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
 	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
 	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1
-	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1
-	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1
+	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF
+	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED
 	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
-	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	L3G
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	
 	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
 	DSPI_1.RSER.B.TCFRE = 0;	//关闭传输完成中断
 }
