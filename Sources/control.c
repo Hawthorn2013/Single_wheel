@@ -67,6 +67,7 @@ void get_speed_now()
 	{
 		data_encoder.speed_now = 0xffff - (data_encoder.cnt_old - data_encoder.cnt_new);
 	}
+	
 }
 /*-----------------------------------------------------------------------*/
 /* 设置电机PWM                                                                    */
@@ -146,7 +147,6 @@ void AngleControl(void)
    float currentanglespeed, lastanglespeed=0;
    float last_angle=0;
    angle_calculate();
-   
    g_fCarAngle= AngleCalculate[0];
    g_fGyroscopeAngleSpeed= -AngleCalculate[1];
  // g_fGyroscopeTurnSpeed= AngleCalculateResult[2];
@@ -154,20 +154,20 @@ void AngleControl(void)
    temp_angle=CarAngleInitial - g_fCarAngle;
    temp_anglespeed= CarAnglespeedInitial - g_fGyroscopeAngleSpeed;
   
-   if(temp_angle<-20)
-	   data_angle_pid.p=45; //0.012
-   else if(temp_angle>=-20&temp_angle<=0)
-	   data_angle_pid.p=54; //0.0135
-   else if(temp_angle>0&temp_angle<=30)
-	   data_angle_pid.p=54;// 0.02    
+   if(temp_angle<-15)//20
+	   data_angle_pid.p=50; //45
+   else if(temp_angle>=-15&temp_angle<=0)
+	   data_angle_pid.p=60; //54
+   else if(temp_angle>0&temp_angle<=25)//30
+	   data_angle_pid.p=60;// 54    
    else
-	   data_angle_pid.p=42;  //  0.015
+	   data_angle_pid.p=50;  //42
                                                     
   
    if(temp_anglespeed>=80||temp_anglespeed<=-80)
-	   data_angle_pid.d=0.3;
+	   data_angle_pid.d=0;//0.3
    else
-	   data_angle_pid.d=0.1;
+	   data_angle_pid.d=0;//0.1
   
    currentanglespeed=g_fCarAngle;
    delta_anglespeed=currentanglespeed-lastanglespeed;
