@@ -23,7 +23,7 @@ void main(void)
 			g_Control=0;
 			count++;
 			set_speed_pwm();
-			/*angle_read(AngleResult);
+			angle_read(AngleResult);
 			angle_calculate();
 			AngleControl();
 			if(AngleCalculate[0]<27&&AngleCalculate[0]>-48)
@@ -31,10 +31,9 @@ void main(void)
 				motor_control();
 			} 
 			else
-			   {
+			{
 				set_motor_pwm(0);
-			   }*/
-			motor_control();
+			}
 			if(count==4)
 			{
 				SpeedCountFlag++;
