@@ -12,12 +12,11 @@ void main(void)
 //	set_speed_target(0);
 	for(;;)
 	{
-//		delay_ms(20);
-//		while(!Reg_Read(ACCEL_XOUT_H,&Data_H)){}
-//		while(!Reg_Read(ACCEL_XOUT_L,&Data_L)){}
-//		Data_H=Data_H<<8;
-//		Data=Data_H|Data_L;
-		
+	/*	delay_ms(20);
+		while(!Reg_Read(ACCEL_XOUT_H,&Data_H)){}
+		while(!Reg_Read(ACCEL_XOUT_L,&Data_L)){}
+		Data_H=Data_H<<8;
+		Data=Data_H|Data_L;*/
 		if(g_Control)
 		{
 			g_Control=0;
@@ -32,9 +31,9 @@ void main(void)
 				motor_control();
 			} 
 			else
-			   {
+			{
 				set_motor_pwm(0);
-			   }
+			}
 			if(count==4)
 			{
 				get_speed_now();

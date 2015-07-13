@@ -132,7 +132,7 @@ struct
 	float p;
 	float i;
 	float d;
-} data_angle_pid = { 15, 1, 5 };
+} data_angle_pid = { 10, 0, 0 };
 #else
 extern struct
 {

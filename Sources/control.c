@@ -13,8 +13,8 @@ int g_f_big_U_2=0;
 int counter=0;
 
 //速度控制全局变量
-float d_speed_pwm=0;
-float speed_pwm=SPEED_PWM_MIN;
+static float d_speed_pwm=0;
+static float speed_pwm=SPEED_PWM_MIN;
 extern unsigned char g_nSpeedControlPeriod;
 //角度控制全局变量
 float fDelta;
@@ -41,13 +41,8 @@ DWORD tmp_a, tmp_b;
 /*-----------------------------------------------------------------------*/
 void PitISR(void)
 {
-	g_f_pit = 1;
-	g_time_basis_PIT++;	/* 计时 */
-	counter++;	
-	
 	get_speed_now();//光编读值
 	/* 开始执行速度控制算法 */
-
 	PIT.CH[1].TFLG.B.TIF = 1;	// MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }
 
@@ -56,7 +51,7 @@ void PitISR(void)
 /*-----------------------------------------------------------------------*/
 void get_speed_now()
 {
-	data_encoder.is_forward = SIU.GPDI[46].B.PDI;//PC14
+	data_encoder.is_forward = SIU.GPDI[28].B.PDI;//PC14
 	data_encoder.cnt_old = data_encoder.cnt_new;
 	data_encoder.cnt_new = (WORD)EMIOS_0.CH[24].CCNTR.R;//PD12
 	if (data_encoder.cnt_new >= data_encoder.cnt_old)
@@ -223,8 +218,6 @@ static SWORD get_e0()
 /*-----------------------------------------------------------------------*/
 void contorl_speed_encoder_pid(void)
 {
-	
-	
 	SWORD e0;
 	static SWORD e1=0;
 	static SWORD e2=0;
@@ -236,13 +229,16 @@ void contorl_speed_encoder_pid(void)
 	      d_speed_pwm=200;
 	if(d_speed_pwm<-200)
 	     d_speed_pwm=-200;   //限制pwm变化量
-
+//	LCD_PrintoutInt(5, 2,d_speed_pwm);
 	e2=e1;
 	e1=e0;	
 }
 void set_speed_pwm(void)
 {
-	speed_pwm+=(d_speed_pwm/100);
+	speed_pwm+=(d_speed_pwm/10);
+	
+//	LCD_PrintoutInt(5, 4,speed_pwm);
+//	LCD_PrintoutInt(5, 6,d_speed_pwm/100);
 }
 
 /*-----------------------------------------------------------------------*/
@@ -262,15 +258,15 @@ void set_speed_PID(void)
 	int speed_now=data_speed_settings.speed_target_now;
 	if(speed_target==0)//420 
 	{
-		data_speed_pid.p=0.0029;
-		data_speed_pid.d=0.002;
-		data_speed_pid.i=0.0029;         
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;         
 	}
 	else if(speed_target>=450&&speed_target<=500)//420 
 	{
-		data_speed_pid.p=0.0015;//0.0013(200)
-		data_speed_pid.d=0.002; // 0.0013
-		data_speed_pid.i=0.002;         
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;          
 
 		if(speed_now<speed_target)
 			speed_now+=25;
@@ -282,10 +278,9 @@ void set_speed_PID(void)
 
 	else if(speed_target>500&&speed_target<=560)//420 
 	{
-		data_speed_pid.p=0.0016;//0.0013(200)
-		data_speed_pid.d=0.002; // 0.0013
-		data_speed_pid.i=0.002;         
-
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;         
 		if(speed_now<speed_target)
 			speed_now+=30;          //30可调 值越大初始时速度变化快
 		else if(speed_now>speed_target)
@@ -296,10 +291,9 @@ void set_speed_PID(void)
 
 	else if(speed_target>560&&speed_target<=620 )
 	{
-		data_speed_pid.p=0.0018;//0.0013(200)
-		data_speed_pid.d=0.002; // 0.0013
-		data_speed_pid.i=0.002;         
-
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;          
 		if(speed_now<speed_target)
 			speed_now+=30;
 		else if(speed_now>speed_target)
@@ -308,19 +302,18 @@ void set_speed_PID(void)
 			speed_now=speed_target;
 	} 
 
-else
-{
- data_speed_pid.p=0.0018;//0.0013(200)
- data_speed_pid.d=0.002; // 0.0013
- data_speed_pid.i=0.002;         
-
- if(speed_now<speed_target)
-   speed_now+=30;
-  else if(speed_now>speed_target)
-  speed_now-=30;
-  else
-  speed_now=speed_target;
-} 
+	else
+	{
+		data_speed_pid.p=15;
+		data_speed_pid.d=5;
+		data_speed_pid.i=1;          
+		if(speed_now<speed_target)
+			speed_now+=30;
+		else if(speed_now>speed_target)
+			speed_now-=30;
+		else
+			speed_now=speed_target;
+	} 
 
 }
 
