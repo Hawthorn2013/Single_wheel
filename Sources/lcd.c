@@ -760,51 +760,94 @@ void LCD_PrintoutIntS(BYTE x, BYTE y, SWORD data)
 
 //==============================================================
 //函数名： void LCD_PrintFloat(BYTE x, BYTE y, float a)
-//功能描述：写入浮点型变量
+//功能描述：写入浮点型变量,支持负数，小于0.001的显示为0.000
 //参数：显示的位置（x,y），y为页范围0～7，要显示的字符串
 //返回：无
 //==============================================================
 void LCD_PrintoutFloat(BYTE x, BYTE y, float n)
 {
-     int i=0,j=0,t=0,b=0,c=0;
+     int i=0,j=0,t=0,b=0,c=0,k=0;
      float q=n;
      BYTE p=0;
      BYTE m[100];
      b=(int)n;
      c=(int)((q-b)*1000);
+     if(c<0)
+    	 c=-c;
     
-     for(i=0;b!=0;i++)
+     if(b>0)
      {
-          m[i]=(BYTE)(b%10+'0');	//avoid warming
-          b=b/10;
+		 for(i=0;b!=0;i++)
+		 {
+			  m[i]=(BYTE)(b%10+'0');	//avoid warming
+			  b=b/10;
+		 }
+		 m[i]='.';
+		 j=i;
+		 if(j%2==0)
+			  i=j/2;
+		 else
+			  i=j/2+1;
+		 
+		  for(t=0;t<i;t++)
+		  {
+			   p=m[t];
+			   m[t]=m[j-t-1];
+			   m[j-t-1]=p;
+		  }
      }
-     m[i]='\0';
-     j=i;
-     if(j%2==0)
-          i=j/2;
-     else
-          i=j/2+1;
-     
-          for(t=0;t<i;t++)
-          {
-               p=m[t];
-               m[t]=m[j-t-1];
-               m[j-t-1]=p;
-          }
-
-     m[j]='.';   
+     else if(b==0)
+     {
+    	 m[0]='0';
+    	 m[1]='.';
+    	 j=1;
+     }
+     else if(b<0)
+     {
+    	 m[0]='-';
+    	 b=-b;
+    	 for(i=1;b!=0;i++)
+		 {
+			  m[i]=(BYTE)(b%10+'0');	//avoid warming
+			  b=b/10;
+		 }
+		 m[i]='.';
+		 j=i-1;
+		 if(j%2==0)
+			  i=j/2;
+		 else
+			  i=j/2+1;
+		 
+		  for(t=0;t<i;t++)
+		  {
+			   p=m[t+1];
+			   m[t+1]=m[j-t];
+			   m[j-t]=p;
+		  }
+		  j=j+1;
+     }
      j++;
      
-     for(;c!=0;)
+     if(c==0)
      {
-          m[j]=(BYTE)(c%10+'0');	//avoid warming
-          c=c/10;
-          j++;
+    	 m[j++]='0';
+    	 m[j++]='0';
+    	 m[j++]='0';
+    	 m[j++]='\0';
      }
-     p=m[j-1];
-     m[j-1]=m[j-3];
-     m[j-3]=p;
-     m[j]='\0';
+     else
+     {
+		 for(k=0;k<3;k++)
+		 {
+			  m[j]=(BYTE)(c%10+'0');	//avoid warming
+			  c=c/10;
+			  j++;
+		 }
+		 p=m[j-1];
+		 m[j-1]=m[j-3];
+		 m[j-3]=p;
+		 m[j]='\0';
+     }
     
      /*BYTE *p=(BYTE*)&a;
      BYTE m[4];
@@ -875,63 +918,6 @@ void LCD_Write_Num(unsigned char X,unsigned char Y,int num,unsigned char N)
   }
 }
 
-/***********************************************************************
-* 函数名称：LCD_Write_Num()
-* 函数功能：显示变量
-* 入口参数：X:行;Y:列;num:变量;N(uint16_t):要显示的变量的位数
-* 出口参数：无
-/**********************************************************************/
-void LCD_Write_Num16(unsigned char X,unsigned char Y,int16_t num,unsigned char N)
-{
-  unsigned char line;
-  unsigned char i=0;
-  unsigned int n[5]={0};
-  
-  if(num>=0)
-  {
-      LCD_Set_Pos(X-4,Y);//光标定位
-  	  LCD_WrDat(0x00);
-  	  LCD_WrDat(0x00);
-  	  LCD_WrDat(0x00);
-  	  LCD_WrDat(0x00);
-	  n[0]= num%10;
-	  n[1]=(num/10)%10;
-	  n[2]=(num/100)%10;
-	  n[3]=(num/1000)%10;
-	  n[4]=(num/10000)%10;
-	  for(i=0;i<5;i++) n[i]=n[i]+16;
-	  for(i=N;i>0;i--) 
-	  {
-	    LCD_Set_Pos(X+(N-i)*6,Y);//光标定位
-	    for (line=0; line<6; line++)
-	     LCD_WrDat(F6x8[n[i-1]][line]);//从ACSII码表中读取字节，然后写入液晶
-	  }
-  	
-  }
-  else
-  {
-  	  LCD_Set_Pos(X-4,Y);//光标定位
-  	  LCD_WrDat(0x10);
-  	  LCD_WrDat(0x10);
-  	  LCD_WrDat(0x10);
-  	  LCD_WrDat(0x10);
-  	  num=-num;
-  	  n[0]= num%10;
-	  n[1]=(num/10)%10;
-	  n[2]=(num/100)%10;
-	  n[3]=(num/1000)%10;
-	  n[4]=(num/10000)%10;
-	  for(i=0;i<5;i++) n[i]=n[i]+16;
-	  
-	  for(i=N;i>0;i--) 
-	  {
-	  	LCD_Set_Pos(X+(N-i)*6,Y);//光标定位
-	    for (line=0; line<6; line++)
-	    LCD_WrDat(F6x8[n[i-1]][line]);//从ACSII码表中读取字节，然后写入液晶
-	  }
-  	
-  }
-}
 /***********************************************************************
 * 函数名称：LCD_write_char()
 * 函数功能：写入1个字符

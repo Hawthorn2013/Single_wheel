@@ -14,7 +14,7 @@ void init_MPU9250(void)
 	Reg_Write(PWR_MGMT_1,0x01);		//select clock
 	Reg_Write(PWR_MGMT_2,0x00);		//enable Acc&Gyro
 	Reg_Write(CONFIG,0x06);			//disable FSYNC;
-	Reg_Write(GYRO_CONFIG,0x00);	//+250dps	DLPF bandwidth 3600, delay 0.17 Fs 8kHz
+	Reg_Write(GYRO_CONFIG,0x00);	//±250dps	DLPF bandwidth 3600, delay 0.17 Fs 8kHz
 	Reg_Write(ACCEL_CONFIG,0x00);	//±2g
 	Reg_Write(ACCEL_CONFIG2,0x00);	//Acc DLPF
 	Reg_Write(SMPLRT_DIV,0x07);
@@ -113,6 +113,22 @@ int Read_GYRO_ACC(int32_t *Data)	//读取角速度与加速度,依次是x,y,z角速度与x,y,z加
 	
 	return 1;
 }
+
+void deviation_adjust_accx(int32_t *xdev)		//x方向加速度零位偏差
+{
+	int i;
+	int32_t Data[6];
+	int32_t dev=0;
+	for(i=0;i<100;i++)
+	{
+		Read_GYRO_ACC(Data);
+		dev=dev+Data[3];
+		delay_ms(20);
+	}
+	*xdev=dev/100;
+}
+
+
 
 //int display_data_in_lcd(uint16_t *Data)
 //{
