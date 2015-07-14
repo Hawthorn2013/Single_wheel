@@ -228,20 +228,21 @@ void contorl_speed_encoder_pid(void)
 	SWORD d_speed_now= data_speed_settings.speed_target - data_encoder.speed_now_d ;
 	static SWORD d_speed_last=0;
 	static SWORD speed_i=0;
+	static SWORD new_speed_pwm=0;
 	static SWORD old_speed_pwm=0;
-	speed_pwm=(SWORD)(data_speed_pid.p*(d_speed_now));       //P控制
-	speed_pwm+=(SWORD)(data_speed_pid.d*(d_speed_now-d_speed_last));  //I控制
+	new_speed_pwm=(SWORD)(data_speed_pid.p*(d_speed_now));       //P控制
+	new_speed_pwm+=(SWORD)(data_speed_pid.d*(d_speed_now-d_speed_last));  //I控制
 	speed_i+=d_speed_now;
 	if(speed_i>70) speed_i=70;
 	if(speed_i<-70) speed_i=-70;
-	speed_pwm+=(SWORD)(data_speed_pid.i*(speed_i));		
-	if(speed_pwm>1500)
-		speed_pwm=1500;
-	if(speed_pwm<-1500)
-		speed_pwm=-1500;   //限制pwm变化量
+	new_speed_pwm+=(SWORD)(data_speed_pid.i*(speed_i));		
+	if(new_speed_pwm>1500)
+		new_speed_pwm=1500;
+	if(new_speed_pwm<-1500)
+		new_speed_pwm=-1500;   //限制pwm变化量
 	d_speed_last = d_speed_now;
-	d_speed_pwm = speed_pwm - old_speed_pwm;
-	old_speed_pwm=speed_pwm;
+	d_speed_pwm = new_speed_pwm - old_speed_pwm;
+	old_speed_pwm = new_speed_pwm;
 }
 void set_speed_pwm(void)
 {
