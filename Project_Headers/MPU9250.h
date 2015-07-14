@@ -44,6 +44,6 @@ extern int Reg_Read(uint8_t reg,uint8_t* Data);
 extern int Reg_Write(uint8_t reg,uint8_t Data);
 extern void init_MPU9250(void);
 extern int Read_GYRO_ACC(int32_t *Data);
-extern void deviation_adjust_accx(int32_t *xdev);
+extern void deviation_adjust_accx(int32_t *xdev,int32_t *xA);
 
 #endif /* INIT_MPU9250_H_ */
