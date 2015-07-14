@@ -10,33 +10,40 @@ void Pit_1ms(void)
 {
 	static int timer=0;
 	static int ABCD=0;
+	static int count=0;
 	g_Control=1;
-	if(timer==stepspeed)
+	count++;
+	if(count>=10)
 	{
-		if(ABCD==0)
-		{
-			Motor_A();
-		}
-		else if(ABCD==1)
-		{
-			Motor_B();
-		}
-		else if(ABCD==2)
-		{
-			Motor_C();
-		}
-		else if(ABCD==3)
-		{
-			Motor_D();
-		}
-		
-		timer=0;
-		ABCD++;
-		ABCD=ABCD%4;
+		get_speed_now();
+		count=0;
 	}
-	else
-		timer++;
-		
+//	if(timer==stepspeed)
+//	{
+//		if(ABCD==0)
+//		{
+//			Motor_A();
+//		}
+//		else if(ABCD==1)
+//		{
+//			Motor_B();
+//		}
+//		else if(ABCD==2)
+//		{
+//			Motor_C();
+//		}
+//		else if(ABCD==3)
+//		{
+//			Motor_D();
+//		}
+//		
+//		timer=0;
+//		ABCD++;
+//		ABCD=ABCD%4;
+//	}
+//	else
+//		timer++;
+//		
 	PIT.CH[2].TFLG.B.TIF = 1;	// MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }
 /*-----------------------------------------------------------------------*/

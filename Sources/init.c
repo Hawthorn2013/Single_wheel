@@ -326,7 +326,7 @@ void init_optical_encoder(void)	//PD12模数计数器入口，上升沿
 
 	
 	/* 方向部分 PC14 */
-	SIU.PCR[46].R = 0x0100;
+	SIU.PCR[28].R = 0x0100;
 	/* SIU.GPDI[28].B.PDI 数据寄存器 */
 }
 
