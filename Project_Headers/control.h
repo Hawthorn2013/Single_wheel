@@ -100,6 +100,7 @@ struct
 	WORD cnt_old;
 	WORD cnt_new;
 	WORD speed_now;
+	int  speed_now_d;
 	SWORD is_forward;
 } data_encoder = { 0x0000, 0x0000, 0x0000, 0, };
 #else
@@ -108,6 +109,7 @@ extern struct
 	WORD cnt_old;
 	WORD cnt_new;
 	WORD speed_now;
+	int  speed_now_d; 
 	SWORD is_forward;
 } data_encoder;
 #endif
@@ -119,7 +121,7 @@ struct
 	float p;
 	float i;
 	float d;
-} data_speed_pid = { 15, 1, 5 };
+} data_speed_pid = { 3, 2, 3 };
 #else
 extern struct
 {
@@ -135,7 +137,7 @@ struct
 	float p;
 	float i;
 	float d;
-} data_angle_pid = { 10, 0, 0 };
+} data_angle_pid = { 100, 1, 5 };
 #else
 extern struct
 {

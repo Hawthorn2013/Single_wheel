@@ -37,7 +37,7 @@ DWORD tmp_a, tmp_b;
 /*-----------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------*/
-/* PIT中断处理函数                                                                 */
+/* PIT中断处理函数        10ms                                                         */
 /*-----------------------------------------------------------------------*/
 void PitISR(void)
 {
@@ -51,18 +51,22 @@ void PitISR(void)
 /*-----------------------------------------------------------------------*/
 void get_speed_now()
 {
+	WORD speed_now;
 	data_encoder.is_forward = SIU.GPDI[28].B.PDI;//PC14
 	data_encoder.cnt_old = data_encoder.cnt_new;
 	data_encoder.cnt_new = (WORD)EMIOS_0.CH[24].CCNTR.R;//PD12
 	if (data_encoder.cnt_new >= data_encoder.cnt_old)
 	{
-		data_encoder.speed_now = data_encoder.cnt_new - data_encoder.cnt_old;
+		speed_now = data_encoder.cnt_new - data_encoder.cnt_old;
 	}
 	else
 	{
-		data_encoder.speed_now = 0xffff - (data_encoder.cnt_old - data_encoder.cnt_new);
+		speed_now = 0xffff - (data_encoder.cnt_old - data_encoder.cnt_new);
 	}
-	
+	if(data_encoder.is_forward==0) 
+		data_encoder.speed_now=0 - speed_now;
+	else 
+		data_encoder.speed_now= speed_now;
 }
 /*-----------------------------------------------------------------------*/
 /* 设置电机PWM                                                                    */
@@ -100,7 +104,8 @@ void set_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向后
 void motor_control(void)
 {
 	int16_t motor_pwm;
-	motor_pwm=angle_pwm+speed_pwm;
+//	motor_pwm=angle_pwm-speed_pwm;
+	motor_pwm=speed_pwm;
 	set_motor_pwm(motor_pwm);
 }
 
@@ -154,7 +159,7 @@ void AngleControl(void)
    else if(temp_angle>=-15&temp_angle<=0)
 	   data_angle_pid.p=200; //200
    else if(temp_angle>0&temp_angle<=15)
-	   data_angle_pid.p=170;// 170   
+	   data_angle_pid.p=200;// 170   
    else
 	   data_angle_pid.p=100;  //100
                                                     
@@ -208,6 +213,8 @@ static SWORD get_e0()
 		tmp_speed_now = 0 - (SWORD) data_encoder.speed_now;
 	}
 	e0=data_speed_settings.speed_target-tmp_speed_now;
+	LCD_PrintoutInt(5, 0,tmp_speed_now);
+	LCD_PrintoutInt(0, 6,data_speed_settings.speed_target);
 	return e0;
 	
 }
@@ -218,26 +225,29 @@ static SWORD get_e0()
 /*-----------------------------------------------------------------------*/
 void contorl_speed_encoder_pid(void)
 {
-	SWORD e0;
-	static SWORD e1=0;
-	static SWORD e2=0;
-	e0=get_e0();
-	d_speed_pwm=(SWORD)(data_speed_pid.p*(e0-e1));       //P控制
-	d_speed_pwm+=(SWORD)(data_speed_pid.d*(e0+e2-2*e1));
-	d_speed_pwm+=(SWORD)(data_speed_pid.i*(e0));		
-	if(d_speed_pwm>200)
-	      d_speed_pwm=200;
-	if(d_speed_pwm<-200)
-	     d_speed_pwm=-200;   //限制pwm变化量
-//	LCD_PrintoutInt(5, 2,d_speed_pwm);
-	e2=e1;
-	e1=e0;	
+	SWORD d_speed_now= data_speed_settings.speed_target - data_encoder.speed_now_d ;
+	static SWORD d_speed_last=0;
+	static SWORD speed_i=0;
+	static SWORD old_speed_pwm=0;
+	speed_pwm=(SWORD)(data_speed_pid.p*(d_speed_now));       //P控制
+	speed_pwm+=(SWORD)(data_speed_pid.d*(d_speed_now-d_speed_last));  //I控制
+	speed_i+=d_speed_now;
+	if(speed_i>70) speed_i=70;
+	if(speed_i<-70) speed_i=-70;
+	speed_pwm+=(SWORD)(data_speed_pid.i*(speed_i));		
+	if(speed_pwm>1500)
+		speed_pwm=1500;
+	if(speed_pwm<-1500)
+		speed_pwm=-1500;   //限制pwm变化量
+	d_speed_last = d_speed_now;
+	d_speed_pwm = speed_pwm - old_speed_pwm;
+	old_speed_pwm=speed_pwm;
 }
 void set_speed_pwm(void)
 {
-	speed_pwm+=(d_speed_pwm/10);
+	speed_pwm+=(d_speed_pwm/100);
 	
-//	LCD_PrintoutInt(5, 4,speed_pwm);
+//	LCD_PrintoutInt(0, 4,speed_pwm);
 //	LCD_PrintoutInt(5, 6,d_speed_pwm/100);
 }
 
