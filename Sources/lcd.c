@@ -760,51 +760,94 @@ void LCD_PrintoutIntS(BYTE x, BYTE y, SWORD data)
 
 //==============================================================
 //函数名： void LCD_PrintFloat(BYTE x, BYTE y, float a)
-//功能描述：写入浮点型变量
+//功能描述：写入浮点型变量,支持负数，小于0.001的显示为0.000
 //参数：显示的位置（x,y），y为页范围0～7，要显示的字符串
 //返回：无
 //==============================================================
 void LCD_PrintoutFloat(BYTE x, BYTE y, float n)
 {
-     int i=0,j=0,t=0,b=0,c=0;
+     int i=0,j=0,t=0,b=0,c=0,k=0;
      float q=n;
      BYTE p=0;
      BYTE m[100];
      b=(int)n;
      c=(int)((q-b)*1000);
+     if(c<0)
+    	 c=-c;
     
-     for(i=0;b!=0;i++)
+     if(b>0)
      {
-          m[i]=(BYTE)(b%10+'0');	//avoid warming
-          b=b/10;
+		 for(i=0;b!=0;i++)
+		 {
+			  m[i]=(BYTE)(b%10+'0');	//avoid warming
+			  b=b/10;
+		 }
+		 m[i]='.';
+		 j=i;
+		 if(j%2==0)
+			  i=j/2;
+		 else
+			  i=j/2+1;
+		 
+		  for(t=0;t<i;t++)
+		  {
+			   p=m[t];
+			   m[t]=m[j-t-1];
+			   m[j-t-1]=p;
+		  }
      }
-     m[i]='\0';
-     j=i;
-     if(j%2==0)
-          i=j/2;
-     else
-          i=j/2+1;
-     
-          for(t=0;t<i;t++)
-          {
-               p=m[t];
-               m[t]=m[j-t-1];
-               m[j-t-1]=p;
-          }
-
-     m[j]='.';   
+     else if(b==0)
+     {
+    	 m[0]='0';
+    	 m[1]='.';
+    	 j=1;
+     }
+     else if(b<0)
+     {
+    	 m[0]='-';
+    	 b=-b;
+    	 for(i=1;b!=0;i++)
+		 {
+			  m[i]=(BYTE)(b%10+'0');	//avoid warming
+			  b=b/10;
+		 }
+		 m[i]='.';
+		 j=i-1;
+		 if(j%2==0)
+			  i=j/2;
+		 else
+			  i=j/2+1;
+		 
+		  for(t=0;t<i;t++)
+		  {
+			   p=m[t+1];
+			   m[t+1]=m[j-t];
+			   m[j-t]=p;
+		  }
+		  j=j+1;
+     }
      j++;
      
-     for(;c!=0;)
+     if(c==0)
      {
-          m[j]=(BYTE)(c%10+'0');	//avoid warming
-          c=c/10;
-          j++;
+    	 m[j++]='0';
+    	 m[j++]='0';
+    	 m[j++]='0';
+    	 m[j++]='\0';
      }
-     p=m[j-1];
-     m[j-1]=m[j-3];
-     m[j-3]=p;
-     m[j]='\0';
+     else
+     {
+		 for(k=0;k<3;k++)
+		 {
+			  m[j]=(BYTE)(c%10+'0');	//avoid warming
+			  c=c/10;
+			  j++;
+		 }
+		 p=m[j-1];
+		 m[j-1]=m[j-3];
+		 m[j-3]=p;
+		 m[j]='\0';
+     }
     
      /*BYTE *p=(BYTE*)&a;
      BYTE m[4];

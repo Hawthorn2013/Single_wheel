@@ -2,14 +2,12 @@
 
 BYTE count=0;
 BYTE  SpeedCountFlag;
-extern uint16_t Data=0x00;
 
 void main(void)
 {
-//	uint16_t Data_H=0x0000;
-//	uint16_t Data_L=0x0000;
 	init_all_and_POST();
-	set_speed_target(-100);
+	D0=0;
+	set_speed_target(0);
 	for(;;)
 	{
 	/*	delay_ms(20);
@@ -52,6 +50,5 @@ void main(void)
 			}
 		}
 	}
+
 }
-
-
