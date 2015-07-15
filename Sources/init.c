@@ -54,14 +54,14 @@ void disable_watchdog(void)
 void init_led(void)
 {
 	//2015第一版载LED
-#if 1	
+#if 0	
  	SIU.PCR[40].R = 0x0203;	/* PC8  */
   	SIU.PCR[45].R = 0x0203; /* PC13 */
  	SIU.PCR[44].R = 0x0203; /* PC12 */
 	SIU.PCR[71].R = 0x0203;	/* PE7  */
 #endif
 
-#if 0
+#if 1
 	//第二版板载LED
 	SIU.PCR[12].R = 0x0203;/* PA12  */
 	SIU.PCR[13].R = 0x0203;/* PA13  */
@@ -472,7 +472,7 @@ void init_all_and_POST(void)
 	init_DSPI_1();
 	
 	/* 开启外部总中断 */
-	//enable_irq();
+	enable_irq();
 	
 	/* 初始化显示屏 */
 	initLCD();

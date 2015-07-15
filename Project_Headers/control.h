@@ -46,6 +46,7 @@ extern int g_f_big_U;
 extern int g_f_big_U_2;
 extern int counter;
 extern float  angle_pwm;
+extern BYTE speed_period;
 
 
 
@@ -100,16 +101,16 @@ struct
 	WORD cnt_old;
 	WORD cnt_new;
 	WORD speed_now;
-	int  speed_now_d;
+	int  speed_real;
 	SWORD is_forward;
-} data_encoder = { 0x0000, 0x0000, 0x0000, 0, };
+} data_encoder = { 0x0000, 0x0000, 0x0000, 0,0 };
 #else
 extern struct
 {
 	WORD cnt_old;
 	WORD cnt_new;
 	WORD speed_now;
-	int  speed_now_d; 
+	int  speed_real; 
 	SWORD is_forward;
 } data_encoder;
 #endif
@@ -121,7 +122,7 @@ struct
 	float p;
 	float i;
 	float d;
-} data_speed_pid = { 3, 2, 3 };
+} data_speed_pid = {10 , 0.3, 0.3 };
 #else
 extern struct
 {
