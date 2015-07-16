@@ -17,5 +17,6 @@ extern float xs;
 
 
 extern void distance(void);
+extern void filter_display(void);
 
 #endif /* ANALYSE_H_ */

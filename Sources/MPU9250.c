@@ -114,33 +114,33 @@ int Read_GYRO_ACC(int32_t *Data)	//读取角速度与加速度,依次是x,y,z角速度与x,y,z加
 	return 1;
 }
 
-void deviation_adjust_accx(int32_t *xdev, int32_t *xA)		//x方向加速度零位偏差
+void deviation_adjust_accx(int32_t *xdev/*, int32_t *xA*/)		//x方向加速度零位偏差，现暂定xA为500
 {
 	int i;
 	int32_t Data[6];
 	int32_t dev=0;
-	int32_t max;
-	int32_t min;
-	for(i=0;i<800;i++)
+//	int32_t max;
+//	int32_t min;
+	for(i=0;i<800;i++)			//取样800次，与后面求平均值要对应
 	{
 		Read_GYRO_ACC(Data);
 		dev=dev+Data[3];
-		if(i==0)
-		{
-			max=Data[3];
-			min=Data[3];
-		}
-		else
-		{
-			if(Data[3]>max)
-				max=Data[3];
-			if(Data[3]<min)
-				min=Data[3];
-		}
-		delay_ms(10);
+//		if(i==0)
+//		{
+//			max=Data[3];
+//			min=Data[3];
+//		}
+//		else
+//		{
+//			if(Data[3]>max)
+//				max=Data[3];
+//			if(Data[3]<min)
+//				min=Data[3];
+//		}
+		delay_ms(5);
 	}
-	*xdev=dev/100;
-	*xA=(max-*xdev)>(*xdev-min)?(max-*xdev):(*xdev-min);
+	*xdev=dev/800;		
+//	*xA=(max-*xdev)>(*xdev-min)?(max-*xdev):(*xdev-min);
 }
 
 
