@@ -259,9 +259,9 @@ void contorl_speed_encoder_pid(void)
 }
 void set_speed_pwm(void)
 {
-	d_speed_pwm = new_speed_pwm - old_speed_pwm;
 	speed_pwm = (d_speed_pwm/100)*(speed_period)+old_speed_pwm;
-	LCD_PrintoutInt(0, 6, new_speed_pwm);
+	d_speed_pwm = new_speed_pwm - old_speed_pwm;
+	LCD_PrintoutInt(0, 6, data_encoder.speed_real);
 }
 
 /*-----------------------------------------------------------------------*/
