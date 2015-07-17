@@ -6,7 +6,7 @@ BYTE  SpeedCountFlag=0;
 void main(void)
 {
 	init_all_and_POST();
-	set_speed_target(30);
+	set_speed_target(0);
 	for(;;)
 	{
 	/*	delay_ms(20);
@@ -21,12 +21,14 @@ void main(void)
 			g_Control=0;
 			count++;
 			speed_period++;
-//			angle_read(AngleResult);
+			angle_read(AngleResult);
 			set_speed_pwm();
-//			AngleControl();
-//			LCD_PrintoutInt(0, 0, AngleResult[1]);
-//			LCD_PrintoutInt(0, 2, AngleCalculate[1]);
-//			LCD_PrintoutInt(0, 4, AngleCalculate[0]);
+			AngleControl();
+			LCD_PrintoutInt(0, 0, AngleResult[1]);
+			LCD_PrintoutInt(0, 2, AngleCalculate[1]);
+			LCD_PrintoutInt(0, 4, AngleCalculate[0]);
+			LCD_PrintoutInt(64, 0, AngleResult[0]);
+			LCD_PrintoutInt(64, 2, AngleCalculate[0]);
 			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
 			{ 
 				motor_control();
@@ -41,11 +43,10 @@ void main(void)
 				get_speed_now();
 				if(SpeedCountFlag>=20) 
 				{
-					//set_speed_PID();
+					set_speed_PID();
 					contorl_speed_encoder_pid();
 					speed_period=0;
-					LCD_PrintoutInt(65, 0, data_encoder.is_forward);
-					LCD_PrintoutInt(65, 2, data_encoder.speed_real);
+					LCD_PrintoutInt(65, 4, data_encoder.speed_real);
 					SpeedCountFlag=0;
 				}
 			}

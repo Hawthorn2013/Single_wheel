@@ -108,8 +108,8 @@ void set_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向后
 void motor_control(void)
 {
 	int16_t motor_pwm;
-//	motor_pwm=angle_pwm-speed_pwm;
-	motor_pwm=speed_pwm;
+	motor_pwm=angle_pwm-speed_pwm;
+//	motor_pwm=speed_pwm;
 	set_motor_pwm(motor_pwm);
 }
 
@@ -228,31 +228,40 @@ static SWORD get_e0()
 void contorl_speed_encoder_pid(void)
 {
 	int error=0;
+	int kp,ki,kd;
 	static SWORD error_last=0;
 	static SWORD sum_error=0;
 	error_last = error;
 	error = data_speed_settings.speed_target - data_encoder.speed_real;
 	
 	old_speed_pwm = new_speed_pwm;
-	new_speed_pwm=(SWORD)(data_speed_pid.p*(error));       //P控制
-	new_speed_pwm+=(SWORD)(data_speed_pid.d*(error-error_last));  //I控制
+	kp=(SWORD)(data_speed_pid.p*(error));       //P控制
+	new_speed_pwm=kp;
+	kd=(SWORD)(data_speed_pid.d*(error-error_last));  //I控制
+	new_speed_pwm+=kd;
 	sum_error+=error;
-	if(sum_error>1000) sum_error=1000;
-	if(sum_error<1000) sum_error=-1000;
-	new_speed_pwm+=(SWORD)(data_speed_pid.i*(sum_error));		
+	if(sum_error>500) sum_error=500;
+	if(sum_error<-500) sum_error=-500;
+	ki=(SWORD)(data_speed_pid.i*(sum_error));	
+	new_speed_pwm+=ki;
 	
 	if(new_speed_pwm>1000)
 		new_speed_pwm=1000;
 	if(new_speed_pwm<-1000)
 		new_speed_pwm=-1000;   //限制pwm变化量
 	
-	LCD_PrintoutInt(65, 4, error);
+//	LCD_PrintoutInt(65, 2, error);
+//	LCD_PrintoutInt(0, 0, kp);
+//	LCD_PrintoutInt(0, 2, kd);
+//	LCD_PrintoutInt(0, 4, ki);	
+//	LCD_PrintoutInt(64, 4, sum_error);
 	LCD_PrintoutInt(65, 6, new_speed_pwm);
 }
 void set_speed_pwm(void)
 {
 	d_speed_pwm = new_speed_pwm - old_speed_pwm;
 	speed_pwm = (d_speed_pwm/100)*(speed_period)+old_speed_pwm;
+	LCD_PrintoutInt(0, 6, new_speed_pwm);
 }
 
 /*-----------------------------------------------------------------------*/
@@ -268,7 +277,12 @@ void set_speed_target(SWORD speed_target)
 /*-----------------------------------------------------------------------*/
 void set_speed_PID(void) 
 { 
-	int speed_target=data_speed_settings.speed_target;
+	
+	data_speed_pid.p=10;
+	data_speed_pid.d=0.5;
+	data_speed_pid.i=0.5;  
+	return;
+	/*int speed_target=data_speed_settings.speed_target;
 	int speed_now=data_speed_settings.speed_target_now;
 	if(speed_target==0)//420 
 	{
@@ -328,7 +342,7 @@ void set_speed_PID(void)
 		else
 			speed_now=speed_target;
 	} 
-
+*/
 }
 
 

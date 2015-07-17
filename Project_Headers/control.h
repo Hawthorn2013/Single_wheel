@@ -122,7 +122,7 @@ struct
 	float p;
 	float i;
 	float d;
-} data_speed_pid = {10 , 0.3, 0.3 };
+} data_speed_pid = {10 , 0.8, 0.6 };
 #else
 extern struct
 {
