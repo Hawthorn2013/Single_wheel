@@ -10,7 +10,7 @@ extern BYTE g_serial_port_1_data;
 
 extern void init_serial_port_1(void);
 extern void serial_port_1_TX(BYTE data);
-extern void serial_port_1_TX_array(const BYTE data[], WORD n);
+extern void serial_port_1_TX_array(const BYTE data[], BYTE n);
 extern void intc_serial_port_1_RX(void);
 
 

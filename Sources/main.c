@@ -9,12 +9,18 @@ void main(void)
 	set_speed_target(30);
 	for(;;)
 	{
-	/*	delay_ms(20);
-		while(!Reg_Read(ACCEL_XOUT_H,&Data_H)){}
-		while(!Reg_Read(ACCEL_XOUT_L,&Data_L)){}
-		Data_H=Data_H<<8;
-		Data=Data_H|Data_L;*/
 
+		while(g_start_PCcontrol)
+		{
+			if (REMOTE_FRAME_STATE_OK == g_remote_frame_state)
+			{
+				g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
+				
+				execute_remote_cmd(remote_frame_data+4);
+			}
+			delay_ms(10);
+		}
+		
 		if(g_Control)
 		{
 			D5=~D5;
@@ -54,6 +60,7 @@ void main(void)
 				count=0;
 			}
 		}
+
 	}
 
 }
