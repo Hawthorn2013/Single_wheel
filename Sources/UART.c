@@ -47,7 +47,7 @@ void serial_port_1_TX(unsigned char data)
 }
 #endif
 
-void serial_port_1_TX_array(const BYTE data[], WORD n)
+void serial_port_1_TX_array(const BYTE data[], BYTE n)
 {
 	int i = 0;
 	
@@ -67,6 +67,7 @@ void intc_serial_port_1_RX()
 	g_serial_port_1_f = 1;
 	g_serial_port_1_data = rev_ch;
 	LINFLEX_1.UARTSR.B.DRF=1;
+	rev_remote_frame_2(rev_ch);
 }
 
 

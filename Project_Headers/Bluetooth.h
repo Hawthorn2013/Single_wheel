@@ -1,0 +1,90 @@
+#ifndef BLUETOOTH_H_
+#define BLUETOOTH_H_
+
+/* 俯仰PITCH陀螺仪远程标定 */
+#define CMD_SET_PITCH_ANGLE_ZERO (0x0002)	/* 远程标定俯仰陀螺仪角度零点 */
+#define CMD_SET_PITCH_ANGLE_SPEED_ZERO (0x0003)	/* 远程标定俯仰陀螺仪角速度零点 */
+
+/* 横滚ROLL陀螺仪远程标定 */
+#define CMD_SET_ROLL_ANGLE_ZERO (0x0004)	/* 远程标定横滚陀螺仪角度零点 */
+#define CMD_SET_ROLL_ANGLE_SPEED_ZERO (0x0005)	/* 远程标定横滚陀螺仪角速度零点 */
+
+/* 航向YAW陀螺仪远程标定 */
+#define CMD_SET_YAW_ANGLE_ZERO (0x0006)	/* 远程标定航向陀螺仪角度零点 */
+#define CMD_SET_YAW_ANGLE_SPEED_ZERO (0x0007)	/* 远程标定航向陀螺仪角速度零点 */
+
+/* 驱动轮电机远程调参 */
+#define CMD_SET_MOTOR1_TARGET (0x0008)	/* 远程修改电机目标值 */
+#define CMD_SET_MOTOR1_PWM_TARGET (0x0009)	/* 远程修改电机占空比 */
+#define CMD_SET_MOTOR1_KP (0x0010)	/* 远程修改电机P值 */
+#define CMD_SET_MOTOR1_KI (0x0011)	/* 远程修改电机I值 */
+#define CMD_SET_MOTOR1_KD (0x0012)	/* 远程修改电机D值 */
+#define CMD_STOP_SPEED (0x0013)	  /* 远程电机目标值置0 */
+
+/* 横滚电机远程调参 */
+#define CMD_SET_MOTOR2_PWM_TARGET (0x0014)	/* 远程修改电机占空比 */
+
+/* 航向角电机远程调参 */
+#define CMD_SET_MOTOR3_PWM_TARGET (0x0015)	/* 远程修改电机占空比 */
+
+/* 上位机控制 */
+#define CMD_START_CONTROL (0x0020)/* 开始PC控制 */
+#define CMD_STOP_CONTROL (0x0021)	/* 结束PC控制 */
+
+/* 封装帧数据 */
+#define REMOTE_FRAME_LENGTH (24)//余婧修改
+#define REMOTE_FRAME_STATE_OK (1)
+#define REMOTE_FRAME_STATE_NOK (0)
+
+/* 发送数据类型 */
+#define ACC_TYPE (0x15)
+#define GYR_TYPE (0x25)
+#define MAG_TYPE (0x35)
+#define ANGLE_TYPE (0x45)
+#define FOUR_TYPE (0x65)
+#define PREC_TYPE (0x75)
+#define RANGE_TYPE (0x85)
+
+/* 传感器类型 */
+#define ENC03 (1)
+#define MPU9250 (2)
+#define GY953 (3)
+
+
+extern BYTE remote_frame_data[];
+extern int g_remote_frame_state;
+extern BYTE g_device_NO;
+extern int g_start_PCcontrol;
+extern SWORD ans;
+
+
+
+/* 网络控制结构体 */
+#ifdef __BLUETOOTH_C_
+struct
+{
+	int is_new_cmd;
+	WORD cmd;
+	DWORD last_report_online_time;
+} g_net_control_data = { 0, 0x00, 0x00000000 };
+#else
+extern struct
+{
+	int is_new_cmd;
+	WORD cmd;
+	DWORD last_report_online_time;
+} g_net_control_data;
+#endif
+
+BYTE check_xor(const BYTE *data, BYTE length);
+BYTE check_sum(const BYTE *data, BYTE length);
+extern void execute_remote_cmd(const BYTE *data);
+extern int rev_remote_frame_2(BYTE rev);
+extern void generate_remote_frame_2(BYTE type, BYTE length, const BYTE data[]);
+extern void send_data2PC(BYTE sensor, BYTE type, BYTE data[]);
+void report_online(void);
+
+
+
+
+#endif /* BLUETOOTH_H_ */
