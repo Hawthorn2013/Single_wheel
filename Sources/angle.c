@@ -42,6 +42,7 @@ void angle_calculate(void)
 {
 	AngleCalculate[0]=((float)AngleResult[0]-angle_data.PITCH_angle_zero)/5.49; //陀螺仪的角度  前倾的角度//1380   
 	AngleCalculate[1]=((float)AngleResult[1]-angle_data.PITCH_anglespeed_zero)/0.67;//陀螺仪角速度
+
 //	AngleCalculate[2]=((float)AngleResult[2]-1532)/5; // 转向角度
 //	AngleCalculate[3]=((float)AngleResult[3]-1378)/0.67; //加速度z轴  //1380
 }
