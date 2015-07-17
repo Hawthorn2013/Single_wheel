@@ -188,16 +188,35 @@ void generate_remote_frame_2(BYTE type, BYTE length, const BYTE data[])
 /*-----------------------------------------------------------------------*/
 /* 发送GY953数据至PC上位机                                                          */
 /* 依赖generate_remote_frame_2()                                          */
-/* 所需数据为GY953 alldata
+/* sensor传感器类型
+/* datatype数据类型
 /*-----------------------------------------------------------------------*/
-void send_data2PC(BYTE type, BYTE data[])
+void send_data2PC(BYTE sensor, BYTE type, BYTE data[])
 {
-	if(type==ACC_TYPE)
-		generate_remote_frame_2( type, 6, (const BYTE *)(&data[2]));
-	else if(type==GYR_TYPE)
-		generate_remote_frame_2( type, 6, (const BYTE *)(&data[8]));
-	else if(type==ANGLE_TYPE)
-		generate_remote_frame_2( type, 6, (const BYTE *)(&data[20]));
+	if(sensor==ENC03)
+	{
+		if(type==GYR_TYPE)
+			generate_remote_frame_2( type, 1, (const BYTE *)(&data[1]));
+		else if(type==ANGLE_TYPE)
+			generate_remote_frame_2( type, 1, (const BYTE *)(&data[0]));
+	}
+	else if(sensor==MPU9250)
+	{
+		if(type==ACC_TYPE)
+			generate_remote_frame_2( type, 6, (const BYTE *)(&data[6]));
+		else if(type==GYR_TYPE)
+			generate_remote_frame_2( type, 6, (const BYTE *)(&data[0]));
+	}
+	else if(sensor==GY953)
+		{
+			if(type==ACC_TYPE)
+				generate_remote_frame_2( type, 6, (const BYTE *)(&data[2]));
+			else if(type==GYR_TYPE)
+				generate_remote_frame_2( type, 6, (const BYTE *)(&data[8]));
+			else if(type==ANGLE_TYPE)
+				generate_remote_frame_2( type, 6, (const BYTE *)(&data[20]));
+		}
+	
 }
 
 
