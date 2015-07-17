@@ -534,6 +534,7 @@ void init_DSPI_1(void)
 	DSPI_1.CTAR[2].R = 0x3E0A7724;  //L3G4200D 极性为1，相位为1，baud rate=1m/s
 	DSPI_1.CTAR[3].R = 0x380A7720;	//OLED 极性为0，相位为0，baud rate=8m/s
 	DSPI_1.MCR.B.HALT = 0x0;	     /* Exit HALT mode: go from STOPPED to RUNNING state*/
+#if 1		//旧板
 	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
 	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
 	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1
@@ -542,6 +543,19 @@ void init_DSPI_1(void)
 	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
 	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	
 	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
+#endif
+
+#if 0
+	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
+	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
+	SIU.PCR[37].R = 0x0604;	//PC5 SOUT_1
+	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		9250
+	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	
+	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	GY953	
+	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1	OLED 
+#endif
+	
 	DSPI_1.RSER.B.TCFRE = 0;	//关闭传输完成中断
 }
 

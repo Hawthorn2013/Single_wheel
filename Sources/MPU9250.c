@@ -7,6 +7,12 @@
 
 #include "includes.h"
 
+#if 1	//¿œ∞Ê
+#define setting 0x08040000
+#endif
+#if 0
+#define setting 0x08000000
+#endif
 
 void init_MPU9250(void)
 {
@@ -28,13 +34,13 @@ int Reg_Read(uint8_t reg,uint8_t* Data)
 	uint32_t tmp_tx = 0x00000000;
 	uint8_t tmp_rx;
 	
-	tmp_tx = 0x88040000|reg|0x80;
+	tmp_tx = 0x80000000|setting|reg|0x80;
 	DSPI_1.PUSHR.R = tmp_tx;
 	while(!DSPI_1.SR.B.TCF){}
 	tmp_rx = (uint8_t)DSPI_1.POPR.B.RXDATA;
 	DSPI_1.SR.B.TCF = 1;
 
-	tmp_tx = 0x08040000|0xff;
+	tmp_tx = setting|0xff;
 	DSPI_1.PUSHR.R = tmp_tx;
 	while(!DSPI_1.SR.B.TCF){}
 	tmp_rx = (uint8_t)DSPI_1.POPR.B.RXDATA;
@@ -49,13 +55,13 @@ int Reg_Write(uint8_t reg,uint8_t Data)
 	uint32_t tmp_tx = 0x00000000;
 	uint8_t tmp_rx;
 	
-	tmp_tx = 0x88040000|(reg&0x7f);
+	tmp_tx = 0x80000000|setting|(reg&0x7f);
 	DSPI_1.PUSHR.R = tmp_tx;
 	while(!DSPI_1.SR.B.TCF){}
 	tmp_rx = (uint8_t)DSPI_1.POPR.B.RXDATA;
 	DSPI_1.SR.B.TCF = 1;
 	
-	tmp_tx = 0x08040000|Data;
+	tmp_tx = setting|Data;
 	DSPI_1.PUSHR.R = tmp_tx;
 	while(!DSPI_1.SR.B.TCF){}
 	tmp_rx = (uint8_t)DSPI_1.POPR.B.RXDATA;
@@ -66,9 +72,9 @@ int Reg_Write(uint8_t reg,uint8_t Data)
 
 int Read_GYRO_ACC(int32_t *Data)	//∂¡»°Ω«ÀŸ∂»”Îº”ÀŸ∂»,“¿¥Œ «x,y,zΩ«ÀŸ∂»”Îx,y,zº”ÀŸ∂»
 {
-	uint8_t Data_H=0x0000;
-	uint8_t Data_L=0x0000;
-	int16_t temp=0x00000000;
+	uint8_t Data_H=0x00;
+	uint8_t Data_L=0x00;
+	int16_t temp=0x0000;
 	
 	while(!Reg_Read(GYRO_XOUT_H,&Data_H)){}
 	while(!Reg_Read(GYRO_XOUT_L,&Data_L)){}
@@ -114,17 +120,21 @@ int Read_GYRO_ACC(int32_t *Data)	//∂¡»°Ω«ÀŸ∂»”Îº”ÀŸ∂»,“¿¥Œ «x,y,zΩ«ÀŸ∂»”Îx,y,zº”
 	return 1;
 }
 
-void deviation_adjust_accx(int32_t *xdev/*, int32_t *xA*/)		//x∑ΩœÚº”ÀŸ∂»¡„Œª∆´≤Ó£¨œ÷‘›∂®xAŒ™500
+void deviation_adjust_accx(int32_t *xdev,int32_t *ydev,int32_t *zdev /*, int32_t *xA*/)		//x∑ΩœÚº”ÀŸ∂»¡„Œª∆´≤Ó£¨œ÷‘›∂®xAŒ™500
 {
 	int i;
 	int32_t Data[6];
-	int32_t dev=0;
+	int32_t Xdev=0;
+	int32_t Ydev=0;
+	int32_t Zdev=0;
 //	int32_t max;
 //	int32_t min;
 	for(i=0;i<800;i++)			//»°—˘800¥Œ£¨”Î∫Û√Ê«Û∆Ωæ˘÷µ“™∂‘”¶
 	{
 		Read_GYRO_ACC(Data);
-		dev=dev+Data[3];
+		Xdev=Xdev+Data[3];
+		Ydev=Ydev+Data[4];
+		Zdev=Zdev+Data[5];
 //		if(i==0)
 //		{
 //			max=Data[3];
@@ -138,14 +148,27 @@ void deviation_adjust_accx(int32_t *xdev/*, int32_t *xA*/)		//x∑ΩœÚº”ÀŸ∂»¡„Œª∆´≤
 //				min=Data[3];
 //		}
 		delay_ms(5);
+		
 	}
-	*xdev=dev/800;		
+	*xdev=Xdev/800;	
+	*ydev=Ydev/800;
+	*zdev=Zdev/800;
 //	*xA=(max-*xdev)>(*xdev-min)?(max-*xdev):(*xdev-min);
+}
+
+void Read_Temp(int32_t* Temp)
+{
+	uint8_t Temp_H=0x00;
+	uint8_t Temp_L=0x00;
+	int16_t temp=0x0000;
+	
+	while(!Reg_Read(TEMP_OUT_H,&Temp_H)){}
+	while(!Reg_Read(TEMP_OUT_L,&Temp_L)){}
+	
+	temp=Temp_H;
+	temp=(temp<<8)|Temp_L;
+	*Temp=temp;
 }
 
 
 
-//int display_data_in_lcd(uint16_t *Data)
-//{
-//	
-//}

@@ -9,15 +9,21 @@ void main(void)
 //	uint8_t i=0;
 //	uint8_t Data_H;
 //	uint8_t Data_L;
-	
+	uint32_t i;
 	init_all_and_POST();
 	D0=0;
 	set_speed_target(0);
-	deviation_adjust_accx(&xdev);
+	deviation_adjust_accx(&xdev,&ydev,&zdev);
+	LCD_Write_Num(15,1,xdev,5);
+	LCD_Write_Num(15,2,ydev,5);
+	LCD_Write_Num(15,3,zdev,5);
+	i=0;
 	for(;;)
 	{
+		temp_analyse(&i);
+		//acc_display(&i);
 		//distance();
-		filter_display();
+		//filter_display();
 		//delay_ms(5);
 	/*	delay_ms(20);
 		while(!Reg_Read(ACCEL_XOUT_H,&Data_H)){}
