@@ -279,8 +279,8 @@ void set_speed_PID(void)
 { 
 	
 	data_speed_pid.p=10;
-	data_speed_pid.d=0.5;
-	data_speed_pid.i=0.5;  
+	data_speed_pid.d=0;
+	data_speed_pid.i=0;  
 	return;
 	/*int speed_target=data_speed_settings.speed_target;
 	int speed_now=data_speed_settings.speed_target_now;
