@@ -3,9 +3,10 @@
 
 unsigned int jos[4]={0};
 unsigned int ADResult[4]={0};
-unsigned int AngleResult[4]={0};
+unsigned int AngleResult[4]={0}; //前后角度
 float AngleCalculate[4]={0};
-
+unsigned int AngleResult_balance[4]={0}; //左右角度
+float AngleCalculate_balance[4]={0};
 
 /*-----------------------------------------------------------------------*/
 /*-----------主陀螺仪模块读值函数-------------*/
@@ -45,4 +46,12 @@ void angle_calculate(void)
 //	AngleCalculate[2]=((float)AngleResult[2]-1532)/5; // 转向角度
 //	AngleCalculate[3]=((float)AngleResult[3]-1378)/0.67; //加速度z轴  //1380
 }
+
+/*-----前后陀螺仪数据处理---*/
+void angle_calculate_balance(void)
+{
+	AngleCalculate_balance[0]=((float)AngleResult_balance[0]-1936)/5.49; //陀螺仪的角度  前倾的角度//1380   
+	AngleCalculate_balance[1]=((float)AngleResult_balance[1]-976)/0.67;//陀螺仪角速度
+}
+
 

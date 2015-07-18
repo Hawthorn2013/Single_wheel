@@ -18,6 +18,18 @@ void Pit_1ms(void)
 		get_speed_now();
 		count=0;
 	}
+	
+	angle_read(AngleResult_balance); //angleread()暂时使用PB10, PB11，与前后一样
+	set_speed_pwm_balance();
+	BalanceControl();
+	if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
+	{ 
+		//LCD_PrintoutInt(65, 2, angle_pwm);
+		motor_control_balance();
+	} 
+	else
+		set_motor_pwm(0);
+	
 //	if(timer==stepspeed)
 //	{
 //		if(ABCD==0)

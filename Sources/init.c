@@ -472,8 +472,8 @@ void init_all_and_POST(void)
 	init_DSPI_1();
 	
 	/* 开启外部总中断 */
-	//enable_irq();
-	
+	enable_irq();
+		
 	/* 初始化显示屏 */
 	initLCD();
 

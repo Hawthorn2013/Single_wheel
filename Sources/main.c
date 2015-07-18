@@ -10,6 +10,7 @@ void main(void)
 	set_speed_target(0);
 	for(;;)
 	{
+		
 	/*	delay_ms(20);
 		while(!Reg_Read(ACCEL_XOUT_H,&Data_H)){}
 		while(!Reg_Read(ACCEL_XOUT_L,&Data_L)){}
@@ -17,23 +18,28 @@ void main(void)
 		Data=Data_H|Data_L;*/
 		if(g_Control)
 		{
+			/*
 			g_Control=0;
 			count++;
-			angle_read(AngleResult);
+			angle_read(AngleResult);  
 			set_speed_pwm();
 			AngleControl();
-//			LCD_PrintoutInt(0, 0, AngleResult[1]);
-//			LCD_PrintoutInt(0, 2, AngleCalculate[1]);
-//			LCD_PrintoutInt(0, 4, AngleCalculate[0]);
+			//LCD_PrintoutInt(0, 0, AngleResult[1]);
+			//LCD_PrintoutInt(0, 2, AngleCalculate[1]);
+			//LCD_PrintoutInt(0, 4, AngleCalculate[0]);
 			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
 			{ 
 				//LCD_PrintoutInt(65, 2, angle_pwm);
 				motor_control();
 			} 
 			else
-			{
 				set_motor_pwm(0);
+		    */
+			if(count==3)
+			{
+				//BalanceControl(); //暂时与前后平衡共用电机接口，不能同时运行
 			}
+			/*
 			if(count==4)
 			{
 				SpeedCountFlag++;
@@ -43,12 +49,12 @@ void main(void)
 					contorl_speed_encoder_pid();
 					SpeedCountFlag=0;
 				}
-			}
+			}*/
 			else if(count==5)
 			{
 				count=0;
 			}
 		}
 	}
-
 }
+
