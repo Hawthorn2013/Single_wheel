@@ -16,7 +16,7 @@ void main(void)
 			{
 				g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
 				
-				execute_remote_cmd(remote_frame_data+4);
+				execute_remote_cmd(remote_frame_data+2);
 			}
 			delay_ms(10);
 		}
