@@ -255,13 +255,13 @@ void contorl_speed_encoder_pid(void)
 //	LCD_PrintoutInt(0, 2, kd);
 //	LCD_PrintoutInt(0, 4, ki);	
 //	LCD_PrintoutInt(64, 4, sum_error);
-	LCD_PrintoutInt(65, 6, new_speed_pwm);
+//	LCD_PrintoutInt(65, 6, new_speed_pwm);
 }
 void set_speed_pwm(void)
 {
 	speed_pwm = (d_speed_pwm/100)*(speed_period)+old_speed_pwm;
 	d_speed_pwm = new_speed_pwm - old_speed_pwm;
-	LCD_PrintoutInt(0, 6, data_encoder.speed_real);
+//	LCD_PrintoutInt(0, 6, data_encoder.speed_real);
 }
 
 /*-----------------------------------------------------------------------*/

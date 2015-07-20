@@ -69,10 +69,7 @@ void init_led(void)
 	SIU.PCR[15].R = 0x0203;/* PA15  */
 #endif
 
-	D0=1;
-	D1=1;
-	D2=1;
-	D3=1;
+
 	D5 = 1;
 	D6 = 1;
 	D7 = 1;
@@ -483,7 +480,7 @@ void init_all_and_POST(void)
 	
 
 	/* 初始化陀螺仪 */
-	init_MPU9250();
+//	init_MPU9250();
 	
 
 	
