@@ -163,15 +163,7 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[9].CADR.R = 1;	/* Leading edge when channel counter bus=250*/
 	EMIOS_0.CH[9].CBDR.R = STEER_HELM_CENTER;	/* Trailing edge when channel counter bus=500*/
 	SIU.PCR[9].R = 0x0600;	/* [11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
-#if 0
-	/* 信号舵机 PWM PA12 输出0-50000 */
-	EMIOS_0.CH[12].CCR.B.BSL = 0x1;
-	EMIOS_0.CH[12].CCR.B.MODE = 0x60;  
-    EMIOS_0.CH[12].CCR.B.EDPOL = 1;
-	EMIOS_0.CH[12].CADR.R = 1;
-	EMIOS_0.CH[12].CBDR.R = SINGLE_HELM_CENTER;
-	SIU.PCR[44].R = 0x0600;
-#endif
+
 }
 
 /*-----------------------------------------------------------------------*/
@@ -536,12 +528,12 @@ void init_DSPI_1(void)
 	DSPI_1.MCR.B.HALT = 0x0;	     /* Exit HALT mode: go from STOPPED to RUNNING state*/
 	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
 	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
-	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1
-	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF
-	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED
-	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
-	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	GY953
-	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
+	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1	//换至PC5
+	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF		//9250
+	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED	//空
+	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250	//空
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	GY953	//GY953
+	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1			//OLED
 	DSPI_1.RSER.B.TCFRE = 0;	//关闭传输完成中断
 }
 

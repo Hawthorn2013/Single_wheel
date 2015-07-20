@@ -18,7 +18,7 @@ void execute_remote_cmd(const BYTE *data)
 {
 	WORD cmd = 0;
 	
-	cmd = ((WORD)(data[0])<<8) | ((WORD)(data[1]));
+	cmd = (WORD)(data[0]);
 	switch (cmd)
 	{
 		
