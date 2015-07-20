@@ -10,31 +10,30 @@ void main(void)
 	for(;;)
 	{
 
-		while(g_start_PCcontrol)
+		if (REMOTE_FRAME_STATE_OK == g_remote_frame_state)
 		{
-			if (REMOTE_FRAME_STATE_OK == g_remote_frame_state)
-			{
-				g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
-				
-				execute_remote_cmd(remote_frame_data+2);
-			}
-			delay_ms(10);
+			g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
+			
+			execute_remote_cmd(remote_frame_data+2);
+			
+			D8=~D8;
 		}
-		
+//		delay_ms(10);
+
+#if 1		
 		if(g_Control)
 		{
-			D5=~D5;
 			g_Control=0;
 			count++;
 			speed_period++;
 			angle_read(AngleResult);
 			set_speed_pwm();
 			AngleControl();
-			LCD_PrintoutInt(0, 0, AngleResult[1]);
-			LCD_PrintoutInt(0, 2, AngleCalculate[1]);
-			LCD_PrintoutInt(0, 4, AngleCalculate[0]);
-			LCD_PrintoutInt(64, 0, AngleResult[0]);
-			LCD_PrintoutInt(64, 2, AngleCalculate[0]);
+			LCD_PrintoutInt(0, 0, angle_data.PITCH_angle_zero);
+//			LCD_PrintoutInt(0, 2, AngleCalculate[1]);
+//			LCD_PrintoutInt(0, 4, AngleCalculate[0]);
+			LCD_PrintoutInt(0, 2, angle_data.YAW_anglespeed_zero);
+//			LCD_PrintoutInt(64, 2, AngleCalculate[0]);
 			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
 			{ 
 				motor_control();
@@ -52,7 +51,7 @@ void main(void)
 					set_speed_PID();
 					contorl_speed_encoder_pid();
 					speed_period=0;
-					LCD_PrintoutInt(65, 4, data_encoder.speed_real);
+//					LCD_PrintoutInt(65, 4, data_encoder.speed_real);
 					SpeedCountFlag=0;
 				}
 			}
@@ -61,7 +60,7 @@ void main(void)
 				count=0;
 			}
 		}
-
+#endif
 	}
 
 }

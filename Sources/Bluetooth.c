@@ -16,9 +16,9 @@ SWORD ans=0;
 /*-----------------------------------------------------------------------*/
 void execute_remote_cmd(const BYTE *data)
 {
-	WORD cmd = 0;
+	BYTE cmd = 0;
 	
-	cmd = (WORD)(data[0]);
+	cmd = (BYTE)(data[0]);
 	switch (cmd)
 	{
 		
@@ -34,26 +34,28 @@ void execute_remote_cmd(const BYTE *data)
 		
 		/* 俯仰陀螺仪标定调参 */
 		case CMD_SET_PITCH_ANGLE_ZERO :
-			set_PITCH_angle_zero(*((DWORD *)(&(data[2]))));
+			set_PITCH_angle_zero(*((SWORD *)(&(data[2]))));
+			D7=~D7;
 		break;
 		case CMD_SET_PITCH_ANGLE_SPEED_ZERO :
-			set_PITCH_angle_speed_zero(*((DWORD *)(&(data[2]))));
+			set_PITCH_angle_speed_zero(*((SWORD *)(&(data[2]))));
 		break;
 		
 		/* 横滚陀螺仪标定调参 */
 		case CMD_SET_ROLL_ANGLE_ZERO :
-			set_ROLL_angle_zero(*((DWORD *)(&(data[2]))));
+			set_ROLL_angle_zero(*((SWORD *)(&(data[2]))));
 		break;
 		case CMD_SET_ROLL_ANGLE_SPEED_ZERO :
-			set_ROLL_angle_speed_zero(*((DWORD *)(&(data[2]))));
+			set_ROLL_angle_speed_zero(*((SWORD *)(&(data[2]))));
 		break;
 		
 		/* 航向角陀螺仪标定调参 */
 		case CMD_SET_YAW_ANGLE_ZERO :
-			set_YAW_angle_zero(*((DWORD *)(&(data[2]))));
+			set_YAW_angle_zero(*((SWORD *)(&(data[2]))));
 		break;
 		case CMD_SET_YAW_ANGLE_SPEED_ZERO :
-			set_YAW_angle_speed_zero(*((DWORD *)(&(data[2]))));
+			set_YAW_angle_speed_zero(*((SWORD *)(&(data[2]))));
+			D7=~D7;
 		break;
 		
 		
@@ -131,6 +133,7 @@ int rev_remote_frame_2(BYTE rev)
 	else if (g_remote_frame_cnt == 3)	//接收长度
 	{
 		remote_frame_data[g_remote_frame_cnt++] = rev;
+
 		if (rev+5>REMOTE_FRAME_LENGTH)	//判断是否会导致缓冲区溢出
 		{
 			g_remote_frame_cnt = 0;
@@ -247,7 +250,7 @@ BYTE check_sum(const BYTE *data, BYTE length)
 	for (i=0; i<length; i++)
 	{
 		res += data[i];
-		res  = (BYTE)res;
+		res  = res&0x00FF;
 	}
 	
 	return (BYTE)res;
