@@ -159,13 +159,13 @@ void AngleControl(void)
    temp_anglespeed= CarAnglespeedInitial - g_fGyroscopeAngleSpeed;
   
    if(temp_angle<-15)
-	   data_angle_pid.p=100; //100开环
+	   data_angle_pid.p=150; //100开环
    else if(temp_angle>=-15&temp_angle<=0)
-	   data_angle_pid.p=200; //200
+	   data_angle_pid.p=230; //200
    else if(temp_angle>0&temp_angle<=15)
-	   data_angle_pid.p=200;// 170   
+	   data_angle_pid.p=230;// 200   
    else
-	   data_angle_pid.p=100;  //100
+	   data_angle_pid.p=150;  //100
                                                     
   
    if(temp_anglespeed>=50||temp_anglespeed<=-50)
@@ -295,7 +295,7 @@ void set_pwm3_target(SWORD speed_pwm)
 void set_speed_PID(void) 
 { 
 	
-	data_speed_pid.p=10;
+	data_speed_pid.p=35;//v=10 p=20
 	data_speed_pid.d=0;
 	data_speed_pid.i=0;  
 	return;

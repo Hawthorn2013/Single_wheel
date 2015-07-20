@@ -174,6 +174,7 @@ int rev_remote_frame_2(BYTE rev)
 void generate_remote_frame_2(BYTE type, BYTE length, const BYTE data[])
 {
 	WORD i = 0, j = 0;
+	D7=~D7;
 	remote_frame_data_send[i++] = 0x5A;
 	remote_frame_data_send[i++] = 0x5A;
 	remote_frame_data_send[i++] = type;
@@ -183,7 +184,7 @@ void generate_remote_frame_2(BYTE type, BYTE length, const BYTE data[])
 		remote_frame_data_send[i++] = data[j];
 	}
 	remote_frame_data_send[i] = check_sum(remote_frame_data_send, length+4);
-
+	
 	serial_port_1_TX_array(remote_frame_data_send, length+5);
 }
 
@@ -197,7 +198,7 @@ void generate_remote_frame_2(BYTE type, BYTE length, const BYTE data[])
 void send_data2PC(BYTE sensor, BYTE type, BYTE data[])
 {
 	if(sensor==ENC03)
-	{
+	{D6=~D6;
 		if(type==GYR_TYPE)
 			generate_remote_frame_2( type, 1, (const BYTE *)(&data[1]));
 		else if(type==ANGLE_TYPE)
