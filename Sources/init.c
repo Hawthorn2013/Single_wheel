@@ -460,7 +460,7 @@ void init_all_and_POST(void)
 
 	init_led();
 	//init_DIP();				/* 拨码开关 */
-	//init_serial_port_1();	/* BlueTooth */
+	init_serial_port_1();	/* BlueTooth */
 	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
 	init_optical_encoder();	/* 光编 */
 

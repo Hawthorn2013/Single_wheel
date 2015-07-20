@@ -11,7 +11,7 @@ struct
 	float ROLL_anglespeed_zero;
 	float YAW_angle_zero;
 	float YAW_anglespeed_zero;
-}angle_data = { 1936, 976, 0, 0, 0, 0 };
+}angle_data = { 1922 , 974, 0, 0, 0, 0 };
 #else
 extern struct
 {

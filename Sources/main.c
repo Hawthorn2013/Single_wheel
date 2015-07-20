@@ -5,11 +5,11 @@ BYTE  SpeedCountFlag=0;
 
 void main(void)
 {
+	static BYTE dall[2]={9,8};
 	init_all_and_POST();
-	set_speed_target(0);
+	set_speed_target(20);
 	for(;;)
 	{
-
 		while(g_start_PCcontrol)
 		{
 			if (REMOTE_FRAME_STATE_OK == g_remote_frame_state)
@@ -30,11 +30,11 @@ void main(void)
 			angle_read(AngleResult);
 			set_speed_pwm();
 			AngleControl();
-			LCD_PrintoutInt(0, 0, AngleResult[1]);
-			LCD_PrintoutInt(0, 2, AngleCalculate[1]);
-			LCD_PrintoutInt(0, 4, AngleCalculate[0]);
+	//		LCD_PrintoutInt(0, 0, AngleResult[1]);
+	//		LCD_PrintoutInt(0, 2, AngleCalculate[1]);
+	//		LCD_PrintoutInt(0, 4, AngleCalculate[0]);
 			LCD_PrintoutInt(64, 0, AngleResult[0]);
-			LCD_PrintoutInt(64, 2, AngleCalculate[0]);
+	//		LCD_PrintoutInt(64, 2, AngleCalculate[0]);
 			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
 			{ 
 				motor_control();
@@ -58,6 +58,7 @@ void main(void)
 			}
 			else if(count==5)
 			{
+				send_data2PC(ENC03,GYR_TYPE,dall);
 				count=0;
 			}
 		}
