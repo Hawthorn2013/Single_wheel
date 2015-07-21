@@ -103,7 +103,7 @@ struct
 	float p;
 	float i;
 	float d;
-} data_angle_pid = { 100, 1, 5 };
+} data_angle_pid = { 297, 0, 2 };
 #else
 extern struct
 {
@@ -147,8 +147,9 @@ extern struct
 
 extern void PitISR(void);
 extern void get_speed_now();
-extern void set_motor_pwm(int16_t speed_pwm);
-extern void motor_control(void);
+extern void set_PITCH_motor_pwm(int16_t speed_pwm);
+extern void PITCH_motor_control(void);
+extern void set_ROLL_motor_pwm(int16_t motor_pwm);
 extern void contorl_speed_encoder_bb(void);
 extern void  AngleControl(void);
 extern void contorl_speed_encoder_pid(void);
@@ -158,8 +159,12 @@ extern void set_speed_PID(void);
 extern void set_speed_KP(float kp);
 extern void set_speed_KI(float ki);
 extern void set_speed_KD(float kd);
+extern void set_pwm1_target(SWORD speed_pwm);
 extern void set_pwm2_target(SWORD speed_pwm);
 extern void set_pwm3_target(SWORD speed_pwm);
+extern void set_angle_KP(float kp);
+extern void set_angle_KI(float kp);
+extern void set_angle_KD(float kp);
 
 
 extern DWORD diff_time_basis_PIT(const DWORD new_time, const DWORD old_time);

@@ -66,14 +66,18 @@ void execute_remote_cmd(const BYTE *data)
 		case CMD_STOP_SPEED :
 			set_speed_target((SWORD)0);
 		break;
-		case CMD_SET_MOTOR1_KP :
-			set_speed_KP(*((SWORD *)(&(data[2]))));
+		case CMD_SET_MOTOR1_PWM_TARGET:
+			set_pwm1_target(*((SWORD *)(&(data[2]))));
+
 		break;
-		case CMD_SET_MOTOR1_KI :
-			set_speed_KP(*((SWORD *)(&(data[2]))));
+		case CMD_SET_ANGLE_KP :
+			set_angle_KP(*((SWORD *)(&(data[2]))));
 		break;
-		case CMD_SET_MOTOR1_KD :
-			set_speed_KP(*((SWORD *)(&(data[2]))));
+		case CMD_SET_ANGLE_KI :
+			set_angle_KI(*((SWORD *)(&(data[2]))));
+		break;
+		case CMD_SET_ANGLE_KD :
+			set_angle_KD(*((SWORD *)(&(data[2]))));
 		break;
 		
 		
@@ -200,9 +204,9 @@ void send_data2PC(BYTE sensor, BYTE type, BYTE data[])
 	if(sensor==ENC03)
 	{D6=~D6;
 		if(type==GYR_TYPE)
-			generate_remote_frame_2( type, 1, (const BYTE *)(&data[1]));
+			generate_remote_frame_2( type, 2, (const BYTE *)(&data[1]));
 		else if(type==ANGLE_TYPE)
-			generate_remote_frame_2( type, 1, (const BYTE *)(&data[0]));
+			generate_remote_frame_2( type, 2, (const BYTE *)(&data[0]));
 	}
 	else if(sensor==MPU9250)
 	{

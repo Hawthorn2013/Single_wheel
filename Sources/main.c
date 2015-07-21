@@ -5,7 +5,6 @@ BYTE  SpeedCountFlag=0;
 
 void main(void)
 {
-	static BYTE dall[2]={9,8};
 	init_all_and_POST();
 	set_speed_target(20);
 	for(;;)
@@ -31,20 +30,22 @@ void main(void)
 			set_speed_pwm();
 			AngleControl();
 			
-			LCD_PrintoutInt(0, 0, angle_data.PITCH_angle_zero);
-//			LCD_PrintoutInt(0, 2, AngleCalculate[1]);
-//			LCD_PrintoutInt(0, 4, AngleCalculate[0]);
-			LCD_PrintoutInt(0, 2, angle_data.YAW_anglespeed_zero);
-//			LCD_PrintoutInt(64, 2, AngleCalculate[0]);
+			LCD_PrintoutInt(0, 0, AngleResult[0]);
+			LCD_PrintoutInt(64, 0, AngleResult[1]);
+			LCD_PrintoutInt(0, 2, angle_data.PITCH_angle_zero);
+			LCD_PrintoutInt(64, 2, angle_data.PITCH_anglespeed_zero);
+			LCD_PrintoutInt(0,4, data_angle_pid.p);
+			LCD_PrintoutInt(0, 6, data_angle_pid.d);
 
 			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
 			{ 
-				motor_control();
+				PITCH_motor_control();
 			} 
 			else
 			{
-				set_motor_pwm(0);
+				set_PITCH_motor_pwm(0);
 			}
+
 			if(count==4)
 			{
 				SpeedCountFlag++;
@@ -54,13 +55,14 @@ void main(void)
 					set_speed_PID();
 					contorl_speed_encoder_pid();
 					speed_period=0;
+//					LCD_PrintoutInt(0, 4, data_speed_settings.speed_target);
 //					LCD_PrintoutInt(65, 4, data_encoder.speed_real);
 					SpeedCountFlag=0;
 				}
 			}
 			else if(count==5)
 			{
-				send_data2PC(ENC03,GYR_TYPE,dall);
+//				send_data2PC(ENC03,GYR_TYPE,dall);
 				count=0;
 			}
 		}

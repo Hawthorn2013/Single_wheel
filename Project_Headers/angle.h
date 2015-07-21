@@ -11,7 +11,7 @@ struct
 	SWORD ROLL_anglespeed_zero;
 	SWORD YAW_angle_zero;
 	SWORD YAW_anglespeed_zero;
-}angle_data = { 1922, 974, 0, 0, 0, 0 };
+}angle_data = { 1983, 974, 0, 0, 0, 0 };//{ 1922, 974, 0, 0, 0, 0 }
 #else
 extern struct
 {

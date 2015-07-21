@@ -131,14 +131,28 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[16].CADR.R = 2000;	/* 设置周期200us 5KHZ */
 	EMIOS_0.CH[16].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
 	EMIOS_0.CH[16].CCR.B.BSL = 0x3;	/* Use internal counter */
-    /* 前进输出 OPWMB PE5 输出0-2000 */
+    /* 平衡输出 OPWMB PE3 输出0-2000 */
+	EMIOS_0.CH[19].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
+	EMIOS_0.CH[19].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
+    EMIOS_0.CH[19].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
+	EMIOS_0.CH[19].CADR.R = 0;	/* Leading edge when channel counter bus= */
+	EMIOS_0.CH[19].CBDR.R = 0;	/* Trailing edge when channel counter bus= */
+	SIU.PCR[67].R = 0x0600;	/*[11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
+	/* 平衡输出 OPWMB PE4 输出0-2000 */
+	EMIOS_0.CH[20].CCR.B.BSL = 0x1;
+	EMIOS_0.CH[20].CCR.B.MODE = 0x60;
+    EMIOS_0.CH[20].CCR.B.EDPOL = 1;
+	EMIOS_0.CH[20].CADR.R = 0;
+	EMIOS_0.CH[20].CBDR.R = 0;
+	SIU.PCR[68].R = 0x0600;
+    /* 俯仰输出 OPWMB PE5 输出0-2000 */
 	EMIOS_0.CH[21].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
 	EMIOS_0.CH[21].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
     EMIOS_0.CH[21].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
 	EMIOS_0.CH[21].CADR.R = 0;	/* Leading edge when channel counter bus= */
 	EMIOS_0.CH[21].CBDR.R = 0;	/* Trailing edge when channel counter bus= */
 	SIU.PCR[69].R = 0x0600;	/*[11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
-	/* 前进输出 OPWMB PE6 输出0-2000 */
+	/* 俯仰输出 OPWMB PE6 输出0-2000 */
 	EMIOS_0.CH[22].CCR.B.BSL = 0x1;
 	EMIOS_0.CH[22].CCR.B.MODE = 0x60;
     EMIOS_0.CH[22].CCR.B.EDPOL = 1;
@@ -146,20 +160,20 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[22].CBDR.R = 0;
 	SIU.PCR[70].R = 0x0600;
 	
-    /* Modulus Up Counter 50HZ */
-    EMIOS_0.CH[8].CCR.B.UCPRE=3;	/* Set channel prescaler to divide by 4 */
-	EMIOS_0.CH[8].CCR.B.UCPEN = 1;	/* Enable prescaler; uses default divide by 4 */
-	EMIOS_0.CH[8].CCR.B.FREN = 1;	/* Freeze channel counting when in debug mode */
-	EMIOS_0.CH[8].CADR.R = 50000;	/* 设置周期0.02s  50HZ */
-	EMIOS_0.CH[8].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
-	EMIOS_0.CH[8].CCR.B.BSL = 0x3;	/* Use internal counter */
-    /* 方向舵机 PWM PA9 输出0-50000 */
-	EMIOS_0.CH[9].CCR.B.BSL = 0x1;	/* Use counter bus C (default) */
-	EMIOS_0.CH[9].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */  
-    EMIOS_0.CH[9].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
-	EMIOS_0.CH[9].CADR.R = 1;	/* Leading edge when channel counter bus=250*/
-	EMIOS_0.CH[9].CBDR.R = STEER_HELM_CENTER;	/* Trailing edge when channel counter bus=500*/
-	SIU.PCR[9].R = 0x0600;	/* [11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
+//    /* Modulus Up Counter 50HZ */
+//    EMIOS_0.CH[8].CCR.B.UCPRE=3;	/* Set channel prescaler to divide by 4 */
+//	EMIOS_0.CH[8].CCR.B.UCPEN = 1;	/* Enable prescaler; uses default divide by 4 */
+//	EMIOS_0.CH[8].CCR.B.FREN = 1;	/* Freeze channel counting when in debug mode */
+//	EMIOS_0.CH[8].CADR.R = 50000;	/* 设置周期0.02s  50HZ */
+//	EMIOS_0.CH[8].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
+//	EMIOS_0.CH[8].CCR.B.BSL = 0x3;	/* Use internal counter */
+//    /* 方向舵机 PWM PA9 输出0-50000 */
+//	EMIOS_0.CH[9].CCR.B.BSL = 0x1;	/* Use counter bus C (default) */
+//	EMIOS_0.CH[9].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */  
+//    EMIOS_0.CH[9].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
+//	EMIOS_0.CH[9].CADR.R = 1;	/* Leading edge when channel counter bus=250*/
+//	EMIOS_0.CH[9].CBDR.R = STEER_HELM_CENTER;	/* Trailing edge when channel counter bus=500*/
+//	SIU.PCR[9].R = 0x0600;	/* [11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
 
 }
 
