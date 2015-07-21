@@ -2,34 +2,34 @@
 #define BLUETOOTH_H_
 
 /* 俯仰PITCH陀螺仪远程标定 */
-#define CMD_SET_PITCH_ANGLE_ZERO (0x0002)	/* 远程标定俯仰陀螺仪角度零点 */
-#define CMD_SET_PITCH_ANGLE_SPEED_ZERO (0x0003)	/* 远程标定俯仰陀螺仪角速度零点 */
+#define CMD_SET_PITCH_ANGLE_ZERO (0x02)	/* 远程标定俯仰陀螺仪角度零点 */
+#define CMD_SET_PITCH_ANGLE_SPEED_ZERO (0x03)	/* 远程标定俯仰陀螺仪角速度零点 */
 
 /* 横滚ROLL陀螺仪远程标定 */
-#define CMD_SET_ROLL_ANGLE_ZERO (0x0004)	/* 远程标定横滚陀螺仪角度零点 */
-#define CMD_SET_ROLL_ANGLE_SPEED_ZERO (0x0005)	/* 远程标定横滚陀螺仪角速度零点 */
+#define CMD_SET_ROLL_ANGLE_ZERO (0x04)	/* 远程标定横滚陀螺仪角度零点 */
+#define CMD_SET_ROLL_ANGLE_SPEED_ZERO (0x05)	/* 远程标定横滚陀螺仪角速度零点 */
 
 /* 航向YAW陀螺仪远程标定 */
-#define CMD_SET_YAW_ANGLE_ZERO (0x0006)	/* 远程标定航向陀螺仪角度零点 */
-#define CMD_SET_YAW_ANGLE_SPEED_ZERO (0x0007)	/* 远程标定航向陀螺仪角速度零点 */
+#define CMD_SET_YAW_ANGLE_ZERO (0x06)	/* 远程标定航向陀螺仪角度零点 */
+#define CMD_SET_YAW_ANGLE_SPEED_ZERO (0x07)	/* 远程标定航向陀螺仪角速度零点 */
 
 /* 驱动轮电机远程调参 */
-#define CMD_SET_MOTOR1_TARGET (0x0008)	/* 远程修改电机目标值 */
-#define CMD_SET_MOTOR1_PWM_TARGET (0x0009)	/* 远程修改电机占空比 */
-#define CMD_SET_MOTOR1_KP (0x0010)	/* 远程修改电机P值 */
-#define CMD_SET_MOTOR1_KI (0x0011)	/* 远程修改电机I值 */
-#define CMD_SET_MOTOR1_KD (0x0012)	/* 远程修改电机D值 */
-#define CMD_STOP_SPEED (0x0013)	  /* 远程电机目标值置0 */
+#define CMD_SET_MOTOR1_TARGET (0x08)	/* 远程修改电机目标值 */
+#define CMD_SET_MOTOR1_PWM_TARGET (0x09)	/* 远程修改电机占空比 */
+#define CMD_SET_ANGLE_KP (0x10)	/* 远程修改角度P值 */
+#define CMD_SET_ANGLE_KI (0x11)	/* 远程修改角度I值 */
+#define CMD_SET_ANGLE_KD (0x12)	/* 远程修改角度D值 */
+#define CMD_STOP_SPEED (0x13)	  /* 远程电机目标值置0 */
 
 /* 横滚电机远程调参 */
-#define CMD_SET_MOTOR2_PWM_TARGET (0x0014)	/* 远程修改电机占空比 */
+#define CMD_SET_MOTOR2_PWM_TARGET (0x14)	/* 远程修改电机占空比 */
 
 /* 航向角电机远程调参 */
-#define CMD_SET_MOTOR3_PWM_TARGET (0x0015)	/* 远程修改电机占空比 */
+#define CMD_SET_MOTOR3_PWM_TARGET (0x15)	/* 远程修改电机占空比 */
 
 /* 上位机控制 */
-#define CMD_START_CONTROL (0x0020)/* 开始PC控制 */
-#define CMD_STOP_CONTROL (0x0021)	/* 结束PC控制 */
+#define CMD_START_CONTROL (0x20)/* 开始PC控制 */
+#define CMD_STOP_CONTROL (0x21)	/* 结束PC控制 */
 
 /* 封装帧数据 */
 #define REMOTE_FRAME_LENGTH (24)//余婧修改

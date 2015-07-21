@@ -8,6 +8,7 @@ int ABCD=0;
 
 void Pit_1ms(void) // 问题：timer一直是负值。考虑加串口记录四个口输出
 {
+<<<<<<< HEAD
 	//static int timer=0;
 	//static int ABCD=0;
 	//static int count=0;
@@ -87,6 +88,42 @@ void Pit_1ms(void) // 问题：timer一直是负值。考虑加串口记录四�
 	
 
 
+=======
+//	static int timer=0;
+//	static int ABCD=0;
+	static int count=0;
+	
+	g_Control=1;
+	count++;
+	
+	
+//	if(timer==stepspeed)
+//	{
+//		if(ABCD==0)
+//		{
+//			Motor_A();
+//		}
+//		else if(ABCD==1)
+//		{
+//			Motor_B();
+//		}
+//		else if(ABCD==2)
+//		{
+//			Motor_C();
+//		}
+//		else if(ABCD==3)
+//		{
+//			Motor_D();
+//		}
+//		
+//		timer=0;
+//		ABCD++;
+//		ABCD=ABCD%4;
+//	}
+//	else
+//		timer++;
+//		
+>>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
 	PIT.CH[2].TFLG.B.TIF = 1;	// MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }
 

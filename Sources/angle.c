@@ -41,8 +41,13 @@ void angle_read(unsigned int *AngleGra)
 /*-----------------------------------------------------------------------*/
 void angle_calculate(void)
 {
+<<<<<<< HEAD
 //	AngleCalculate[0]=((float)AngleResult[0]-angle_data.PITCH_angle_zero)/5.49; //陀螺仪的角度  前倾的角度//1380   
 //	AngleCalculate[1]=((float)AngleResult[1]-angle_data.PITCH_anglespeed_zero)/0.67;//陀螺仪角速度
+=======
+	AngleCalculate[0]=((float)AngleResult[0]-(float)angle_data.PITCH_angle_zero)/5.49; //陀螺仪的角度  前倾的角度//1380   
+	AngleCalculate[1]=((float)AngleResult[1]-(float)angle_data.PITCH_anglespeed_zero)/0.67;//陀螺仪角速度
+>>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
 
 	AngleCalculate[0]=((float)AngleResult[0]-1500)/5.49; //暂时用作 左右角度  //1380   
 	AngleCalculate[1]=((float)AngleResult[1]-1500)/0.67;//陀螺仪角速度
@@ -51,6 +56,7 @@ void angle_calculate(void)
 //	AngleCalculate[3]=((float)AngleResult[3]-1378)/0.67; //加速度z轴  //1380
 }
 
+<<<<<<< HEAD
 /*-----左右陀螺仪数据处理---*/
 void angle_calculate_balance(void)
 {
@@ -60,31 +66,34 @@ void angle_calculate_balance(void)
 
 
 void set_PITCH_angle_zero(DWORD zero)
+=======
+void set_PITCH_angle_zero(SWORD zero)
+>>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
 {
 	angle_data.PITCH_angle_zero = zero;
 }
 
-void set_PITCH_angle_speed_zero(DWORD zero)
+void set_PITCH_angle_speed_zero(SWORD zero)
 {
 	angle_data.PITCH_anglespeed_zero = zero;
 }
 
-void set_ROLL_angle_zero(DWORD zero)
+void set_ROLL_angle_zero(SWORD zero)
 {
 	angle_data.ROLL_angle_zero = zero;
 }
 
-void set_ROLL_angle_speed_zero(DWORD zero)
+void set_ROLL_angle_speed_zero(SWORD zero)
 {
 	angle_data.ROLL_anglespeed_zero = zero;
 }
 
-void set_YAW_angle_zero(DWORD zero)
+void set_YAW_angle_zero(SWORD zero)
 {
 	angle_data.YAW_angle_zero = zero;
 }
 
-void set_YAW_angle_speed_zero(DWORD zero)
+void set_YAW_angle_speed_zero(SWORD zero)
 {
 	angle_data.YAW_anglespeed_zero = zero;
 }

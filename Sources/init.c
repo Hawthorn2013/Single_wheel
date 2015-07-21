@@ -69,10 +69,7 @@ void init_led(void)
 	SIU.PCR[15].R = 0x0203;/* PA15  */
 #endif
 
-	D0=1;
-	D1=1;
-	D2=1;
-	D3=1;
+
 	D5 = 1;
 	D6 = 1;
 	D7 = 1;
@@ -134,14 +131,28 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[16].CADR.R = 2000;	/* 设置周期200us 5KHZ */
 	EMIOS_0.CH[16].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
 	EMIOS_0.CH[16].CCR.B.BSL = 0x3;	/* Use internal counter */
-    /* 前进输出 OPWMB PE5 输出0-2000 */
+    /* 平衡输出 OPWMB PE3 输出0-2000 */
+	EMIOS_0.CH[19].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
+	EMIOS_0.CH[19].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
+    EMIOS_0.CH[19].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
+	EMIOS_0.CH[19].CADR.R = 0;	/* Leading edge when channel counter bus= */
+	EMIOS_0.CH[19].CBDR.R = 0;	/* Trailing edge when channel counter bus= */
+	SIU.PCR[67].R = 0x0600;	/*[11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
+	/* 平衡输出 OPWMB PE4 输出0-2000 */
+	EMIOS_0.CH[20].CCR.B.BSL = 0x1;
+	EMIOS_0.CH[20].CCR.B.MODE = 0x60;
+    EMIOS_0.CH[20].CCR.B.EDPOL = 1;
+	EMIOS_0.CH[20].CADR.R = 0;
+	EMIOS_0.CH[20].CBDR.R = 0;
+	SIU.PCR[68].R = 0x0600;
+    /* 俯仰输出 OPWMB PE5 输出0-2000 */
 	EMIOS_0.CH[21].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
 	EMIOS_0.CH[21].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
     EMIOS_0.CH[21].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
 	EMIOS_0.CH[21].CADR.R = 0;	/* Leading edge when channel counter bus= */
 	EMIOS_0.CH[21].CBDR.R = 0;	/* Trailing edge when channel counter bus= */
 	SIU.PCR[69].R = 0x0600;	/*[11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
-	/* 前进输出 OPWMB PE6 输出0-2000 */
+	/* 俯仰输出 OPWMB PE6 输出0-2000 */
 	EMIOS_0.CH[22].CCR.B.BSL = 0x1;
 	EMIOS_0.CH[22].CCR.B.MODE = 0x60;
     EMIOS_0.CH[22].CCR.B.EDPOL = 1;
@@ -149,29 +160,21 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[22].CBDR.R = 0;
 	SIU.PCR[70].R = 0x0600;
 	
-    /* Modulus Up Counter 50HZ */
-    EMIOS_0.CH[8].CCR.B.UCPRE=3;	/* Set channel prescaler to divide by 4 */
-	EMIOS_0.CH[8].CCR.B.UCPEN = 1;	/* Enable prescaler; uses default divide by 4 */
-	EMIOS_0.CH[8].CCR.B.FREN = 1;	/* Freeze channel counting when in debug mode */
-	EMIOS_0.CH[8].CADR.R = 50000;	/* 设置周期0.02s  50HZ */
-	EMIOS_0.CH[8].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
-	EMIOS_0.CH[8].CCR.B.BSL = 0x3;	/* Use internal counter */
-    /* 方向舵机 PWM PA9 输出0-50000 */
-	EMIOS_0.CH[9].CCR.B.BSL = 0x1;	/* Use counter bus C (default) */
-	EMIOS_0.CH[9].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */  
-    EMIOS_0.CH[9].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
-	EMIOS_0.CH[9].CADR.R = 1;	/* Leading edge when channel counter bus=250*/
-	EMIOS_0.CH[9].CBDR.R = STEER_HELM_CENTER;	/* Trailing edge when channel counter bus=500*/
-	SIU.PCR[9].R = 0x0600;	/* [11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
-#if 0
-	/* 信号舵机 PWM PA12 输出0-50000 */
-	EMIOS_0.CH[12].CCR.B.BSL = 0x1;
-	EMIOS_0.CH[12].CCR.B.MODE = 0x60;  
-    EMIOS_0.CH[12].CCR.B.EDPOL = 1;
-	EMIOS_0.CH[12].CADR.R = 1;
-	EMIOS_0.CH[12].CBDR.R = SINGLE_HELM_CENTER;
-	SIU.PCR[44].R = 0x0600;
-#endif
+//    /* Modulus Up Counter 50HZ */
+//    EMIOS_0.CH[8].CCR.B.UCPRE=3;	/* Set channel prescaler to divide by 4 */
+//	EMIOS_0.CH[8].CCR.B.UCPEN = 1;	/* Enable prescaler; uses default divide by 4 */
+//	EMIOS_0.CH[8].CCR.B.FREN = 1;	/* Freeze channel counting when in debug mode */
+//	EMIOS_0.CH[8].CADR.R = 50000;	/* 设置周期0.02s  50HZ */
+//	EMIOS_0.CH[8].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
+//	EMIOS_0.CH[8].CCR.B.BSL = 0x3;	/* Use internal counter */
+//    /* 方向舵机 PWM PA9 输出0-50000 */
+//	EMIOS_0.CH[9].CCR.B.BSL = 0x1;	/* Use counter bus C (default) */
+//	EMIOS_0.CH[9].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */  
+//    EMIOS_0.CH[9].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
+//	EMIOS_0.CH[9].CADR.R = 1;	/* Leading edge when channel counter bus=250*/
+//	EMIOS_0.CH[9].CBDR.R = STEER_HELM_CENTER;	/* Trailing edge when channel counter bus=500*/
+//	SIU.PCR[9].R = 0x0600;	/* [11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
+
 }
 
 /*-----------------------------------------------------------------------*/
@@ -447,22 +450,23 @@ void init_all_and_POST(void)
 
 	disable_watchdog();
 	init_modes_and_clock();
-	initEMIOS_0MotorAndSteer();
+	//initEMIOS_0MotorAndSteer();
 	
 	/* PIT：光编读值&速度控制 */
 //	init_pit_10ms();
 	
 	/* PIT：步进电机控制&角度控制标志位 */
-	init_pit_1ms();	
+	//init_pit_1ms();	
 	
 	
 	init_Stepmotor();		/* 初始化步进电机 */
 
 	init_led();
 	//init_DIP();				/* 拨码开关 */
-	//init_serial_port_1();	/* BlueTooth */
-	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
-	init_optical_encoder();	/* 光编 */
+	init_serial_port_1();	/* BlueTooth */
+
+	//init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
+	//init_optical_encoder();	/* 光编 */
 
 	//init_I2C();
 	//init_choose_mode();		/* 拨码开关模式选择 */
@@ -491,7 +495,8 @@ void init_all_and_POST(void)
 	
 
 	/* 初始化陀螺仪 */
-	init_MPU9250();
+
+//	init_MPU9250();
 	
 
 	
@@ -534,14 +539,29 @@ void init_DSPI_1(void)
 	DSPI_1.CTAR[2].R = 0x3E087727;  //GY953	电子罗盘	MSB先发	一次发送8bit 极性为1，相位为1，baud rate=312.5k/s
 	DSPI_1.CTAR[3].R = 0x380A7720;	//OLED 极性为0，相位为0，baud rate=8m/s
 	DSPI_1.MCR.B.HALT = 0x0;	     /* Exit HALT mode: go from STOPPED to RUNNING state*/
+#if 1		//旧板
 	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
 	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
 	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1
 	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF
 	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED
 	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
-	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	GY953
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	
 	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
+#endif
+
+#if 0
+	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
+	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
+	SIU.PCR[37].R = 0x0604;	//PC5 SOUT_1
+	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		9250
+	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	
+	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	GY953	
+	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1	OLED 
+#endif
+	
+
 	DSPI_1.RSER.B.TCFRE = 0;	//关闭传输完成中断
 }
 
