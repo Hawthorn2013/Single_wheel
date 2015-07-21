@@ -450,13 +450,13 @@ void init_all_and_POST(void)
 
 	disable_watchdog();
 	init_modes_and_clock();
-	initEMIOS_0MotorAndSteer();
+	//initEMIOS_0MotorAndSteer();
 	
 	/* PIT：光编读值&速度控制 */
 //	init_pit_10ms();
 	
 	/* PIT：步进电机控制&角度控制标志位 */
-	init_pit_1ms();	
+	//init_pit_1ms();	
 	
 	
 	//init_Stepmotor();		/* 初始化步进电机 */
@@ -464,8 +464,9 @@ void init_all_and_POST(void)
 	init_led();
 	//init_DIP();				/* 拨码开关 */
 	init_serial_port_1();	/* BlueTooth */
-	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
-	init_optical_encoder();	/* 光编 */
+
+	//init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
+	//init_optical_encoder();	/* 光编 */
 
 	//init_I2C();
 	//init_choose_mode();		/* 拨码开关模式选择 */
@@ -494,6 +495,7 @@ void init_all_and_POST(void)
 	
 
 	/* 初始化陀螺仪 */
+
 //	init_MPU9250();
 	
 
@@ -537,14 +539,29 @@ void init_DSPI_1(void)
 	DSPI_1.CTAR[2].R = 0x3E087727;  //GY953	电子罗盘	MSB先发	一次发送8bit 极性为1，相位为1，baud rate=312.5k/s
 	DSPI_1.CTAR[3].R = 0x380A7720;	//OLED 极性为0，相位为0，baud rate=8m/s
 	DSPI_1.MCR.B.HALT = 0x0;	     /* Exit HALT mode: go from STOPPED to RUNNING state*/
+#if 1		//旧板
 	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
 	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
-	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1	//换至PC5
-	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF		//9250
-	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED	//空
-	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250	//空
-	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	GY953	//GY953
-	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1			//OLED
+	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1
+	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF
+	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED
+	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	
+	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
+#endif
+
+#if 0
+	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
+	SIU.PCR[36].R = 0x0104;	//PC4 SIN_1
+	SIU.PCR[37].R = 0x0604;	//PC5 SOUT_1
+	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		9250
+	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	
+	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	GY953	
+	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1	OLED 
+#endif
+	
+
 	DSPI_1.RSER.B.TCFRE = 0;	//关闭传输完成中断
 }
 

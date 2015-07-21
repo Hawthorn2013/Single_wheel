@@ -853,9 +853,19 @@ void LCD_PrintoutFloat(BYTE x, BYTE y, float n)
      }
      else if(b==0)
      {
-    	 m[0]='0';
-    	 m[1]='.';
-    	 j=1;
+    	 if(n>0)
+    	 {
+    		 m[0]='0';
+        	 m[1]='.';
+        	 j=1;
+    	 }
+    	 else if(n<0)
+    	 {
+    		 m[0]='-';
+    		 m[1]='0';
+    		 m[2]='.';
+    		 j=2;
+    	 }
      }
      else if(b<0)
      {
