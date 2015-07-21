@@ -22,5 +22,8 @@ extern void distance(void);
 extern void filter_display(void);
 extern void acc_display(uint32_t* i);
 extern void temp_analyse(uint32_t* i);
+extern void Runge_Kutta(float q0[],float T,float W[],float q1[]);
+extern void MY_sqrt(float src,float *dst);
+extern float abs(float data);
 
 #endif /* ANALYSE_H_ */

@@ -184,7 +184,7 @@ extern void set_speed_KI(float ki);
 extern void set_speed_KD(float kd);
 
 extern DWORD diff_time_basis_PIT(const DWORD new_time, const DWORD old_time);
-extern int abs(int data);
+//extern int abs(int data);
 
 #define CarSpeedConstant 10
 #define SPEED_CONTROL_PERIOD 100

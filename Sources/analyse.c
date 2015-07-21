@@ -166,3 +166,71 @@ void temp_analyse(uint32_t* i)
 	
 	*i=ii;
 }
+
+//--------------------------------------------------------
+//功能：利用龙格库塔法求微分方程 dq/dt=0.5*W*q
+//入口参数：四元数初值(向量),步长T(为相邻周期的百分之一),角速度矩阵W,以及输出四元数
+//返回值：q1,第推输出四元数
+//--------------------------------------------------------
+void Runge_Kutta(float q0[],float T,float W[],float q1[])
+{
+	float k1[4],k2[4],k3[4],k4[4],kt[4],ktt[4],y1;
+	float q2[4],q3[4];
+	float mat[4];
+	float *a;		//归一化系数
+	float b;
+	int i;
+	for(i=0;i<100;i++)
+	{
+		m_multiply(W,q0,mat,4,4,4,1);
+		m_scalar(mat,0.5,k1,4,1);	//求k1
+		
+		m_scalar(k1,T/2,kt,4,1);
+		m_add(kt,q0,ktt,4,1);
+		m_multiply(W,ktt,k2,4,4,4,1);//求k2
+		
+		m_scalar(k2,T/2,kt,4,1);
+		m_add(kt,q0,ktt,4,1);
+		m_multiply(W,ktt,k3,4,4,4,1);//求k3
+		
+		m_scalar(k3,T,kt,4,1);
+		m_add(kt,q0,ktt,4,1);
+		m_multiply(W,ktt,k4,4,4,4,1);//求k4
+		
+		m_scalar(k2,2,ktt,4,1);
+		m_add(ktt,k1,kt,4,1);
+		m_scalar(k3,2,ktt,4,1);
+		m_add(kt,ktt,kt,4,1);
+		m_add(kt,k4,kt,4,1);
+		m_scalar(kt,T/6,kt,4,1);
+		m_add(kt,q0,q1,4,1);		//求出q1
+		
+		q0=q1;
+	}
+	
+	//归一化
+	MY_sqrt(q1[0]*q1[0]+q1[1]*q1[1]+q1[2]*q1[2]+q1[3]*q1[3],a);
+	b=1/(*a);
+	m_scalar(q1,b,q1,4,1);
+}
+
+void MY_sqrt(float src,float *dst)
+{
+	float eps=0.00001;
+	float x=src/2;
+	float y=x*x-src;
+	while(abs(y)>eps)
+	{
+		x-=y/(2*x);
+		y=x*x-src;
+	}
+	*dst=x;
+}
+
+
+float abs(float data)
+{
+	if (data<0)
+		data=0-data;
+	return data;
+}

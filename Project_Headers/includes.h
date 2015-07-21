@@ -54,6 +54,7 @@ typedef unsigned short word;
 #include "angle.h"
 #include "MPU9250.h"
 #include "analyse.h"
+#include "matrix.h"
 
 
 
