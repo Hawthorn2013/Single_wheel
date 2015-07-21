@@ -55,6 +55,8 @@ typedef unsigned short word;
 #include "MPU9250.h"
 #include "analyse.h"
 #include "matrix.h"
+#include "GY953.h"
+#include "Bluetooth.h"
 
 
 

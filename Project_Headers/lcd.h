@@ -15,6 +15,7 @@ void LCD_P8x16Str(BYTE x,BYTE y,BYTE ch[]);
 void LCD_P14x16Str(BYTE x,BYTE y,BYTE ch[]);
 void LCD_Printbyte(BYTE x, BYTE y, BYTE ch[]);
 void LCD_PrintoutInt(BYTE x, BYTE y, SWORD data);
+void LCD_PrintoutDWORD(BYTE x, BYTE y, DWORD data);
 void LCD_PrintoutIntS(BYTE x, BYTE y, SWORD data);
 void LCD_PrintoutFloat(BYTE x, BYTE y, float n);
 void LCD_DISPLAY(void);

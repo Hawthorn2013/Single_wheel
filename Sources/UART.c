@@ -21,8 +21,8 @@ void init_serial_port_1(void)
 //	LINFLEX_1.LINIBRR.B.DIV_M= 520; //57600:86&13  9600:520&13
 //    LINFLEX_1.LINFBRR.B.DIV_F =13;
 //#else
-	LINFLEX_1.LINIBRR.B.DIV_M= 17; //57600
-    LINFLEX_1.LINFBRR.B.DIV_F = 6;
+	LINFLEX_1.LINIBRR.B.DIV_M= 26; 	//38400:26&1	57600:17&6
+    LINFLEX_1.LINFBRR.B.DIV_F = 1;
 //#endif
 
     LINFLEX_1.UARTCR.B.UART=1;
@@ -47,7 +47,7 @@ void serial_port_1_TX(unsigned char data)
 }
 #endif
 
-void serial_port_1_TX_array(const BYTE data[], WORD n)
+void serial_port_1_TX_array(const BYTE data[], BYTE n)
 {
 	int i = 0;
 	
@@ -67,6 +67,7 @@ void intc_serial_port_1_RX()
 	g_serial_port_1_f = 1;
 	g_serial_port_1_data = rev_ch;
 	LINFLEX_1.UARTSR.B.DRF=1;
+	rev_remote_frame_2(rev_ch);
 }
 
 

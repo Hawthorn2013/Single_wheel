@@ -703,6 +703,61 @@ void LCD_PrintoutInt(BYTE x, BYTE y, SWORD data)
      }
      LCD_Printbyte(x,y,m);          
 }
+
+//==============================================================
+//函数名： void LCD_PrintInt(BYTE x, BYTE y, DWORD a)大
+//功能描述：写入整型变量 占据六个字符的位置 范围DWORD
+//参数：显示的位置（x,y），y为页范围0～7，要显示的字符串
+//返回：无
+//==============================================================
+void LCD_PrintoutDWORD(BYTE x, BYTE y, DWORD data)
+{
+	int a = data;
+     int i=0,j=0,t=0;
+     BYTE m[100];
+     BYTE p=0;
+     //********焦剑修改********
+     //********不能显示0*******
+     if (0 == a)	/* 零 */
+     {
+     	//m[i++]=(BYTE)'0';
+     	m[i++] = ' ';
+     	m[i++] = ' ';
+     	m[i++] = ' ';
+     	m[i++] = ' ';
+     	m[i++] = ' ';
+     	m[i++] = '0';
+     }
+     else
+     {
+     	int isNegative = 0;
+     	
+     	for(i=0;a!=0;i++)
+     	{
+     	     m[i]=(BYTE)(a%10+'0');	//avoid warming
+     	     a=a/10;
+     	}
+
+     	for (; i<7; i++)
+     	{
+     		m[i] = ' ';
+     	}
+     }
+     //********焦剑修改结束****
+     m[i]='\0';
+     j=i;
+     if(j%2==0)
+          i=j/2;
+     else
+          i=j/2+1;
+     for(t=0;t<i;t++)
+     {
+          p=m[t];
+          m[t]=m[j-t-1];
+          m[j-t-1]=p;
+     }
+     LCD_Printbyte(x,y,m);          
+}
 //==============================================================
 //函数名： void LCD_PrintInt(BYTE x, BYTE y, int a)小
 //功能描述：写入整型变量 占据三个字符的位置 范围WORD

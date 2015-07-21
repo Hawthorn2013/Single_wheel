@@ -46,6 +46,7 @@ extern int g_f_big_U;
 extern int g_f_big_U_2;
 extern int counter;
 extern float  angle_pwm;
+extern BYTE speed_period;
 
 
 
@@ -57,41 +58,6 @@ DWORD g_time_basis_PIT;
 extern const DWORD g_time_basis_PIT;
 #endif
 
-/* 方向舵机上层数据 */
-#ifdef __CONTROL_C_
-struct
-{
-	SWORD center;
-	SWORD left_limit;
-	SWORD right_limit;
-} data_steer_helm = {(SWORD) 0, STEER_HELM_LEFT-STEER_HELM_CENTER, STEER_HELM_RIGHT-STEER_HELM_CENTER };
-#else
-extern const struct
-{
-	SWORD center;
-	SWORD left_limit;
-	SWORD right_limit;
-} data_steer_helm;
-#endif
-
-/* 方向舵机底层数据 */
-#ifdef __CONTROL_C_
-struct
-{
-	WORD center;
-	WORD left_limit;
-	WORD right_limit;
-	SWORD direction;
-} data_steer_helm_basement = { STEER_HELM_CENTER, STEER_HELM_LEFT, STEER_HELM_RIGHT, 1 };
-#else
-extern const struct
-{
-	WORD center;
-	WORD left_limit;
-	WORD right_limit;
-	SWORD direction;
-} data_steer_helm_basement;
-#endif
 
 /* 光编数据 */
 #ifdef __CONTROL_C_
@@ -100,16 +66,16 @@ struct
 	WORD cnt_old;
 	WORD cnt_new;
 	WORD speed_now;
-	int  speed_now_d;
+	int  speed_real;
 	SWORD is_forward;
-} data_encoder = { 0x0000, 0x0000, 0x0000, 0, };
+} data_encoder = { 0x0000, 0x0000, 0x0000, 0,0 };
 #else
 extern struct
 {
 	WORD cnt_old;
 	WORD cnt_new;
 	WORD speed_now;
-	int  speed_now_d; 
+	int  speed_real; 
 	SWORD is_forward;
 } data_encoder;
 #endif
@@ -121,7 +87,7 @@ struct
 	float p;
 	float i;
 	float d;
-} data_speed_pid = { 3, 2, 3 };
+} data_speed_pid = {10 , 0.8, 0.6 };
 #else
 extern struct
 {
@@ -151,22 +117,32 @@ extern struct
 #ifdef __CONTROL_C_
 struct
 {
-	SWORD speed_pwm;
 	SWORD speed_target;
 	SWORD speed_target_now;
-} data_speed_settings = { 0x0000, 0x0000, };
+} data_speed_settings = { 0x0000, 0x0000 };
 #else
 extern struct
 {
-	SWORD speed_pwm;
 	SWORD speed_target;
 	SWORD speed_target_now;
 } data_speed_settings;
 #endif
 
-/* 方向舵机位置数据 */
+/* 三电机PWM设置数据 */
 #ifdef __CONTROL_C_
-WORD helm_data_record = STEER_HELM_CENTER;
+struct
+{
+	SWORD motor_1_pwm;
+	SWORD motor_2_pwm;
+	SWORD motor_3_pwm;
+} motor_pwm_settings = { 1, 1, 1 };
+#else
+extern struct
+{
+	SWORD motor_1_pwm;
+	SWORD motor_2_pwm;
+	SWORD motor_3_pwm;
+} motor_pwm_settings;
 #endif
 
 extern void PitISR(void);
@@ -182,6 +158,9 @@ extern void set_speed_PID(void);
 extern void set_speed_KP(float kp);
 extern void set_speed_KI(float ki);
 extern void set_speed_KD(float kd);
+extern void set_pwm2_target(SWORD speed_pwm);
+extern void set_pwm3_target(SWORD speed_pwm);
+
 
 extern DWORD diff_time_basis_PIT(const DWORD new_time, const DWORD old_time);
 //extern int abs(int data);

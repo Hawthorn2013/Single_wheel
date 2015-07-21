@@ -54,14 +54,14 @@ void disable_watchdog(void)
 void init_led(void)
 {
 	//2015第一版载LED
-#if 1	
+#if 0	
  	SIU.PCR[40].R = 0x0203;	/* PC8  */
   	SIU.PCR[45].R = 0x0203; /* PC13 */
  	SIU.PCR[44].R = 0x0203; /* PC12 */
 	SIU.PCR[71].R = 0x0203;	/* PE7  */
 #endif
 
-#if 0
+#if 1
 	//第二版板载LED
 	SIU.PCR[12].R = 0x0203;/* PA12  */
 	SIU.PCR[13].R = 0x0203;/* PA13  */
@@ -69,10 +69,7 @@ void init_led(void)
 	SIU.PCR[15].R = 0x0203;/* PA15  */
 #endif
 
-	D0=1;
-	D1=1;
-	D2=1;
-	D3=1;
+
 	D5 = 1;
 	D6 = 1;
 	D7 = 1;
@@ -163,15 +160,7 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[9].CADR.R = 1;	/* Leading edge when channel counter bus=250*/
 	EMIOS_0.CH[9].CBDR.R = STEER_HELM_CENTER;	/* Trailing edge when channel counter bus=500*/
 	SIU.PCR[9].R = 0x0600;	/* [11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
-#if 0
-	/* 信号舵机 PWM PA12 输出0-50000 */
-	EMIOS_0.CH[12].CCR.B.BSL = 0x1;
-	EMIOS_0.CH[12].CCR.B.MODE = 0x60;  
-    EMIOS_0.CH[12].CCR.B.EDPOL = 1;
-	EMIOS_0.CH[12].CADR.R = 1;
-	EMIOS_0.CH[12].CBDR.R = SINGLE_HELM_CENTER;
-	SIU.PCR[44].R = 0x0600;
-#endif
+
 }
 
 /*-----------------------------------------------------------------------*/
@@ -461,6 +450,7 @@ void init_all_and_POST(void)
 	init_led();
 	//init_DIP();				/* 拨码开关 */
 	init_serial_port_1();	/* BlueTooth */
+
 	//init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
 	//init_optical_encoder();	/* 光编 */
 
@@ -491,7 +481,8 @@ void init_all_and_POST(void)
 	
 
 	/* 初始化陀螺仪 */
-	init_MPU9250();
+
+//	init_MPU9250();
 	
 
 	
@@ -531,7 +522,7 @@ void init_DSPI_1(void)
 	DSPI_1.MCR.R = 0x803f0001;     /* Configure DSPI_1 as master */
 	DSPI_1.CTAR[0].R = 0x3E0A7724;	//陀螺仪 用于发送8bits MSB先发,调整极性为1，相位为1，调整波特率为1m/s
 	DSPI_1.CTAR[1].R = 0x38087726;  //TF 极性为0，相位为0，baud rate=625k/s
-	DSPI_1.CTAR[2].R = 0x3E0A7724;  //L3G4200D 极性为1，相位为1，baud rate=1m/s
+	DSPI_1.CTAR[2].R = 0x3E087727;  //GY953	电子罗盘	MSB先发	一次发送8bit 极性为1，相位为1，baud rate=312.5k/s
 	DSPI_1.CTAR[3].R = 0x380A7720;	//OLED 极性为0，相位为0，baud rate=8m/s
 	DSPI_1.MCR.B.HALT = 0x0;	     /* Exit HALT mode: go from STOPPED to RUNNING state*/
 #if 1		//旧板
@@ -556,6 +547,7 @@ void init_DSPI_1(void)
 	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1	OLED 
 #endif
 	
+
 	DSPI_1.RSER.B.TCFRE = 0;	//关闭传输完成中断
 }
 

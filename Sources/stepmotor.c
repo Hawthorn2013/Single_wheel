@@ -8,16 +8,14 @@ BYTE g_Control;
 
 void Pit_1ms(void)
 {
-	static int timer=0;
-	static int ABCD=0;
+//	static int timer=0;
+//	static int ABCD=0;
 	static int count=0;
+	
 	g_Control=1;
 	count++;
-	if(count>=10)
-	{
-		get_speed_now();
-		count=0;
-	}
+	
+	
 //	if(timer==stepspeed)
 //	{
 //		if(ABCD==0)

@@ -1,12 +1,5 @@
-/*
- * init_MPU9250.h
- *
- *  Created on: Jul 10, 2015
- *      Author: Paul
- */
-
-#ifndef INIT_MPU9250_H_
-#define INIT_MPU9250_H_
+#ifndef MPU9250_H_
+#define MPU9250_H_
 
 #define	SMPLRT_DIV		0x19	//陀螺仪采样率，典型值：0x07(125Hz)
 #define	CONFIG			0x1A	//低通滤波频率，典型值：0x06(5Hz)
