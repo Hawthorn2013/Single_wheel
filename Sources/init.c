@@ -54,14 +54,14 @@ void disable_watchdog(void)
 void init_led(void)
 {
 	//2015第一版载LED
-#if 1	
+#if 0	
  	SIU.PCR[40].R = 0x0203;	/* PC8  */
   	SIU.PCR[45].R = 0x0203; /* PC13 */
  	SIU.PCR[44].R = 0x0203; /* PC12 */
 	SIU.PCR[71].R = 0x0203;	/* PE7  */
 #endif
 
-#if 0
+#if 1
 	//第二版板载LED
 	SIU.PCR[12].R = 0x0203;/* PA12  */
 	SIU.PCR[13].R = 0x0203;/* PA13  */
@@ -456,7 +456,7 @@ void init_all_and_POST(void)
 	init_pit_1ms();	
 	
 	
-	//init_Stepmotor();		/* 初始化步进电机 */
+	init_Stepmotor();		/* 初始化步进电机 */
 
 	init_led();
 	//init_DIP();				/* 拨码开关 */
@@ -473,7 +473,7 @@ void init_all_and_POST(void)
 	
 	/* 开启外部总中断 */
 	enable_irq();
-		
+
 	/* 初始化显示屏 */
 	initLCD();
 
@@ -491,7 +491,7 @@ void init_all_and_POST(void)
 	
 
 	/* 初始化陀螺仪 */
-	//init_MPU9250();
+	init_MPU9250();
 	
 
 	
@@ -531,7 +531,7 @@ void init_DSPI_1(void)
 	DSPI_1.MCR.R = 0x803f0001;     /* Configure DSPI_1 as master */
 	DSPI_1.CTAR[0].R = 0x3E0A7724;	//陀螺仪 用于发送8bits MSB先发,调整极性为1，相位为1，调整波特率为1m/s
 	DSPI_1.CTAR[1].R = 0x38087726;  //TF 极性为0，相位为0，baud rate=625k/s
-	DSPI_1.CTAR[2].R = 0x3E0A7724;  //L3G4200D 极性为1，相位为1，baud rate=1m/s
+	DSPI_1.CTAR[2].R = 0x3E087727;  //GY953	电子罗盘	MSB先发	一次发送8bit 极性为1，相位为1，baud rate=312.5k/s
 	DSPI_1.CTAR[3].R = 0x380A7720;	//OLED 极性为0，相位为0，baud rate=8m/s
 	DSPI_1.MCR.B.HALT = 0x0;	     /* Exit HALT mode: go from STOPPED to RUNNING state*/
 	SIU.PCR[34].R = 0x0604;	//PC2 SCK_1
@@ -540,7 +540,7 @@ void init_DSPI_1(void)
 	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF
 	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED
 	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
-	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	GY953
 	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
 	DSPI_1.RSER.B.TCFRE = 0;	//关闭传输完成中断
 }

@@ -53,6 +53,9 @@ typedef unsigned short word;
 #include "stepmotor.h"
 #include "angle.h"
 #include "MPU9250.h"
+#include "GY953.h"
+#include "Bluetooth.h"
+
 
 
 

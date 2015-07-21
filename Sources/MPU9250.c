@@ -1,10 +1,4 @@
-/*
- * init_MPU9250.c
- *
- *  Created on: Jul 10, 2015
- *      Author: Paul
- */
-
+#define __MPU9250_C_
 #include "includes.h"
 
 
