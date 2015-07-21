@@ -110,8 +110,7 @@ void set_PITCH_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向�
 void PITCH_motor_control(void)
 {
 	int16_t motor_pwm;
-	motor_pwm=PITCH_angle_pwm-speed_pwm*0;
-//	motor_pwm=PITCH_angle_pwm-speed_pwm;
+	motor_pwm=PITCH_angle_pwm-speed_pwm;
 //	motor_pwm=speed_pwm;
 	set_PITCH_motor_pwm(motor_pwm);
 }
@@ -338,7 +337,7 @@ void set_pwm3_target(SWORD speed_pwm)
 void set_speed_PID(void) 
 { 
 	
-	data_speed_pid.p=35;//v=10 p=20
+	data_speed_pid.p=20;//v=10 p=20
 	data_speed_pid.d=0;
 	data_speed_pid.i=0;  
 //	data_speed_pid.p=35;//v=20//v=10 p=20

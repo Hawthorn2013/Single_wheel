@@ -6,7 +6,7 @@ BYTE  SpeedCountFlag=0;
 void main(void)
 {
 	init_all_and_POST();
-	set_speed_target(20);
+	set_speed_target(0);
 	for(;;)
 	{
 
@@ -34,8 +34,7 @@ void main(void)
 			LCD_PrintoutInt(64, 0, AngleResult[1]);
 			LCD_PrintoutInt(0, 2, angle_data.PITCH_angle_zero);
 			LCD_PrintoutInt(64, 2, angle_data.PITCH_anglespeed_zero);
-			LCD_PrintoutInt(0,4, data_angle_pid.p);
-			LCD_PrintoutInt(0, 6, data_angle_pid.d);
+//			LCD_PrintoutInt(0, 6, data_angle_pid.p);
 
 			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
 			{ 

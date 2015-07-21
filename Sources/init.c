@@ -450,13 +450,13 @@ void init_all_and_POST(void)
 
 	disable_watchdog();
 	init_modes_and_clock();
-	//initEMIOS_0MotorAndSteer();
+	initEMIOS_0MotorAndSteer();
 	
 	/* PIT：光编读值&速度控制 */
 //	init_pit_10ms();
 	
 	/* PIT：步进电机控制&角度控制标志位 */
-	//init_pit_1ms();	
+	init_pit_1ms();	
 	
 	
 	//init_Stepmotor();		/* 初始化步进电机 */
@@ -465,8 +465,8 @@ void init_all_and_POST(void)
 	//init_DIP();				/* 拨码开关 */
 	init_serial_port_1();	/* BlueTooth */
 
-	//init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
-	//init_optical_encoder();	/* 光编 */
+	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
+	init_optical_encoder();	/* 光编 */
 
 	//init_I2C();
 	//init_choose_mode();		/* 拨码开关模式选择 */

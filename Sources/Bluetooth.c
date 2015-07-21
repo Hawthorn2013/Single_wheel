@@ -41,6 +41,16 @@ void execute_remote_cmd(const BYTE *data)
 			set_PITCH_angle_speed_zero(*((SWORD *)(&(data[2]))));
 		break;
 		
+		case CMD_SET_ANGLE_KP :
+			set_angle_KP(*((SWORD *)(&(data[2]))));
+		break;
+		case CMD_SET_ANGLE_KI :
+			set_angle_KI(*((SWORD *)(&(data[2]))));
+		break;
+		case CMD_SET_ANGLE_KD :
+			set_angle_KD(*((SWORD *)(&(data[2]))));
+		break;
+		
 		/* 横滚陀螺仪标定调参 */
 		case CMD_SET_ROLL_ANGLE_ZERO :
 			set_ROLL_angle_zero(*((SWORD *)(&(data[2]))));
@@ -68,17 +78,18 @@ void execute_remote_cmd(const BYTE *data)
 		break;
 		case CMD_SET_MOTOR1_PWM_TARGET:
 			set_pwm1_target(*((SWORD *)(&(data[2]))));
+		break;
+		
+		case CMD_SET_MOTOR1_KP :
+			set_speed_KP(*((SWORD *)(&(data[2]))));
+		break;
+		case CMD_SET_MOTOR1_KI :
+			set_speed_KI(*((SWORD *)(&(data[2]))));
+		break;
+		case CMD_SET_MOTOR1_KD :
+			set_speed_KD(*((SWORD *)(&(data[2]))));
+		break;
 
-		break;
-		case CMD_SET_ANGLE_KP :
-			set_angle_KP(*((SWORD *)(&(data[2]))));
-		break;
-		case CMD_SET_ANGLE_KI :
-			set_angle_KI(*((SWORD *)(&(data[2]))));
-		break;
-		case CMD_SET_ANGLE_KD :
-			set_angle_KD(*((SWORD *)(&(data[2]))));
-		break;
 		
 		
 		/* 左右平衡电机调参 	*/
