@@ -18,7 +18,6 @@ void main(void)
 			
 			D8=~D8;
 		}
-
 #if 1		
 		if(g_Control)
 		{
@@ -57,11 +56,14 @@ void main(void)
 			LCD_PrintoutInt(64, 2, angle_data.PITCH_anglespeed_zero);
 			LCD_PrintoutInt(0, 6, data_angle_pid.p);
 			LCD_PrintoutInt(64, 6, data_angle_pid.d);
+			LCD_PrintoutInt(0, 4, motor_pwm_settings.motor_3_pwm);
 
 
 			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
 			{ 
 				PITCH_motor_control();
+				set_YAW_motor_pwm(motor_pwm_settings.motor_3_pwm);
+
 			} 
 			else
 			{
@@ -87,8 +89,8 @@ void main(void)
 //					set_speed_PID();
 					contorl_speed_encoder_pid();
 					speed_period=0;
-					LCD_PrintoutInt(0, 4, data_speed_pid.p);
-					LCD_PrintoutInt(64, 4, data_speed_pid.d);
+//					LCD_PrintoutInt(0, 4, data_speed_pid.p);
+//					LCD_PrintoutInt(64, 4, data_speed_pid.d);
 //					LCD_PrintoutInt(0, 4, data_speed_settings.speed_target);
 //					LCD_PrintoutInt(65, 4, data_encoder.speed_real);
 					SpeedCountFlag=0;
