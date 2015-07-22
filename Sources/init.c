@@ -444,7 +444,7 @@ void delay_ms(DWORD ms)
 /*-----------------------------------------------------------------------*/
 /* 初始化并自检                                                          */
 /*-----------------------------------------------------------------------*/
-void init_all_and_POST(void)
+void init_all_and_POST(void)     //push 之后在init_SPI中关闭9250
 {
 	int i = 0;
 
@@ -459,14 +459,16 @@ void init_all_and_POST(void)
 	init_pit_1ms();	
 	
 	
-	//init_Stepmotor();		/* 初始化步进电机 */
+	init_Stepmotor();		/* 初始化步进电机 */
 
 	init_led();
 	//init_DIP();				/* 拨码开关 */
 	init_serial_port_1();	/* BlueTooth */
 
 	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
+
 	init_optical_encoder();	/* 光编 */
+
 
 	//init_I2C();
 	//init_choose_mode();		/* 拨码开关模式选择 */
@@ -477,7 +479,7 @@ void init_all_and_POST(void)
 	
 	/* 开启外部总中断 */
 	enable_irq();
-	
+
 	/* 初始化显示屏 */
 	initLCD();
 

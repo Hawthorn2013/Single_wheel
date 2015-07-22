@@ -15,6 +15,10 @@ int counter=0;
 static float d_speed_pwm=0;
 static float speed_pwm=0;
 extern unsigned char g_nSpeedControlPeriod;
+//平衡控制速度全局变量
+static float d_speed_pwm_balance=0;
+static float speed_pwm_balance=0;
+extern unsigned char g_nSpeedControlPeriod_balance;
 //角度控制全局变量
 float fDelta;
 float g_fCarAngle;
@@ -23,17 +27,25 @@ float g_fGyroscopeTurnSpeed;
 float CarAngleInitial=0;
 float CarAnglespeedInitial=0;
 extern float  AngleCalculate[4];
+//左右平衡控制全局变量
+float fDelta_balance;
+float g_fCarAngle_balance;
+float g_fGyroscopeAngleSpeed_balance;
+float g_fGyroscopeTurnSpeed_balance;
+float CarAngleInitial_balance=0;
+float CarAnglespeedInitial_balance=0;
+
+
 
 // float AngleControlOutMax=0.2, AngleControlOutMin=-0.2;
+
 float  PITCH_angle_pwm;
 float  ROLL_angle_pwm;
+
 
 static int new_speed_pwm=0;
 static int old_speed_pwm=0;
 BYTE speed_period=0;
-
-
-
 
 
 DWORD tmp_a, tmp_b;
@@ -110,10 +122,18 @@ void set_PITCH_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向�
 void PITCH_motor_control(void)
 {
 	int16_t motor_pwm;
+
 	motor_pwm=PITCH_angle_pwm-speed_pwm;
+
 //	motor_pwm=speed_pwm;
 	set_PITCH_motor_pwm(motor_pwm);
 }
+//void motor_control_balance(void)
+//{
+//	int16_t motor_pwm_balance;
+//	motor_pwm_balance=angle_pwm_balance;
+//	set_motor_pwm(angle_pwm_balance);
+//}
 
 /*-----------------------------------------------------------------------*/
 /* 设置平衡电机PWM                                                                    */
@@ -149,6 +169,13 @@ void set_ROLL_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向�
 	}
 }
 #endif
+
+void ROLL_motor_control(void)
+{
+	int16_t motor_pwm;
+	motor_pwm=ROLL_angle_pwm;
+	set_ROLL_motor_pwm(motor_pwm);
+}
 /*-----------------------------------------------------------------------*/
 /* BangBang速度控制                                                             */
 /*-----------------------------------------------------------------------*/
@@ -233,6 +260,73 @@ void AngleControl(void)
 /*-----------------------------------------------------------------------*/
 void BalanceControl(void)
 {
+	/*
+	//用电位器调节转速，试验用
+	int potential=1;
+	int sss=1;
+	potential=(int)ADC.CDR[33].B.CDATA;//PB9
+	if(potential<0)
+	{
+		potential=0-potential;
+	}
+	if(potential>SPEED_PWM_MAX)
+	{
+		potential=SPEED_PWM_MAX;
+	}
+	
+	if(potential<200)
+		sss=200;
+	else
+		sss=500;
+	set_motor_pwm(100);  
+	*/
+	
+	float delta_angle_balance;
+	float delta_anglespeed_balance;
+	float temp_angle_balance, temp_anglespeed_balance;
+	float currentanglespeed_balance, lastanglespeed_balance=0;
+	float last_angle_balance=0;
+	angle_calculate();
+	g_fCarAngle_balance= AngleCalculate[2];
+	g_fGyroscopeAngleSpeed_balance= -AngleCalculate[3];
+	 
+	temp_angle_balance=CarAngleInitial_balance - g_fCarAngle_balance;
+	temp_anglespeed_balance= CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance;
+	  
+//	   if(temp_angle_balance<-15)
+//		   data_angle_pid.p=100; //100开环
+//	   else if(temp_angle_balance>=-15&temp_angle_balance<=0)
+//		   data_angle_pid.p=200; //200
+//	   else if(temp_angle_balance>0&temp_angle_balance<=15)
+//		   data_angle_pid.p=200;// 170   
+//	   else
+//		   data_angle_pid.p=100;  //100
+//	                                                    
+//	  
+//	   if(temp_anglespeed_balance>=50||temp_anglespeed_balance<=-50)
+//		   data_angle_pid.d=2;//0.3
+//	   else
+//		   data_angle_pid.d=0.5;//0.1
+	  
+	  currentanglespeed_balance=g_fCarAngle_balance;
+	  delta_anglespeed_balance=currentanglespeed_balance-lastanglespeed_balance;
+	  lastanglespeed_balance=currentanglespeed_balance;
+	  
+	  delta_angle_balance = data_angle_pid.p*(CarAngleInitial_balance - g_fCarAngle_balance);
+	  delta_angle_balance+=data_angle_pid.d*0.6*(CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance);
+	  delta_angle_balance+=data_angle_pid.d*0.4*delta_anglespeed_balance;
+	  //delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle) /5000 +data_angle_pid.d*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed) /15000; // 1000 与10000是否根据实际需要调整 
+	  //angle_pwm=delta_angle;
+	  
+	  /* if(delta_angle>AngleControlOutMax)
+	  delta_angle=AngleControlOutMax;
+	  else if(delta_angle<AngleControlOutMin)
+	  delta_angle=AngleControlOutMin;*/
+	  
+	  //angle_pwm_balance=dta_angle;
+	  ROLL_angle_pwm=delta_angle_balance;
+	
+	
 	
 }
 
@@ -299,7 +393,10 @@ void set_speed_pwm(void)
 	d_speed_pwm = new_speed_pwm - old_speed_pwm;
 //	LCD_PrintoutInt(0, 6, data_encoder.speed_real);
 }
-
+void set_speed_pwm_balance(void)
+{
+	speed_pwm_balance+=(d_speed_pwm_balance/100);
+}
 /*-----------------------------------------------------------------------*/
 /* 设置目标速度                                                                      */
 /*-----------------------------------------------------------------------*/
