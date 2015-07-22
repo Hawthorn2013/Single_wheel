@@ -169,6 +169,38 @@ void set_ROLL_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向�
 	}
 }
 #endif
+/*-----------------------------------------------------------------------*/
+/* 设置转向电机PWM                                                                    */
+/*-----------------------------------------------------------------------*/
+void set_YAW_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向后
+{
+	if (motor_pwm>0)	//forward
+	{
+		if (motor_pwm>SPEED_PWM_MAX)
+		{
+			motor_pwm = SPEED_PWM_MAX;
+		}
+		EMIOS_0.CH[17].CBDR.R = motor_pwm;
+		EMIOS_0.CH[18].CBDR.R = 1;
+		
+	}
+	else if (motor_pwm<0)	//backward
+	{
+		motor_pwm = 0-motor_pwm;
+		if (motor_pwm>SPEED_PWM_MAX)
+		{
+			motor_pwm = SPEED_PWM_MAX;
+		}
+
+		EMIOS_0.CH[17].CBDR.R = 1;
+		EMIOS_0.CH[18].CBDR.R = motor_pwm;	
+	}
+	else
+	{
+		EMIOS_0.CH[17].CBDR.R = 1;
+		EMIOS_0.CH[18].CBDR.R = 1;	
+	}
+}
 
 void ROLL_motor_control(void)
 {

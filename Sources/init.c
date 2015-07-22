@@ -131,6 +131,7 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[16].CADR.R = 2000;	/* 设置周期200us 5KHZ */
 	EMIOS_0.CH[16].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
 	EMIOS_0.CH[16].CCR.B.BSL = 0x3;	/* Use internal counter */
+#if 0
     /* 平衡输出 OPWMB PE3 输出0-2000 */
 	EMIOS_0.CH[19].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
 	EMIOS_0.CH[19].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
@@ -145,6 +146,7 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[20].CADR.R = 0;
 	EMIOS_0.CH[20].CBDR.R = 0;
 	SIU.PCR[68].R = 0x0600;
+#endif
     /* 俯仰输出 OPWMB PE5 输出0-2000 */
 	EMIOS_0.CH[21].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
 	EMIOS_0.CH[21].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
@@ -159,7 +161,20 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[22].CADR.R = 0;
 	EMIOS_0.CH[22].CBDR.R = 0;
 	SIU.PCR[70].R = 0x0600;
-	
+    /* 转向输出 OPWMB PE1 输出0-2000 */
+	EMIOS_0.CH[17].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
+	EMIOS_0.CH[17].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
+    EMIOS_0.CH[17].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
+	EMIOS_0.CH[17].CADR.R = 0;	/* Leading edge when channel counter bus= */
+	EMIOS_0.CH[17].CBDR.R = 0;	/* Trailing edge when channel counter bus= */
+	SIU.PCR[65].R = 0x0600;	/*[11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
+	/* 转向输出 OPWMB PE2输出0-2000 */
+	EMIOS_0.CH[18].CCR.B.BSL = 0x1;
+	EMIOS_0.CH[18].CCR.B.MODE = 0x60;
+    EMIOS_0.CH[18].CCR.B.EDPOL = 1;
+	EMIOS_0.CH[18].CADR.R = 0;
+	EMIOS_0.CH[18].CBDR.R = 0;
+	SIU.PCR[66].R = 0x0600;
 //    /* Modulus Up Counter 50HZ */
 //    EMIOS_0.CH[8].CCR.B.UCPRE=3;	/* Set channel prescaler to divide by 4 */
 //	EMIOS_0.CH[8].CCR.B.UCPEN = 1;	/* Enable prescaler; uses default divide by 4 */
@@ -444,7 +459,7 @@ void delay_ms(DWORD ms)
 /*-----------------------------------------------------------------------*/
 /* 初始化并自检                                                          */
 /*-----------------------------------------------------------------------*/
-void init_all_and_POST(void)     //push 之后在init_SPI中关闭9250
+void init_all_and_POST(void)
 {
 	int i = 0;
 
@@ -466,9 +481,7 @@ void init_all_and_POST(void)     //push 之后在init_SPI中关闭9250
 	init_serial_port_1();	/* BlueTooth */
 
 	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
-
 	init_optical_encoder();	/* 光编 */
-
 
 	//init_I2C();
 	//init_choose_mode();		/* 拨码开关模式选择 */
@@ -479,7 +492,7 @@ void init_all_and_POST(void)     //push 之后在init_SPI中关闭9250
 	
 	/* 开启外部总中断 */
 	enable_irq();
-
+	
 	/* 初始化显示屏 */
 	initLCD();
 

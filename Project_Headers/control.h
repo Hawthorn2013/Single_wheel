@@ -153,6 +153,7 @@ extern void motor_control_balance(void);
 extern void set_PITCH_motor_pwm(int16_t speed_pwm);
 extern void PITCH_motor_control(void);
 extern void set_ROLL_motor_pwm(int16_t motor_pwm);
+extern void set_YAW_motor_pwm(int16_t motor_pwm);
 extern void ROLL_motor_control(void);
 
 extern void contorl_speed_encoder_bb(void);

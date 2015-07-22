@@ -44,8 +44,8 @@ void angle_calculate(void)
 
 	AngleCalculate[0]=((float)AngleResult[0]-(float)angle_data.PITCH_angle_zero)/5.49; //陀螺仪的角度  前倾的角度//1380   
 	AngleCalculate[1]=((float)AngleResult[1]-(float)angle_data.PITCH_anglespeed_zero)/0.67;//陀螺仪角速度
-	AngleCalculate[2]=((float)AngleResult[2]-angle_data.ROLL_angle_zero)/5; // 左右角度
-	AngleCalculate[3]=((float)AngleResult[3]-angle_data.ROLL_anglespeed_zero)/0.67; //左右角速度//1380
+	AngleCalculate[2]=((float)AngleResult[2]-(float)angle_data.ROLL_angle_zero)/5; // 左右角度
+	AngleCalculate[3]=((float)AngleResult[3]-(float)angle_data.ROLL_anglespeed_zero)/0.67; //左右角速度//1380
 }
 
 
