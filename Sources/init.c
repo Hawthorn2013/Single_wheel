@@ -450,7 +450,7 @@ void init_all_and_POST(void)     //push 之后在init_SPI中关闭9250
 
 	disable_watchdog();
 	init_modes_and_clock();
-	//initEMIOS_0MotorAndSteer();
+	initEMIOS_0MotorAndSteer();
 	
 	/* PIT：光编读值&速度控制 */
 //	init_pit_10ms();
@@ -466,7 +466,9 @@ void init_all_and_POST(void)     //push 之后在init_SPI中关闭9250
 	init_serial_port_1();	/* BlueTooth */
 
 	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
-	//init_optical_encoder();	/* 光编 */
+
+	init_optical_encoder();	/* 光编 */
+
 
 	//init_I2C();
 	//init_choose_mode();		/* 拨码开关模式选择 */

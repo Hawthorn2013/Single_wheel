@@ -4,6 +4,9 @@
 /* 俯仰PITCH陀螺仪远程标定 */
 #define CMD_SET_PITCH_ANGLE_ZERO (0x02)	/* 远程标定俯仰陀螺仪角度零点 */
 #define CMD_SET_PITCH_ANGLE_SPEED_ZERO (0x03)	/* 远程标定俯仰陀螺仪角速度零点 */
+#define CMD_SET_ANGLE_KP (0x10)	/* 远程修改角度P值 */
+#define CMD_SET_ANGLE_KI (0x11)	/* 远程修改角度I值 */
+#define CMD_SET_ANGLE_KD (0x12)	/* 远程修改角度D值 */
 
 /* 横滚ROLL陀螺仪远程标定 */
 #define CMD_SET_ROLL_ANGLE_ZERO (0x04)	/* 远程标定横滚陀螺仪角度零点 */
@@ -13,12 +16,14 @@
 #define CMD_SET_YAW_ANGLE_ZERO (0x06)	/* 远程标定航向陀螺仪角度零点 */
 #define CMD_SET_YAW_ANGLE_SPEED_ZERO (0x07)	/* 远程标定航向陀螺仪角速度零点 */
 
+
 /* 驱动轮电机远程调参 */
 #define CMD_SET_MOTOR1_TARGET (0x08)	/* 远程修改电机目标值 */
 #define CMD_SET_MOTOR1_PWM_TARGET (0x09)	/* 远程修改电机占空比 */
-#define CMD_SET_ANGLE_KP (0x10)	/* 远程修改角度P值 */
-#define CMD_SET_ANGLE_KI (0x11)	/* 远程修改角度I值 */
-#define CMD_SET_ANGLE_KD (0x12)	/* 远程修改角度D值 */
+#define CMD_SET_MOTOR1_KP (0x16)	/* 远程修改速度P值 */
+#define CMD_SET_MOTOR1_KI (0x17)	/* 远程修改速度P值 */
+#define CMD_SET_MOTOR1_KD (0x18)	/* 远程修改速度P值 */
+
 #define CMD_STOP_SPEED (0x13)	  /* 远程电机目标值置0 */
 
 /* 横滚电机远程调参 */
