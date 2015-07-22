@@ -97,23 +97,58 @@ void stepmotor_video(int num)
 		ABCD+=2;
 		ABCD=ABCD%4;
 	}
-	if(num==1000)
+	if(num==250)
 	{
-		stepspeed=10;
+		stepspeed=-7;
 		timer=0;
 		ABCD+=2;
 		ABCD=ABCD%4;
 	}
-	if(num==1700)
+	if(num==450)
+	{
+		stepspeed=4;
+		timer=0;
+		ABCD+=2;
+		ABCD=ABCD%4;
+	}
+	if(num==900)
 	{
 		stepspeed=-5;
 		timer=0;
 		ABCD+=2;  //	原本的写法是两句  ABCD-=2;ABCD+=4;
 		ABCD=ABCD%4;
 	}
-	if(num==2100)
+	if(num==1200)
 	{
-		stepspeed=-15;
+		stepspeed=-8;
+		timer=0;
+		ABCD+=2;
+		ABCD=ABCD%4;				
+	}
+	if(num==1400)
+	{
+		stepspeed=4;
+		timer=0;
+		ABCD+=2;
+		ABCD=ABCD%4;				
+	}
+	if(num==1750)
+	{
+		stepspeed=-6;
+		timer=0;
+		ABCD+=2;
+		ABCD=ABCD%4;				
+	}
+	if(num==2000)
+	{
+		stepspeed=3 ;
+		timer=0;
+		ABCD+=2;
+		ABCD=ABCD%4;				
+	}
+	if(num==2200)
+	{
+		stepspeed=-5;
 		timer=0;
 		ABCD+=2;
 		ABCD=ABCD%4;				

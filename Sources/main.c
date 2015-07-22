@@ -10,18 +10,14 @@ void main(void)
 	set_speed_target(0);
 	for(;;)
 	{
-
-
-//		if (REMOTE_FRAME_STATE_OK == g_remote_frame_state)
-//
-//		{
-//			g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
-//			
-//			execute_remote_cmd(remote_frame_data+2);
-//			
-//			D8=~D8;
-//		}
-
+		if (REMOTE_FRAME_STATE_OK == g_remote_frame_state)
+		{
+			g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
+			
+			execute_remote_cmd(remote_frame_data+2);
+			
+			D8=~D8;
+		}
 
 #if 1		
 		if(g_Control)
@@ -46,7 +42,7 @@ void main(void)
 			angle_read(AngleResult);
 			set_speed_pwm();
 			AngleControl();
-			BalanceControl();
+//			BalanceControl();
 			//LCD_PrintoutInt(0, 0, AngleResult[1]);
 			//LCD_PrintoutInt(0, 2, AngleCalculate[1]);
 			//LCD_PrintoutInt(0, 4, AngleCalculate[0]);
