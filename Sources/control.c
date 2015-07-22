@@ -34,18 +34,15 @@ float g_fGyroscopeAngleSpeed_balance;
 float g_fGyroscopeTurnSpeed_balance;
 float CarAngleInitial_balance=0;
 float CarAnglespeedInitial_balance=0;
-extern float  AngleCalculate_balance[4];
+
 
 
 // float AngleControlOutMax=0.2, AngleControlOutMin=-0.2;
-<<<<<<< HEAD
-float  angle_pwm;
-float angle_pwm_balance;
-=======
+
 float  PITCH_angle_pwm;
 float  ROLL_angle_pwm;
 
->>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
+
 static int new_speed_pwm=0;
 static int old_speed_pwm=0;
 BYTE speed_period=0;
@@ -125,22 +122,18 @@ void set_PITCH_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向�
 void PITCH_motor_control(void)
 {
 	int16_t motor_pwm;
-<<<<<<< HEAD
 
-	motor_pwm=angle_pwm-speed_pwm;
-=======
 	motor_pwm=PITCH_angle_pwm-speed_pwm*0;
 //	motor_pwm=PITCH_angle_pwm-speed_pwm;
->>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
 //	motor_pwm=speed_pwm;
 	set_PITCH_motor_pwm(motor_pwm);
 }
-void motor_control_balance(void)
-{
-	int16_t motor_pwm_balance;
-	motor_pwm_balance=angle_pwm_balance;
-	set_motor_pwm(angle_pwm_balance);
-}
+//void motor_control_balance(void)
+//{
+//	int16_t motor_pwm_balance;
+//	motor_pwm_balance=angle_pwm_balance;
+//	set_motor_pwm(angle_pwm_balance);
+//}
 
 /*-----------------------------------------------------------------------*/
 /* 设置平衡电机PWM                                                                    */
@@ -176,6 +169,13 @@ void set_ROLL_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向�
 	}
 }
 #endif
+
+void ROLL_motor_control(void)
+{
+	int16_t motor_pwm;
+	motor_pwm=ROLL_angle_pwm;
+	set_ROLL_motor_pwm(motor_pwm);
+}
 /*-----------------------------------------------------------------------*/
 /* BangBang速度控制                                                             */
 /*-----------------------------------------------------------------------*/
@@ -281,51 +281,50 @@ void BalanceControl(void)
 	set_motor_pwm(100);  
 	*/
 	
-	float dta_angle;
-	float dta_anglespeed;
+	float delta_angle_balance;
+	float delta_anglespeed_balance;
 	float temp_angle_balance, temp_anglespeed_balance;
 	float currentanglespeed_balance, lastanglespeed_balance=0;
 	float last_angle_balance=0;
-	angle_calculate_balance();
-	g_fCarAngle_balance= AngleCalculate_balance[0];
-	g_fGyroscopeAngleSpeed_balance= -AngleCalculate_balance[1];
-	 // g_fGyroscopeTurnSpeed= AngleCalculateResult[2];
+	angle_calculate();
+	g_fCarAngle_balance= AngleCalculate[2];
+	g_fGyroscopeAngleSpeed_balance= -AngleCalculate[3];
 	 
 	temp_angle_balance=CarAngleInitial_balance - g_fCarAngle_balance;
 	temp_anglespeed_balance= CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance;
 	  
-	   if(temp_angle_balance<-15)
-		   data_angle_pid.p=100; //100开环
-	   else if(temp_angle_balance>=-15&temp_angle_balance<=0)
-		   data_angle_pid.p=200; //200
-	   else if(temp_angle_balance>0&temp_angle_balance<=15)
-		   data_angle_pid.p=200;// 170   
-	   else
-		   data_angle_pid.p=100;  //100
-	                                                    
+//	   if(temp_angle_balance<-15)
+//		   data_angle_pid.p=100; //100开环
+//	   else if(temp_angle_balance>=-15&temp_angle_balance<=0)
+//		   data_angle_pid.p=200; //200
+//	   else if(temp_angle_balance>0&temp_angle_balance<=15)
+//		   data_angle_pid.p=200;// 170   
+//	   else
+//		   data_angle_pid.p=100;  //100
+//	                                                    
+//	  
+//	   if(temp_anglespeed_balance>=50||temp_anglespeed_balance<=-50)
+//		   data_angle_pid.d=2;//0.3
+//	   else
+//		   data_angle_pid.d=0.5;//0.1
 	  
-	   if(temp_anglespeed_balance>=50||temp_anglespeed_balance<=-50)
-		   data_angle_pid.d=2;//0.3
-	   else
-		   data_angle_pid.d=0.5;//0.1
+	  currentanglespeed_balance=g_fCarAngle_balance;
+	  delta_anglespeed_balance=currentanglespeed_balance-lastanglespeed_balance;
+	  lastanglespeed_balance=currentanglespeed_balance;
 	  
-	   currentanglespeed_balance=g_fCarAngle_balance;
-	   dta_anglespeed=currentanglespeed_balance-lastanglespeed_balance;
-	   lastanglespeed_balance=currentanglespeed_balance;
-	  
-	   dta_angle = data_angle_pid.p*(CarAngleInitial_balance - g_fCarAngle_balance);
-	   dta_angle+=data_angle_pid.d*0.6*(CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance);
-	   dta_angle+=data_angle_pid.d*0.4*dta_anglespeed;
+	  delta_angle_balance = data_angle_pid.p*(CarAngleInitial_balance - g_fCarAngle_balance);
+	  delta_angle_balance+=data_angle_pid.d*0.6*(CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance);
+	  delta_angle_balance+=data_angle_pid.d*0.4*delta_anglespeed_balance;
 	  //delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle) /5000 +data_angle_pid.d*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed) /15000; // 1000 与10000是否根据实际需要调整 
 	  //angle_pwm=delta_angle;
 	  
-	 /* if(delta_angle>AngleControlOutMax)
+	  /* if(delta_angle>AngleControlOutMax)
 	  delta_angle=AngleControlOutMax;
 	  else if(delta_angle<AngleControlOutMin)
 	  delta_angle=AngleControlOutMin;*/
 	  
 	  //angle_pwm_balance=dta_angle;
-	
+	  ROLL_angle_pwm=delta_angle_balance;
 	
 	
 	

@@ -11,20 +11,17 @@ void main(void)
 	for(;;)
 	{
 
-<<<<<<< HEAD
-		
-		while(g_start_PCcontrol)
-=======
-		if (REMOTE_FRAME_STATE_OK == g_remote_frame_state)
->>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
-		{
-			g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
-			
-			execute_remote_cmd(remote_frame_data+2);
-			
-			D8=~D8;
-		}
-//		delay_ms(10);
+
+//		if (REMOTE_FRAME_STATE_OK == g_remote_frame_state)
+//
+//		{
+//			g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
+//			
+//			execute_remote_cmd(remote_frame_data+2);
+//			
+//			D8=~D8;
+//		}
+
 
 #if 1		
 		if(g_Control)
@@ -39,52 +36,51 @@ void main(void)
 //			LCD_PrintoutInt(0, 6, SIU.GPDO[73].B.PDO);
 
 			
-//			//步进电机调平衡
+			//步进电机调平衡
 //			angle_read(AngleResult_balance);
 //			stepmotor_balance();
-			//视频用步进电机转动
-			stepmotor_video(stepcount);
+			
+			stepmotor_video(stepcount);//视频用步进电机转动
 			
 			speed_period++;
 			angle_read(AngleResult);
 			set_speed_pwm();
 			AngleControl();
-<<<<<<< HEAD
+			BalanceControl();
 			//LCD_PrintoutInt(0, 0, AngleResult[1]);
 			//LCD_PrintoutInt(0, 2, AngleCalculate[1]);
 			//LCD_PrintoutInt(0, 4, AngleCalculate[0]);
 			//LCD_PrintoutInt(64, 0, AngleResult[0]);
 			//LCD_PrintoutInt(64, 2, AngleCalculate[0]);
-=======
-			
-			LCD_PrintoutInt(0, 0, AngleResult[0]);
-			LCD_PrintoutInt(64, 0, AngleResult[1]);
-			LCD_PrintoutInt(0, 2, angle_data.PITCH_angle_zero);
-			LCD_PrintoutInt(64, 2, angle_data.PITCH_anglespeed_zero);
-			LCD_PrintoutInt(0,4, data_angle_pid.p);
-			LCD_PrintoutInt(0, 6, data_angle_pid.d);
 
->>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
+			
+//			LCD_PrintoutInt(0, 0, AngleResult[0]);
+//			LCD_PrintoutInt(64, 0, AngleResult[1]);
+//			LCD_PrintoutInt(0, 2, angle_data.PITCH_angle_zero);
+//			LCD_PrintoutInt(64, 2, angle_data.PITCH_anglespeed_zero);
+//			LCD_PrintoutInt(0,4, data_angle_pid.p);
+//			LCD_PrintoutInt(0, 6, data_angle_pid.d);
+
+
 			if(AngleCalculate[0]<20&&AngleCalculate[0]>-20)
 			{ 
 				PITCH_motor_control();
 			} 
 			else
-<<<<<<< HEAD
-				set_motor_pwm(0);
-		    
-			
-//			if(count==3)
-//			{
-//				BalanceControl(); //暂时与前后平衡共用电机接口，不能同时运行
-//			}
-			
-=======
 			{
 				set_PITCH_motor_pwm(0);
 			}
+			//平衡控制 暂时无法使用set_ROLL_motor_pwm();
+//			if(AngleCalculate[2]<20&&AngleCalculate[2]>-20)
+//			{ 
+//				ROLL_motor_control();
+//			} 
+//			else
+//			{
+//				set_ROLL_motor_pwm(0);
+//			}
+			
 
->>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
 			if(count==4)
 			{
 				SpeedCountFlag++;

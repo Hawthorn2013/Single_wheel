@@ -147,15 +147,14 @@ extern struct
 
 extern void PitISR(void);
 extern void get_speed_now();
-<<<<<<< HEAD
-extern void set_motor_pwm(int16_t speed_pwm);
-extern void motor_control(void);
+
 extern void motor_control_balance(void);
-=======
+
 extern void set_PITCH_motor_pwm(int16_t speed_pwm);
 extern void PITCH_motor_control(void);
 extern void set_ROLL_motor_pwm(int16_t motor_pwm);
->>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
+extern void ROLL_motor_control(void);
+
 extern void contorl_speed_encoder_bb(void);
 extern void  AngleControl(void);
 extern void contorl_speed_encoder_pid(void);
@@ -165,14 +164,13 @@ extern void set_speed_PID(void);
 extern void set_speed_KP(float kp);
 extern void set_speed_KI(float ki);
 extern void set_speed_KD(float kd);
-<<<<<<< HEAD
+
 
 extern void BalanceControl(void);
-extern void set_speed_pwm_balance(void);
 
-=======
+
+
 extern void set_pwm1_target(SWORD speed_pwm);
->>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
 extern void set_pwm2_target(SWORD speed_pwm);
 extern void set_pwm3_target(SWORD speed_pwm);
 extern void set_angle_KP(float kp);

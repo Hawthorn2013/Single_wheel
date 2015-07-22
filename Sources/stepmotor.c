@@ -6,9 +6,9 @@ BYTE g_Control;
 int timer=0;
 int ABCD=0;
 
-void Pit_1ms(void) // 问题：timer一直是负值。考虑加串口记录四个口输出
+void Pit_1ms(void) 
 {
-<<<<<<< HEAD
+
 	//static int timer=0;
 	//static int ABCD=0;
 	//static int count=0;
@@ -24,21 +24,21 @@ void Pit_1ms(void) // 问题：timer一直是负值。考虑加串口记录四�
 			{     
 				Motor_A();
 			}
-		else if(ABCD==1)
+			else if(ABCD==1)
 			{
 				Motor_B();
 			}
-		else if(ABCD==2)
+			else if(ABCD==2)
 			{
 				Motor_C();
 			}
-		else if(ABCD==3)
+			else if(ABCD==3)
 			{
 				Motor_D();
 			}
-		timer=0;
-		ABCD++;
-		ABCD=ABCD%4;
+			timer=0;
+			ABCD++;
+			ABCD=ABCD%4;
 		}
 		else
 			timer++;
@@ -47,32 +47,30 @@ void Pit_1ms(void) // 问题：timer一直是负值。考虑加串口记录四�
 	{
 		if(timer==stepspeed)
 		{
-			if(ABCD==0)
+			if(ABCD==3)
 			{
 				Motor_D();
 			}
-			else if(ABCD==1)
+			else if(ABCD==2)
 			{
 				Motor_C();
 			}
-			else if(ABCD==2)
+			else if(ABCD==1)
 			{
 				Motor_B();
 			}
-			else if(ABCD==3)
+			else if(ABCD==0)
 			{
 				Motor_A();
 			}
 			timer=0;
-			ABCD++;
+			ABCD--;
+			ABCD+=4;
 			ABCD=ABCD%4;
 		}
 		else
 			timer--;
 	}
-	
-	
-	
 	/*
 	angle_read(AngleResult_balance); //angleread()暂时使用PB10, PB11，与前后一样
 	set_speed_pwm_balance();
@@ -85,45 +83,6 @@ void Pit_1ms(void) // 问题：timer一直是负值。考虑加串口记录四�
 	else
 		set_motor_pwm(0);
 	*/
-	
-
-
-=======
-//	static int timer=0;
-//	static int ABCD=0;
-	static int count=0;
-	
-	g_Control=1;
-	count++;
-	
-	
-//	if(timer==stepspeed)
-//	{
-//		if(ABCD==0)
-//		{
-//			Motor_A();
-//		}
-//		else if(ABCD==1)
-//		{
-//			Motor_B();
-//		}
-//		else if(ABCD==2)
-//		{
-//			Motor_C();
-//		}
-//		else if(ABCD==3)
-//		{
-//			Motor_D();
-//		}
-//		
-//		timer=0;
-//		ABCD++;
-//		ABCD=ABCD%4;
-//	}
-//	else
-//		timer++;
-//		
->>>>>>> 8c625fc5adef5b34f082c5062cb56d0e19c3d5c6
 	PIT.CH[2].TFLG.B.TIF = 1;	// MPC56xxB/P/S: Clear PIT 1 flag by writing 1
 }
 
@@ -165,14 +124,14 @@ void stepmotor_balance(void)
 {
 	//步进电机调平衡 
 	
-	if(AngleResult_balance[0]>0)
+	if(AngleCalculate[2]>0)
 	{
 		stepspeed=3; //正负待定  3为最大转速
 		timer=0;
 		ABCD+=2;
 		ABCD=ABCD%4;
 	}  
-	else if(AngleResult_balance[0]<0)
+	else if(AngleCalculate[2]<0)
 	{
 		stepspeed=-3;  //正负待定
 		timer=0;
