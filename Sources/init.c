@@ -54,14 +54,14 @@ void disable_watchdog(void)
 void init_led(void)
 {
 	//2015第一版载LED
-#if 0	
+#if 1	
  	SIU.PCR[40].R = 0x0203;	/* PC8  */
   	SIU.PCR[45].R = 0x0203; /* PC13 */
  	SIU.PCR[44].R = 0x0203; /* PC12 */
 	SIU.PCR[71].R = 0x0203;	/* PE7  */
 #endif
 
-#if 1
+#if 0
 	//第二版板载LED
 	SIU.PCR[12].R = 0x0203;/* PA12  */
 	SIU.PCR[13].R = 0x0203;/* PA13  */
@@ -69,11 +69,15 @@ void init_led(void)
 	SIU.PCR[15].R = 0x0203;/* PA15  */
 #endif
 
-
-	D5 = 1;
-	D6 = 1;
-	D7 = 1;
-	D8 = 1;
+	D0=1;
+	D1=1;
+	D2=1;
+	D3=1;
+	
+//	D5 = 1;
+//	D6 = 1;
+//	D7 = 1;
+//	D8 = 1;
 }
 
 
@@ -465,13 +469,13 @@ void init_all_and_POST(void)
 	enable_irq();
 	
 	/* 初始化显示屏 */
-	initLCD();
+	//initLCD();
 
-	LCD_DISPLAY();
-	LCD_Fill(0xFF);	/* 亮屏 */
-	delay_ms(50);
-	LCD_Fill(0x00);	/* 黑屏 */
-	delay_ms(50);
+//	LCD_DISPLAY();
+//	LCD_Fill(0xFF);	/* 亮屏 */
+//	delay_ms(50);
+//	LCD_Fill(0x00);	/* 黑屏 */
+//	delay_ms(50);
 	
 	/* 初始化TF卡 */
 	//test_init_TF();
@@ -482,7 +486,9 @@ void init_all_and_POST(void)
 
 	/* 初始化陀螺仪 */
 
-//	init_MPU9250();
+	//init_MPU9250();
+	/*初始化电子罗盘*/
+	init_GY953();
 	
 
 	

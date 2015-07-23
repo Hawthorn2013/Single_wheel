@@ -43,12 +43,11 @@ int Read_Precision(BYTE* Data)
 /*------------------------------------------------------------------------------*/
 int Read_GYalldata(BYTE* Data)
 {
-	BYTE data[]={0};
 	BYTE reg=0x01;
 	int i=0;
 	for(i=0;i<41;i++)
 	{
-		while(!GY953_Read(reg,&data[i])){};
+		while(!GY953_Read(reg,&Data[i])){};
 		reg++;
 	}
 	return 1;
@@ -89,14 +88,14 @@ int GY953_multi_Read(uint8_t* Data)
 	uint8_t reg=0x01;
 	int i=0;
 	
+	tmp_tx = 0xA8080000|(reg&0x3F)|0xC0;
+	DSPI_1.PUSHR.R = tmp_tx;
+	while(!DSPI_1.SR.B.TCF){}
+	tmp_rx = (uint8_t)DSPI_1.POPR.B.RXDATA;
+	DSPI_1.SR.B.TCF = 1;
+	
 	for(i=0;i<41;i++)
 	{
-		tmp_tx = 0xA8080000|(reg&0x3F)|0xC0;
-		DSPI_1.PUSHR.R = tmp_tx;
-		while(!DSPI_1.SR.B.TCF){}
-		tmp_rx = (uint8_t)DSPI_1.POPR.B.RXDATA;
-		DSPI_1.SR.B.TCF = 1;
-
 		tmp_tx = 0x28080000|0xff;
 		DSPI_1.PUSHR.R = tmp_tx;
 		while(!DSPI_1.SR.B.TCF){}
