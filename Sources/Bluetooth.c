@@ -41,6 +41,16 @@ void execute_remote_cmd(const BYTE *data)
 			set_PITCH_angle_speed_zero(*((SWORD *)(&(data[2]))));
 		break;
 		
+		case CMD_SET_ANGLE_KP :
+			set_angle_KP(*((SWORD *)(&(data[2]))));
+		break;
+		case CMD_SET_ANGLE_KI :
+			set_angle_KI(*((SWORD *)(&(data[2]))));
+		break;
+		case CMD_SET_ANGLE_KD :
+			set_angle_KD(*((SWORD *)(&(data[2]))));
+		break;
+		
 		/* 横滚陀螺仪标定调参 */
 		case CMD_SET_ROLL_ANGLE_ZERO :
 			set_ROLL_angle_zero(*((SWORD *)(&(data[2]))));
@@ -66,15 +76,20 @@ void execute_remote_cmd(const BYTE *data)
 		case CMD_STOP_SPEED :
 			set_speed_target((SWORD)0);
 		break;
+		case CMD_SET_MOTOR1_PWM_TARGET:
+			set_pwm1_target(*((SWORD *)(&(data[2]))));
+		break;
+		
 		case CMD_SET_MOTOR1_KP :
 			set_speed_KP(*((SWORD *)(&(data[2]))));
 		break;
 		case CMD_SET_MOTOR1_KI :
-			set_speed_KP(*((SWORD *)(&(data[2]))));
+			set_speed_KI(*((SWORD *)(&(data[2]))));
 		break;
 		case CMD_SET_MOTOR1_KD :
-			set_speed_KP(*((SWORD *)(&(data[2]))));
+			set_speed_KD(*((SWORD *)(&(data[2]))));
 		break;
+
 		
 		
 		/* 左右平衡电机调参 	*/
@@ -100,13 +115,14 @@ void execute_remote_cmd(const BYTE *data)
 
 
 /*-----------------------------------------------------------------------*/
-/* 接受上位机命令                                                        */
-/* 第二版                                                                */                               
-/* 5A XX 校验位              */
+/* 接受远程数据帧                                                        */
+/* 第二版                                                                */
+/* 修改地址位定义:源地址(1B)+目的地址(1B)                                */
+/* 5A 5A 数据类型(1B) 长度(1B) 数据体 校验字(1B)              */
+/* 未改变原数据帧的大部分定义及长度                                      */
 /*-----------------------------------------------------------------------*/
 int rev_remote_frame_2(BYTE rev)
 {
-	BYTE Data[3];
 	if (g_remote_frame_cnt == 0)	//接收帧头
 	{
 		if (rev == 0x5A)
@@ -114,123 +130,53 @@ int rev_remote_frame_2(BYTE rev)
 			remote_frame_data[g_remote_frame_cnt++] = 0x5A;
 		}
 	}
-	else if (g_remote_frame_cnt == 1)	
+	else if (g_remote_frame_cnt == 1)	//接收帧头
 	{
-		if (rev == 0x57)
+		if (rev == 0x5A)
 		{
-			D1=~D1;
-			remote_frame_data[g_remote_frame_cnt++] = 0x57;
-		}
-		else if(rev==0x58)
-		{
-			D2=~D2;
-			remote_frame_data[g_remote_frame_cnt++] = 0x57;
-		}
-		else if(rev==0x85)
-		{
-			D3=~D3;
-			remote_frame_data[g_remote_frame_cnt++] = 0x85;
-		}
-		else if(rev==0x75)
-		{
-			remote_frame_data[g_remote_frame_cnt++] = 0x75;
+			remote_frame_data[g_remote_frame_cnt++] = 0x5A;
 		}
 		else
 		{
-			g_remote_frame_cnt=0;
+			g_remote_frame_cnt = 0;
 		}
 	}
-	else if (g_remote_frame_cnt == 2)	//接收校验位
+	else if (g_remote_frame_cnt == 2)	//接收数据类型
 	{
-		if((remote_frame_data[0]+remote_frame_data[1]==rev)||(remote_frame_data[0]+remote_frame_data[1]==rev+0x100))
-			{
-			remote_frame_data[g_remote_frame_cnt] = rev;
-			g_remote_frame_state = REMOTE_FRAME_STATE_OK;	//CheckSum Success
-			if(remote_frame_data[1]==0x57)	//加陀校准
-			{
-				GY953_Write(0x02,0x13);
-			}
-			else if(remote_frame_data[1]==0x58)	//磁场校准
-			{
-				send_data2PC(3, PREC_TYPE, Data);
-				GY953_Write(0x02,0x13);
-			}
-			else if(remote_frame_data[1]==0x75)
-			{
-				Read_Precision(Data);
-				send_data2PC(3, PREC_TYPE, Data);
-			}
-			}
-		else
-			g_remote_frame_cnt=0;
+		remote_frame_data[g_remote_frame_cnt++] = rev;
 	}
+	else if (g_remote_frame_cnt == 3)	//接收长度
+	{
+		remote_frame_data[g_remote_frame_cnt++] = rev;
 
+		if (rev+5>REMOTE_FRAME_LENGTH)	//判断是否会导致缓冲区溢出
+		{
+			g_remote_frame_cnt = 0;
+		}
+	}
+	else if (g_remote_frame_cnt>3 && g_remote_frame_cnt<=remote_frame_data[3]+3)	//接收数据区
+	{
+		remote_frame_data[g_remote_frame_cnt++] = rev;
+	}
+	else if (g_remote_frame_cnt==remote_frame_data[3]+4)	//接收校验字节	
+	{
+		BYTE sum;
+		remote_frame_data[g_remote_frame_cnt++] = rev;
+		sum = check_sum((const BYTE *)(remote_frame_data), (BYTE)(remote_frame_data[3]+4));
+		if (sum != remote_frame_data[remote_frame_data[3]+4])
+		{
+			g_remote_frame_cnt = 0;	//CheckSum Fail
+		}
+		else
+		{
+			g_remote_frame_cnt = 0;
+			g_remote_frame_state = REMOTE_FRAME_STATE_OK;	//CheckSum Success
+		}
+	}
 	
 	return g_remote_frame_state;
 }
-/*-----------------------------------------------------------------------*/
-/* 接受远程数据帧                                                        */
-/* 第二版                                                                */
-/* 修改地址位定义:源地址(1B)+目的地址(1B)                                */
-/* 5A 5A 数据类型(1B) 长度(1B) 数据体 校验字(1B)              */
-/* 未改变原数据帧的大部分定义及长度                                      */
-/*-----------------------------------------------------------------------*/
 
-//int rev_remote_frame_2(BYTE rev)
-//{
-//	if (g_remote_frame_cnt == 0)	//接收帧头
-//	{
-//		if (rev == 0x5A)
-//		{
-//			remote_frame_data[g_remote_frame_cnt++] = 0x5A;
-//		}
-//	}
-//	else if (g_remote_frame_cnt == 1)	//接收帧头
-//	{
-//		if (rev == 0x5A)
-//		{
-//			remote_frame_data[g_remote_frame_cnt++] = 0x5A;
-//		}
-//		else
-//		{
-//			g_remote_frame_cnt = 0;
-//		}
-//	}
-//	else if (g_remote_frame_cnt == 2)	//接收数据类型
-//	{
-//		remote_frame_data[g_remote_frame_cnt++] = rev;
-//	}
-//	else if (g_remote_frame_cnt == 3)	//接收长度
-//	{
-//		remote_frame_data[g_remote_frame_cnt++] = rev;
-//
-//		if (rev+5>REMOTE_FRAME_LENGTH)	//判断是否会导致缓冲区溢出
-//		{
-//			g_remote_frame_cnt = 0;
-//		}
-//	}
-//	else if (g_remote_frame_cnt>3 && g_remote_frame_cnt<=remote_frame_data[3]+3)	//接收数据区
-//	{
-//		remote_frame_data[g_remote_frame_cnt++] = rev;
-//	}
-//	else if (g_remote_frame_cnt==remote_frame_data[3]+4)	//接收校验字节	
-//	{
-//		BYTE sum;
-//		remote_frame_data[g_remote_frame_cnt++] = rev;
-//		sum = check_sum((const BYTE *)(remote_frame_data), (BYTE)(remote_frame_data[3]+4));
-//		if (sum != remote_frame_data[remote_frame_data[3]+4])
-//		{
-//			g_remote_frame_cnt = 0;	//CheckSum Fail
-//		}
-//		else
-//		{
-//			g_remote_frame_cnt = 0;
-//			g_remote_frame_state = REMOTE_FRAME_STATE_OK;	//CheckSum Success
-//		}
-//	}
-//	
-//	return g_remote_frame_state;
-//}
 
 /*-----------------------------------------------------------------------*/
 /* 生成并发送数据至上位机                                                    */
@@ -267,16 +213,14 @@ void generate_remote_frame_2(BYTE type, BYTE length, const BYTE data[])
 void send_data2PC(BYTE sensor, BYTE type, BYTE data[])
 {
 	if(sensor==ENC03)
-	{
-		D1=~D1;
+	{D6=~D6;
 		if(type==GYR_TYPE)
-			generate_remote_frame_2( type, 1, (const BYTE *)(&data[1]));
+			generate_remote_frame_2( type, 2, (const BYTE *)(&data[1]));
 		else if(type==ANGLE_TYPE)
-			generate_remote_frame_2( type, 1, (const BYTE *)(&data[0]));
+			generate_remote_frame_2( type, 2, (const BYTE *)(&data[0]));
 	}
 	else if(sensor==MPU9250)
 	{
-		D2=~D2;
 		if(type==ACC_TYPE)
 			generate_remote_frame_2( type, 6, (const BYTE *)(&data[6]));
 		else if(type==GYR_TYPE)
@@ -284,17 +228,12 @@ void send_data2PC(BYTE sensor, BYTE type, BYTE data[])
 	}
 	else if(sensor==GY953)
 		{
-		D3=~D3;
 			if(type==ACC_TYPE)
 				generate_remote_frame_2( type, 6, (const BYTE *)(&data[2]));
 			else if(type==GYR_TYPE)
 				generate_remote_frame_2( type, 6, (const BYTE *)(&data[8]));
 			else if(type==ANGLE_TYPE)
 				generate_remote_frame_2( type, 6, (const BYTE *)(&data[20]));
-			else if(type==MAG_TYPE)
-				generate_remote_frame_2( type, 6, (const BYTE *)(&data[14]));
-			else if(type==FOUR_TYPE)
-				generate_remote_frame_2( type, 8, (const BYTE *)(&data[26]));
 		}
 	
 }

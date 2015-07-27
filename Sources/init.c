@@ -54,14 +54,14 @@ void disable_watchdog(void)
 void init_led(void)
 {
 	//2015第一版载LED
-#if 1	
+#if 0	
  	SIU.PCR[40].R = 0x0203;	/* PC8  */
   	SIU.PCR[45].R = 0x0203; /* PC13 */
  	SIU.PCR[44].R = 0x0203; /* PC12 */
 	SIU.PCR[71].R = 0x0203;	/* PE7  */
 #endif
 
-#if 0
+#if 1
 	//第二版板载LED
 	SIU.PCR[12].R = 0x0203;/* PA12  */
 	SIU.PCR[13].R = 0x0203;/* PA13  */
@@ -69,15 +69,11 @@ void init_led(void)
 	SIU.PCR[15].R = 0x0203;/* PA15  */
 #endif
 
-	D0=1;
-	D1=1;
-	D2=1;
-	D3=1;
-	
-//	D5 = 1;
-//	D6 = 1;
-//	D7 = 1;
-//	D8 = 1;
+
+	D5 = 1;
+	D6 = 1;
+	D7 = 1;
+	D8 = 1;
 }
 
 
@@ -135,35 +131,64 @@ void initEMIOS_0MotorAndSteer(void)
 	EMIOS_0.CH[16].CADR.R = 2000;	/* 设置周期200us 5KHZ */
 	EMIOS_0.CH[16].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
 	EMIOS_0.CH[16].CCR.B.BSL = 0x3;	/* Use internal counter */
-    /* 前进输出 OPWMB PE5 输出0-2000 */
+#if 0
+    /* 平衡输出 OPWMB PE3 输出0-2000 */
+	EMIOS_0.CH[19].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
+	EMIOS_0.CH[19].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
+    EMIOS_0.CH[19].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
+	EMIOS_0.CH[19].CADR.R = 0;	/* Leading edge when channel counter bus= */
+	EMIOS_0.CH[19].CBDR.R = 0;	/* Trailing edge when channel counter bus= */
+	SIU.PCR[67].R = 0x0600;	/*[11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
+	/* 平衡输出 OPWMB PE4 输出0-2000 */
+	EMIOS_0.CH[20].CCR.B.BSL = 0x1;
+	EMIOS_0.CH[20].CCR.B.MODE = 0x60;
+    EMIOS_0.CH[20].CCR.B.EDPOL = 1;
+	EMIOS_0.CH[20].CADR.R = 0;
+	EMIOS_0.CH[20].CBDR.R = 0;
+	SIU.PCR[68].R = 0x0600;
+#endif
+    /* 俯仰输出 OPWMB PE5 输出0-2000 */
 	EMIOS_0.CH[21].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
 	EMIOS_0.CH[21].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
     EMIOS_0.CH[21].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
 	EMIOS_0.CH[21].CADR.R = 0;	/* Leading edge when channel counter bus= */
 	EMIOS_0.CH[21].CBDR.R = 0;	/* Trailing edge when channel counter bus= */
 	SIU.PCR[69].R = 0x0600;	/*[11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
-	/* 前进输出 OPWMB PE6 输出0-2000 */
+	/* 俯仰输出 OPWMB PE6 输出0-2000 */
 	EMIOS_0.CH[22].CCR.B.BSL = 0x1;
 	EMIOS_0.CH[22].CCR.B.MODE = 0x60;
     EMIOS_0.CH[22].CCR.B.EDPOL = 1;
 	EMIOS_0.CH[22].CADR.R = 0;
 	EMIOS_0.CH[22].CBDR.R = 0;
 	SIU.PCR[70].R = 0x0600;
-	
-    /* Modulus Up Counter 50HZ */
-    EMIOS_0.CH[8].CCR.B.UCPRE=3;	/* Set channel prescaler to divide by 4 */
-	EMIOS_0.CH[8].CCR.B.UCPEN = 1;	/* Enable prescaler; uses default divide by 4 */
-	EMIOS_0.CH[8].CCR.B.FREN = 1;	/* Freeze channel counting when in debug mode */
-	EMIOS_0.CH[8].CADR.R = 50000;	/* 设置周期0.02s  50HZ */
-	EMIOS_0.CH[8].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
-	EMIOS_0.CH[8].CCR.B.BSL = 0x3;	/* Use internal counter */
-    /* 方向舵机 PWM PA9 输出0-50000 */
-	EMIOS_0.CH[9].CCR.B.BSL = 0x1;	/* Use counter bus C (default) */
-	EMIOS_0.CH[9].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */  
-    EMIOS_0.CH[9].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
-	EMIOS_0.CH[9].CADR.R = 1;	/* Leading edge when channel counter bus=250*/
-	EMIOS_0.CH[9].CBDR.R = STEER_HELM_CENTER;	/* Trailing edge when channel counter bus=500*/
-	SIU.PCR[9].R = 0x0600;	/* [11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
+    /* 转向输出 OPWMB PE1 输出0-2000 */
+	EMIOS_0.CH[17].CCR.B.BSL = 0x1;	/* Use counter bus D (default) */
+	EMIOS_0.CH[17].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */
+    EMIOS_0.CH[17].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
+	EMIOS_0.CH[17].CADR.R = 0;	/* Leading edge when channel counter bus= */
+	EMIOS_0.CH[17].CBDR.R = 0;	/* Trailing edge when channel counter bus= */
+	SIU.PCR[65].R = 0x0600;	/*[11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
+	/* 转向输出 OPWMB PE2输出0-2000 */
+	EMIOS_0.CH[18].CCR.B.BSL = 0x1;
+	EMIOS_0.CH[18].CCR.B.MODE = 0x60;
+    EMIOS_0.CH[18].CCR.B.EDPOL = 1;
+	EMIOS_0.CH[18].CADR.R = 0;
+	EMIOS_0.CH[18].CBDR.R = 0;
+	SIU.PCR[66].R = 0x0600;
+//    /* Modulus Up Counter 50HZ */
+//    EMIOS_0.CH[8].CCR.B.UCPRE=3;	/* Set channel prescaler to divide by 4 */
+//	EMIOS_0.CH[8].CCR.B.UCPEN = 1;	/* Enable prescaler; uses default divide by 4 */
+//	EMIOS_0.CH[8].CCR.B.FREN = 1;	/* Freeze channel counting when in debug mode */
+//	EMIOS_0.CH[8].CADR.R = 50000;	/* 设置周期0.02s  50HZ */
+//	EMIOS_0.CH[8].CCR.B.MODE = 0x50;	/* Modulus Counter Buffered (MCB) */
+//	EMIOS_0.CH[8].CCR.B.BSL = 0x3;	/* Use internal counter */
+//    /* 方向舵机 PWM PA9 输出0-50000 */
+//	EMIOS_0.CH[9].CCR.B.BSL = 0x1;	/* Use counter bus C (default) */
+//	EMIOS_0.CH[9].CCR.B.MODE = 0x60;	/* Mode is OPWM Buffered */  
+//    EMIOS_0.CH[9].CCR.B.EDPOL = 1;	/* Polarity-leading edge sets output/trailing clears*/
+//	EMIOS_0.CH[9].CADR.R = 1;	/* Leading edge when channel counter bus=250*/
+//	EMIOS_0.CH[9].CBDR.R = STEER_HELM_CENTER;	/* Trailing edge when channel counter bus=500*/
+//	SIU.PCR[9].R = 0x0600;	/* [11:10]选择AFx 此处AF1 /* MPC56xxS: Assign EMIOS_0 ch 21 to pad */
 
 }
 
@@ -440,23 +465,23 @@ void init_all_and_POST(void)
 
 	disable_watchdog();
 	init_modes_and_clock();
-	//initEMIOS_0MotorAndSteer();
+	initEMIOS_0MotorAndSteer();
 	
 	/* PIT：光编读值&速度控制 */
 //	init_pit_10ms();
 	
 	/* PIT：步进电机控制&角度控制标志位 */
-	//init_pit_1ms();	
+	init_pit_1ms();	
 	
 	
-	//init_Stepmotor();		/* 初始化步进电机 */
+	init_Stepmotor();		/* 初始化步进电机 */
 
 	init_led();
 	//init_DIP();				/* 拨码开关 */
 	init_serial_port_1();	/* BlueTooth */
 
-	//init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
-	//init_optical_encoder();	/* 光编 */
+	init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
+	init_optical_encoder();	/* 光编 */
 
 	//init_I2C();
 	//init_choose_mode();		/* 拨码开关模式选择 */
@@ -469,13 +494,13 @@ void init_all_and_POST(void)
 	enable_irq();
 	
 	/* 初始化显示屏 */
-	//initLCD();
+	initLCD();
 
-//	LCD_DISPLAY();
-//	LCD_Fill(0xFF);	/* 亮屏 */
-//	delay_ms(50);
-//	LCD_Fill(0x00);	/* 黑屏 */
-//	delay_ms(50);
+	LCD_DISPLAY();
+	LCD_Fill(0xFF);	/* 亮屏 */
+	delay_ms(50);
+	LCD_Fill(0x00);	/* 黑屏 */
+	delay_ms(50);
 	
 	/* 初始化TF卡 */
 	//test_init_TF();
@@ -486,9 +511,7 @@ void init_all_and_POST(void)
 
 	/* 初始化陀螺仪 */
 
-	//init_MPU9250();
-	/*初始化电子罗盘*/
-	init_GY953();
+//	init_MPU9250();
 	
 
 	
@@ -538,7 +561,7 @@ void init_DSPI_1(void)
 	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF
 	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED
 	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
-	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1		
 	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
 #endif
 
