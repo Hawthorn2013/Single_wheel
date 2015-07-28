@@ -57,6 +57,7 @@ typedef unsigned short word;
 #include "matrix.h"
 #include "GY953.h"
 #include "Bluetooth.h"
+#include <math.h>
 
 
 

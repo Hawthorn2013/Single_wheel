@@ -234,6 +234,10 @@ void send_data2PC(BYTE sensor, BYTE type, BYTE data[])
 				generate_remote_frame_2( type, 6, (const BYTE *)(&data[8]));
 			else if(type==ANGLE_TYPE)
 				generate_remote_frame_2( type, 6, (const BYTE *)(&data[20]));
+			else if(type==MAG_TYPE)
+				generate_remote_frame_2( type, 6, (const BYTE *)(&data[14]));
+			else if(type==FOUR_TYPE)
+				generate_remote_frame_2( type, 8, (const BYTE *)(&data[26]));
 		}
 	
 }
