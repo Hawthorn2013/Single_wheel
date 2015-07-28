@@ -13,12 +13,14 @@
 
 
 
-void init_GY953(void);
-int GY953_Read(uint8_t reg,uint8_t* Data);
-int GY953_multi_Read(uint8_t* Data);
-int GY953_Write(uint8_t reg,uint8_t Data);
-int Read_Precision(BYTE* Data);	
-int Read_GYalldata(BYTE* Data);
+
+
+extern void init_GY953(void);
+extern int GY953_Read(uint8_t reg,uint8_t* Data);
+extern int GY953_multi_Read(uint8_t* Data);
+extern int GY953_Write(uint8_t reg,uint8_t Data);
+extern int Read_Precision(BYTE* Data);	
+extern int Read_GYalldata(BYTE* Data);
 
 
 
