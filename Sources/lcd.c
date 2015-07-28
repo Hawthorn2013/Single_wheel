@@ -1,7 +1,8 @@
 ﻿#define __LCD_C_
 #include "includes.h"
 
-
+/*	老版 0xB8020000
+	新版 0xB8100000	*/
 /*********************LCD初始化************************/
 void initLCD(void)//RST=0复位
 {
@@ -92,7 +93,8 @@ void LCD_WrDat(BYTE data)//DC=1数据（XS128）
 	uint32_t tmp_tx = 0x00000000;
 	uint16_t tmp_rx;
 	LCD_DC=1;
-	tmp_tx |= 0xB8020000;
+	tmp_tx |= 0xB8020000;//老版
+//	tmp_tx |= 0xB8100000;//2015版板子
 	tmp_tx |= (uint32_t)data;
 	DSPI_1.PUSHR.R = tmp_tx;
 	while(!DSPI_1.SR.B.TCF){}
