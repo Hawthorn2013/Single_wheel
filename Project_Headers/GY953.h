@@ -17,7 +17,7 @@
 
 extern void init_GY953(void);
 extern int GY953_Read(uint8_t reg,uint8_t* Data);
-extern int GY953_multi_Read(uint8_t* Data);
+extern int GY953_multi_Read(uint8_t* Data,uint8_t reg);
 extern int GY953_Write(uint8_t reg,uint8_t Data);
 extern int Read_Precision(BYTE* Data);	
 extern int Read_GYalldata(BYTE* Data);

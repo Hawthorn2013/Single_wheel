@@ -214,23 +214,3 @@ void Runge_Kutta(float q0[],float T,float W[],float q1[])
 	m_scalar(q1,b,q1,4,1);
 }
 
-void MY_sqrt(float src,float *dst)
-{
-	float eps=0.00001;
-	float x=src/2;
-	float y=x*x-src;
-	while(abs(y)>eps)
-	{
-		x-=y/(2*x);
-		y=x*x-src;
-	}
-	*dst=x;
-}
-
-
-float abs(float data)
-{
-	if (data<0)
-		data=0-data;
-	return data;
-}
