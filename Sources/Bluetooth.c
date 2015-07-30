@@ -123,64 +123,91 @@ void execute_remote_cmd(const BYTE *data)
 int rev_remote_frame_2(BYTE rev)
 {
 	BYTE Data[3];
-	if (g_remote_frame_cnt == 0)	//接受起始位
+	if (g_remote_frame_cnt == 0)
 	{
-		if (rev == 0x5A)
-		{
-			remote_frame_data[g_remote_frame_cnt++] = 0x5A;
-		}
+		Data[0]=rev;
+		if(rev==0xA5)
+			D0=~D0;
+		g_remote_frame_cnt++;
 	}
-	else if (g_remote_frame_cnt == 1)	//接受命令类型位
+	else if(g_remote_frame_cnt==1)
 	{
-		if (rev == 0x57)	//加陀校准
-		{
+		Data[1]=rev;
+		if(rev==0x57)
 			D1=~D1;
-			remote_frame_data[g_remote_frame_cnt++] = 0x57;
-		}
-		else if(rev==0x58)	//磁力校准
-		{
-			D2=~D2;
-			remote_frame_data[g_remote_frame_cnt++] = 0x58;
-		}
-		else if(rev==0x85)//读取量程
-		{
-			D3=~D3;
-			remote_frame_data[g_remote_frame_cnt++] = 0x85;
-		}
-		else if(rev==0x75)//精度，频率
-		{
-			remote_frame_data[g_remote_frame_cnt++] = 0x75;
-		}
-		else
-		{
-			g_remote_frame_cnt=0;
-		}
+		g_remote_frame_cnt++;
 	}
-	else if (g_remote_frame_cnt == 2)	//接受校验位
+	else if(g_remote_frame_cnt==2)
 	{
-		if((remote_frame_data[0]+remote_frame_data[1]==rev)||(remote_frame_data[0]+remote_frame_data[1]==rev+0x100))
-		{
-			remote_frame_data[g_remote_frame_cnt] = rev;
-			g_remote_frame_state = REMOTE_FRAME_STATE_OK;	//CheckSum Success
-			if(remote_frame_data[1]==0x57)
-			{
-				GY953_Write(0x02,0x13);
-			}
-			else if(remote_frame_data[1]==0x58)	
-			{
-				send_data2PC(3, PREC_TYPE, Data);
-				GY953_Write(0x02,0x13);
-			}
-			else if(remote_frame_data[1]==0x75)
-			{
-				Read_Precision(Data);
-				send_data2PC(3, PREC_TYPE, Data);
-			}
-		}
+		Data[2]=rev;
+		if(rev==0xFC)
+			D2=~D2;
 		g_remote_frame_cnt=0;
+		LCD_Write_Num(80,1,Data[0],5);
+		LCD_Write_Num(80,3,Data[1],5);
+		LCD_Write_Num(80,5,Data[2],5);
 	}
-
-	return g_remote_frame_state;
+//	BYTE Data[3];
+//	uint8_t sum;
+//	if (g_remote_frame_cnt == 0)	//接受起始位
+//	{
+//		if (rev == 0x5A)
+//		{
+//			remote_frame_data[g_remote_frame_cnt++] = 0x5A;
+//		}
+//	}
+//	else if (g_remote_frame_cnt == 1)	//接受命令类型位
+//	{
+//		if (rev == 0x57)	//加陀校准
+//		{
+//			D1=~D1;
+//			remote_frame_data[g_remote_frame_cnt++] = 0x57;
+//		}
+//		else if(rev==0x58)	//磁力校准
+//		{
+//			D2=~D2;
+//			remote_frame_data[g_remote_frame_cnt++] = 0x58;
+//		}
+//		else if(rev==0x85)//读取量程
+//		{
+//			D3=~D3;
+//			remote_frame_data[g_remote_frame_cnt++] = 0x85;
+//		}
+//		else if(rev==0x75)//精度，频率
+//		{
+//			remote_frame_data[g_remote_frame_cnt++] = 0x75;
+//		}
+//		else
+//		{
+//			g_remote_frame_cnt=0;
+//		}
+//	}
+//	else if (g_remote_frame_cnt == 2)	//接受校验位
+//	{
+//		sum=(uint8_t)(remote_frame_data[0]+remote_frame_data[1]);
+//		if(rev==sum)
+//		{
+//			remote_frame_data[g_remote_frame_cnt] = rev;
+//			g_remote_frame_state = REMOTE_FRAME_STATE_OK;	//CheckSum Success
+//			if(remote_frame_data[1]==0x57)
+//			{
+//				GY953_Write(0x02,0x13);
+//			}
+//			else if(remote_frame_data[1]==0x58)	
+//			{
+//				send_data2PC(3, PREC_TYPE, Data);
+//				GY953_Write(0x02,0x13);
+//			}
+//			else if(remote_frame_data[1]==0x75)
+//			{
+//				Read_Precision(Data);
+//				send_data2PC(3, PREC_TYPE, Data);
+//			}
+//		}
+//		g_remote_frame_cnt=0;
+//	}
+//
+//	return g_remote_frame_state;
 }
 
 

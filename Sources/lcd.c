@@ -930,7 +930,7 @@ void LCD_PrintoutFloat(BYTE x, BYTE y, float n)
 /***********************************************************************
 * 函数名称：LCD_Write_Num()
 * 函数功能：显示变量
-* 入口参数：X:行;Y:列;num:变量;N:要显示的变量的位数
+* 入口参数：X:列;Y:行;num:变量;N:要显示的变量的位数
 * 出口参数：无
 /**********************************************************************/
 void LCD_Write_Num(unsigned char X,unsigned char Y,int num,unsigned char N)

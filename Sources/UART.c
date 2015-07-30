@@ -24,6 +24,8 @@ void init_serial_port_1(void)
     LINFLEX_1.LINFBRR.B.DIV_F = 1;	//小数部分先写
 	LINFLEX_1.LINIBRR.B.DIV_M= 26; 	//38400:26&1	57600:17&6
 //#endif
+    LINFLEX_1.LINFBRR.B.DIV_F = 3;	//小数部分先写
+	LINFLEX_1.LINIBRR.B.DIV_M= 104; 	//9600
 
     LINFLEX_1.UARTCR.B.UART=1;
 	LINFLEX_1.UARTCR.R=0x00000033;
@@ -66,8 +68,10 @@ void intc_serial_port_1_RX()
 	rev_ch = (BYTE)LINFLEX_1.BDRM.B.DATA4;
 	g_serial_port_1_f = 1;
 	g_serial_port_1_data = rev_ch;
-	LINFLEX_1.UARTSR.B.DRF=1;
 	rev_remote_frame_2(rev_ch);
+	LINFLEX_1.UARTSR.B.DRF=1;
+	LINFLEX_1.UARTSR.B.RMB=1;		//Release Message Buffer !!!
+	//LCD_Write_Num(80,1,rev_ch,5);
 }
 
 

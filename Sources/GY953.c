@@ -147,3 +147,29 @@ int GY953_Write(uint8_t reg,uint8_t Data)
 	return 1;
 }
 
+int GY953_Four(float *q0,float *q1,float *q2,float *q3,uint8_t *Data)
+{
+	int16_t q00,q11,q22,q33;
+	q00=q00|Data[26];
+	q00=q00<<8|Data[27];
+	LCD_Write_Num(80,1,q00,5);
+	*q0=q00/10000;
+	
+	q11=q11|Data[28];
+	q11=q11<<8|Data[29];
+	LCD_Write_Num(80,2,q11,5);
+	*q1=q11/10000;
+	
+	q22=q22|Data[30];
+	q22=q22<<8|Data[31];
+	LCD_Write_Num(80,3,q22,5);
+	*q2=q22/10000;
+	
+	q33=q33|Data[32];
+	q33=q33<<8|Data[33];
+	LCD_Write_Num(80,4,q33,5);
+	*q3=q33/10000;
+	
+	return 1;
+}
+

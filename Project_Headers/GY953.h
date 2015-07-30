@@ -21,7 +21,7 @@ extern int GY953_multi_Read(uint8_t* Data,uint8_t reg);
 extern int GY953_Write(uint8_t reg,uint8_t Data);
 extern int Read_Precision(BYTE* Data);	
 extern int Read_GYalldata(BYTE* Data);
-
+int GY953_Four(float *q0,float *q1,float *q2,float *q3,uint8_t *Data);
 
 
 
