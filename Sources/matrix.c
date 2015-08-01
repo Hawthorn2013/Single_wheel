@@ -27,7 +27,6 @@ void m_multiply(float a[], float b[], float c[], int ra, int ca, int rb, int cb)
 			*(c+i*ra+j)=sum;
 		}
 	}
-
 }
 
 void m_scalar(float A[],float b,float B[],int m,int n)

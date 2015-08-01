@@ -147,6 +147,8 @@ int rev_remote_frame_2(BYTE rev)
 		LCD_Write_Num(80,3,Data[1],5);
 		LCD_Write_Num(80,5,Data[2],5);
 	}
+	
+	return 1;
 //	BYTE Data[3];
 //	uint8_t sum;
 //	if (g_remote_frame_cnt == 0)	//接受起始位

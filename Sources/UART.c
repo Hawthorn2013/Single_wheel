@@ -60,7 +60,7 @@ void serial_port_1_TX_array(const BYTE data[], BYTE n)
 }
 
 
-void intc_serial_port_1_RX()
+void intc_serial_port_1_RX()//中断后未恢复
 {
 	BYTE rev_ch;
 	

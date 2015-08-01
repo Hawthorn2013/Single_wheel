@@ -152,23 +152,86 @@ int GY953_Four(float *q0,float *q1,float *q2,float *q3,uint8_t *Data)
 	int16_t q00,q11,q22,q33;
 	q00=q00|Data[26];
 	q00=q00<<8|Data[27];
-	LCD_Write_Num(80,1,q00,5);
+	//LCD_Write_Num(80,1,q00,5);
 	*q0=q00/10000;
 	
 	q11=q11|Data[28];
 	q11=q11<<8|Data[29];
-	LCD_Write_Num(80,2,q11,5);
+	//LCD_Write_Num(80,2,q11,5);
 	*q1=q11/10000;
 	
 	q22=q22|Data[30];
 	q22=q22<<8|Data[31];
-	LCD_Write_Num(80,3,q22,5);
+	//LCD_Write_Num(80,3,q22,5);
 	*q2=q22/10000;
 	
 	q33=q33|Data[32];
 	q33=q33<<8|Data[33];
-	LCD_Write_Num(80,4,q33,5);
+	//LCD_Write_Num(80,4,q33,5);
 	*q3=q33/10000;
+	
+	return 1;
+}
+
+int Wbn_get(float Wbn[],uint8_t *Data)
+{
+	float q0,q1,q2,q3;
+	GY953_Four(&q0,&q1,&q2,&q3,Data);
+	
+	Wbn[0]=q0*q0+q1*q1-q2*q2-q3*q3;
+	Wbn[1]=2*(q1*q2+q0*q3);
+	Wbn[2]=2*(q1*q3-q0*q2);
+	Wbn[3]=2*(q1*q2-q0*q3);
+	Wbn[4]=q0*q0-q1*q1+q2*q2-q3*q3;
+	Wbn[5]=2*(q2*q3+q0*q1);
+	Wbn[6]=2*(q1*q3+q0*q2);
+	Wbn[7]=2*(q2*q3-q0*q1);
+	Wbn[8]=q0*q0-q1*q1-q2*q2+q3*q3;
+}
+
+int Acc_get(int16_t Acc[],uint8_t *Data)
+{
+	int16_t ax,ay,az;
+	
+	ax=ax|Data[2];
+	ax=(ax<<8)|Data[3];
+	
+	ay=ay|Data[4];
+	ay=(ay<<8)|Data[5];
+	
+	az=az|Data[6];
+	az=(az<<8)|Data[7];
+	
+	Acc[0]=ax;
+	Acc[1]=ay;
+	Acc[2]=az;
+	
+	return 1;
+}
+
+int Dev_get(int16_t *dev)
+{
+	int32_t sum=0;
+	int16_t d;
+	uint8_t Acc_X_H,Acc_X_L;
+	int16_t Acc_X=0;
+	int i;
+	for(i=0;i<5000;i++)
+	{
+		GY953_Read(0x03,&Acc_X_H);
+		GY953_Read(0x04,&Acc_X_L);
+		
+		Acc_X=Acc_X|Acc_X_H;
+		Acc_X=(Acc_X<<8)|Acc_X_L;
+		
+		sum+=Acc_X;
+		
+		delay_us(200);
+	}
+	
+	d=sum/5000;
+	
+	*dev=d;
 	
 	return 1;
 }

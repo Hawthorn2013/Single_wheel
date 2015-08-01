@@ -513,6 +513,13 @@ void init_all_and_POST(void)
 
 //	init_MPU9250();
 	
+	
+	/* 初始化电子罗盘 */
+
+	init_GY953();
+	
+	
+	
 
 	
 
@@ -561,7 +568,7 @@ void init_DSPI_1(void)
 	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF
 	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED
 	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
-	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	
+	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	GY953	
 	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
 #endif
 
