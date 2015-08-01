@@ -54,10 +54,11 @@ void execute_remote_cmd(const BYTE *data)
 		/* 横滚陀螺仪标定调参 */
 		case CMD_SET_ROLL_ANGLE_ZERO :
 			set_ROLL_angle_zero(*((SWORD *)(&(data[2]))));
+			D5=~D5;
 		break;
 		case CMD_SET_ROLL_ANGLE_SPEED_ZERO :
 			set_ROLL_angle_speed_zero(*((SWORD *)(&(data[2]))));
-		break;
+			break;
 		
 		/* 航向角陀螺仪标定调参 */
 		case CMD_SET_YAW_ANGLE_ZERO :

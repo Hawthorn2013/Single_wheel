@@ -87,7 +87,7 @@ struct
 	float p;
 	float i;
 	float d;
-} data_speed_pid = {10 , 0.8, 0.6 };
+} data_speed_pid = {297 , 0, 0.8};
 #else
 extern struct
 {
@@ -103,7 +103,7 @@ struct
 	float p;
 	float i;
 	float d;
-} data_angle_pid = { 297, 0, 2 };
+} data_angle_pid = { 297, 0, 0 };
 #else
 extern struct
 {
@@ -113,6 +113,22 @@ extern struct
 } data_angle_pid;
 #endif
 
+/*平衡PID数据*/
+#ifdef __CONTROL_C_
+struct
+{
+	float p;
+	float i;
+	float d;
+} data_ROLL_angle_pid = { 60, 0, 37 };
+#else
+extern struct
+{
+	float p;
+	float i;
+	float d;
+} data_ROLL_angle_pid;
+#endif
 /* 速度设置数据 */
 #ifdef __CONTROL_C_
 struct
@@ -128,6 +144,17 @@ extern struct
 } data_speed_settings;
 #endif
 
+extern struct
+{
+	float p;
+	float i;
+	float d;
+}data_balance_pid;
+
+
+
+
+
 /* 三电机PWM设置数据 */
 #ifdef __CONTROL_C_
 struct
@@ -135,13 +162,15 @@ struct
 	SWORD motor_1_pwm;
 	SWORD motor_2_pwm;
 	SWORD motor_3_pwm;
-} motor_pwm_settings = { 1, 1, 1 };
+	SWORD motor_4_pwm; //2,4为风扇电机两路输出
+} motor_pwm_settings = { 1, 1, 1 ,1};
 #else
 extern struct
 {
 	SWORD motor_1_pwm;
 	SWORD motor_2_pwm;
 	SWORD motor_3_pwm;
+	SWORD motor_4_pwm; //2,4为风扇电机两路输出
 } motor_pwm_settings;
 #endif
 
@@ -167,9 +196,13 @@ extern void set_speed_KI(float ki);
 extern void set_speed_KD(float kd);
 
 
+
 extern void BalanceControl(void);
-
-
+extern void set_PropellerA_motor_pwm(int16_t motor_pwm);
+extern void set_PropellerB_motor_pwm(int16_t motor_pwm);
+extern void PropellerA_Control(void);
+extern void PropellerB_Control(void);
+extern void Bangbang_balance_control(void);
 
 extern void set_pwm1_target(SWORD speed_pwm);
 extern void set_pwm2_target(SWORD speed_pwm);

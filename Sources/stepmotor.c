@@ -178,8 +178,8 @@ void stepmotor_video(int num)
 
 void stepmotor_balance(void)
 {
-	//步进电机调平衡 
-	
+	/*
+	//步进电机调平衡 ，最大加速度
 	if(AngleCalculate[2]>0)
 	{
 		stepspeed=3; //正负待定  3为最大转速
@@ -197,6 +197,68 @@ void stepmotor_balance(void)
 	}
 	else
 		stepspeed=1000;  //1000对应静止
+	*/
+	/*
+	float fDelta_balance;
+	float g_fCarAngle_balance;
+	float g_fGyroscopeAngleSpeed_balance;
+	float g_fGyroscopeTurnSpeed_balance;
+	float CarAngleInitial_balance=0;
+	float CarAnglespeedInitial_balance=0;
+	
+	float delta_angle_balance;
+	float delta_anglespeed_balance;
+	float temp_angle_balance, temp_anglespeed_balance;
+	float currentanglespeed_balance, lastanglespeed_balance=0;
+	float last_angle_balance=0;
+	angle_calculate();
+	g_fCarAngle_balance= AngleCalculate[2];
+	g_fGyroscopeAngleSpeed_balance= -AngleCalculate[3]; 
+	
+	temp_angle_balance=CarAngleInitial_balance - g_fCarAngle_balance;
+	temp_anglespeed_balance= CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance;
+		  
+	//	   if(temp_angle_balance<-15)
+	//		   data_angle_pid.p=100; //100开环
+	//	   else if(temp_angle_balance>=-15&temp_angle_balance<=0)
+	//		   data_angle_pid.p=200; //200
+	//	   else if(temp_angle_balance>0&temp_angle_balance<=15)
+	//		   data_angle_pid.p=200;// 170   
+	//	   else
+	//		   data_angle_pid.p=100;  //100
+	//	                                                    
+	//	  
+	//	   if(temp_anglespeed_balance>=50||temp_anglespeed_balance<=-50)
+	//		   data_angle_pid.d=2;//0.3
+	//	   else
+	//		   data_angle_pid.d=0.5;//0.1
+		  
+	currentanglespeed_balance=g_fCarAngle_balance;
+	delta_anglespeed_balance=currentanglespeed_balance-lastanglespeed_balance;
+	lastanglespeed_balance=currentanglespeed_balance;
+		  
+	delta_angle_balance = data_angle_pid.p*(CarAngleInitial_balance - g_fCarAngle_balance);
+	delta_angle_balance+=data_angle_pid.d*0.6*(CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance);
+	delta_angle_balance+=data_angle_pid.d*0.4*delta_anglespeed_balance;
+	//delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle) /5000 +data_angle_pid.d*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed) /15000; // 1000 与10000是否根据实际需要调整 
+	//angle_pwm=delta_angle;
+		  
+//	if(delta_angle>AngleControlOutMax)
+//	delta_angle=AngleControlOutMax;
+//	 else if(delta_angle<AngleControlOutMin)
+//	delta_angle=AngleControlOutMin;
+		  
+	//angle_pwm_balance=delta_angle_balance;
+	//ROLL_angle_pwm=delta_angle_balance;
+	stepspeed-=(int)delta_angle_balance;
+	*/
+	
+	
+	
+	
+	
+	
+	
 }
 
 

@@ -119,6 +119,62 @@ void set_PITCH_motor_pwm(int16_t motor_pwm)	//speed_pwm正为向前，负为向�
 		EMIOS_0.CH[22].CBDR.R = 1;	
 	}
 }
+void set_PropellerA_motor_pwm(int16_t motor_pwm)	
+{
+	//使用PE5,PE6
+	motor_pwm=1000+motor_pwm;
+	if (motor_pwm>0)	
+	{
+		if (motor_pwm>1950)
+		{
+			motor_pwm = 1950;
+		}
+		EMIOS_0.CH[21].CBDR.R = motor_pwm;//PE5
+		EMIOS_0.CH[22].CBDR.R = 1;//PE6
+		
+	}
+	else 	
+	{
+		EMIOS_0.CH[21].CBDR.R = 1;
+		EMIOS_0.CH[22].CBDR.R = 1;	
+	}
+}
+void set_PropellerB_motor_pwm(int16_t motor_pwm)	
+{
+	//暂时使用PE1,PE2
+	motor_pwm=1000-motor_pwm;
+	if (motor_pwm>0)	
+	{
+		if (motor_pwm>1950)
+		{
+			motor_pwm = 1950;
+		}
+		EMIOS_0.CH[17].CBDR.R = motor_pwm;//PE1
+		EMIOS_0.CH[18].CBDR.R = 1;//PE2
+		
+	}
+	else 	
+	{
+		EMIOS_0.CH[17].CBDR.R = 1;
+		EMIOS_0.CH[18].CBDR.R = 1;	
+	}
+}
+
+
+void PropellerA_Control(void)
+{
+	int16_t motor_pwm;
+	motor_pwm=ROLL_angle_pwm;
+	set_PropellerA_motor_pwm(motor_pwm);
+}
+void PropellerB_Control(void)
+{
+	int16_t motor_pwm;
+	motor_pwm=ROLL_angle_pwm;
+	set_PropellerB_motor_pwm(motor_pwm);
+}
+
+
 void PITCH_motor_control(void)
 {
 	int16_t motor_pwm;
@@ -234,6 +290,29 @@ void contorl_speed_encoder_bb(void)
 		set_PITCH_motor_pwm(SPEED_PWM_MAX);
 	}
 }
+/*-----------BangBang平衡控制--------------*/
+void Bangbang_balance_control(void)
+{
+	if(AngleCalculate[2]<0)
+	{
+		EMIOS_0.CH[21].CBDR.R = 1700;//PE5
+		EMIOS_0.CH[22].CBDR.R = 1;//PE6
+		EMIOS_0.CH[17].CBDR.R = 200;//PE1
+		EMIOS_0.CH[18].CBDR.R = 1;//PE2
+	}
+	else if (AngleCalculate[2]>0)
+	{
+		EMIOS_0.CH[21].CBDR.R = 200;//PE5
+		EMIOS_0.CH[22].CBDR.R = 1;//PE6
+		EMIOS_0.CH[17].CBDR.R = 1700;//PE1
+		EMIOS_0.CH[18].CBDR.R = 1;//PE2
+	}
+}
+
+
+
+
+
 
 /*-----------------------------------------------------------------------*/
 /* 前后角度控制                                                             */
@@ -273,8 +352,8 @@ void AngleControl(void)
    lastanglespeed=currentanglespeed;
   
    delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle);
-   delta_angle+=data_angle_pid.d*0.6*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed);
-   delta_angle+=data_angle_pid.d*0.4*delta_anglespeed;
+   delta_angle+=data_angle_pid.d*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed);
+//   delta_angle+=data_angle_pid.d*0.4*delta_anglespeed;
   //delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle) /5000 +data_angle_pid.d*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed) /15000; // 1000 与10000是否根据实际需要调整 
   //angle_pwm=delta_angle;
   
@@ -290,7 +369,7 @@ void AngleControl(void)
 /*-----------------------------------------------------------------------*/
 /* 左右平衡控制                                                             */
 /*-----------------------------------------------------------------------*/
-void BalanceControl(void)
+void BalanceControl(void)//暂时用data_speed_pid
 {
 	/*
 	//用电位器调节转速，试验用
@@ -316,48 +395,38 @@ void BalanceControl(void)
 	float delta_angle_balance;
 	float delta_anglespeed_balance;
 	float temp_angle_balance, temp_anglespeed_balance;
-	float currentanglespeed_balance, lastanglespeed_balance=0;
+	static float currentanglespeed_balance, lastanglespeed_balance=0;
 	float last_angle_balance=0;
+	float temp_p,temp_d;
 	angle_calculate();
 	g_fCarAngle_balance= AngleCalculate[2];
-	g_fGyroscopeAngleSpeed_balance= -AngleCalculate[3];
+	g_fGyroscopeAngleSpeed_balance=-AngleCalculate[3];
 	 
 	temp_angle_balance=CarAngleInitial_balance - g_fCarAngle_balance;
 	temp_anglespeed_balance= CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance;
-	  
-//	   if(temp_angle_balance<-15)
-//		   data_angle_pid.p=100; //100开环
-//	   else if(temp_angle_balance>=-15&temp_angle_balance<=0)
-//		   data_angle_pid.p=200; //200
-//	   else if(temp_angle_balance>0&temp_angle_balance<=15)
-//		   data_angle_pid.p=200;// 170   
-//	   else
-//		   data_angle_pid.p=100;  //100
-//	                                                    
-//	  
-//	   if(temp_anglespeed_balance>=50||temp_anglespeed_balance<=-50)
-//		   data_angle_pid.d=2;//0.3
-//	   else
-//		   data_angle_pid.d=0.5;//0.1
-	  
-	  currentanglespeed_balance=g_fCarAngle_balance;
-	  delta_anglespeed_balance=currentanglespeed_balance-lastanglespeed_balance;
-	  lastanglespeed_balance=currentanglespeed_balance;
-	  
-	  delta_angle_balance = data_angle_pid.p*(CarAngleInitial_balance - g_fCarAngle_balance);
-	  delta_angle_balance+=data_angle_pid.d*0.6*(CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance);
-	  delta_angle_balance+=data_angle_pid.d*0.4*delta_anglespeed_balance;
-	  //delta_angle = data_angle_pid.p*(CarAngleInitial - g_fCarAngle) /5000 +data_angle_pid.d*(CarAnglespeedInitial - g_fGyroscopeAngleSpeed) /15000; // 1000 与10000是否根据实际需要调整 
-	  //angle_pwm=delta_angle;
-	  
-	  /* if(delta_angle>AngleControlOutMax)
-	  delta_angle=AngleControlOutMax;
-	  else if(delta_angle<AngleControlOutMin)
-	  delta_angle=AngleControlOutMin;*/
-	  
-	  //angle_pwm_balance=dta_angle;
-	  ROLL_angle_pwm=delta_angle_balance;
 	
+	if(g_fCarAngle_balance>7||g_fCarAngle_balance<-7)
+	{
+		temp_d=0;
+		temp_p=90;
+	}
+	else
+	{
+		temp_p=data_ROLL_angle_pid.p;
+		temp_d=data_ROLL_angle_pid.d;
+	}
+	
+//	currentanglespeed_balance=g_fCarAngle_balance;
+//	delta_anglespeed_balance=currentanglespeed_balance-lastanglespeed_balance;
+//	lastanglespeed_balance=currentanglespeed_balance;
+	  
+	delta_angle_balance = temp_p*(CarAngleInitial_balance - g_fCarAngle_balance);
+	delta_angle_balance+=temp_d*(CarAnglespeedInitial_balance - g_fGyroscopeAngleSpeed_balance);
+//	delta_angle_balance+=data_speed_pid.d*0.4*delta_anglespeed_balance;
+	  
+	//angle_pwm_balance=dta_angle;
+	ROLL_angle_pwm=delta_angle_balance;
+	LCD_PrintoutInt(0, 6, ROLL_angle_pwm);
 	
 	
 }
@@ -445,7 +514,7 @@ void set_pwm1_target(SWORD speed_pwm)
 	motor_pwm_settings.motor_1_pwm = speed_pwm;
 }
 /*-----------------------------------------------------------------------*/
-/* 设置平衡轮电机目标占空比                                                                      */
+/* 设置平衡轮电机目标占空比          或风扇一号电机占空比                                                            */
 /*-----------------------------------------------------------------------*/
 void set_pwm2_target(SWORD speed_pwm)
 {
@@ -458,6 +527,13 @@ void set_pwm2_target(SWORD speed_pwm)
 void set_pwm3_target(SWORD speed_pwm)
 {
 	motor_pwm_settings.motor_3_pwm = speed_pwm;
+}
+/*-----------------------------------------------------------------------*/
+/* 设置风扇二号电机目标占空比                                                                      */
+/*-----------------------------------------------------------------------*/
+void set_pwm4_target(SWORD speed_pwm)
+{
+	motor_pwm_settings.motor_4_pwm = speed_pwm;
 }
 
 /*-----------------------------------------------------------------------*/

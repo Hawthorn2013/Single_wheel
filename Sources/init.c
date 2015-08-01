@@ -474,7 +474,7 @@ void init_all_and_POST(void)
 	init_pit_1ms();	
 	
 	
-	init_Stepmotor();		/* 初始化步进电机 */
+	//init_Stepmotor();		/* 初始化步进电机 */
 
 	init_led();
 	//init_DIP();				/* 拨码开关 */
@@ -501,6 +501,10 @@ void init_all_and_POST(void)
 	delay_ms(50);
 	LCD_Fill(0x00);	/* 黑屏 */
 	delay_ms(50);
+	
+	/*初始化螺旋桨电机，给1000占空比*/
+	set_PropellerA_motor_pwm(1000);
+	set_PropellerB_motor_pwm(1000);
 	
 	/* 初始化TF卡 */
 	//test_init_TF();
@@ -560,7 +564,7 @@ void init_DSPI_1(void)
 	SIU.PCR[67].R = 0x0A04;	//PE3 SOUT_1
 	SIU.PCR[35].R = 0x0503;	//PC3 CS0_1		TF
 	SIU.PCR[62].R = 0x0604;	//PD14 CS1_1	OLED
-	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
+//	SIU.PCR[63].R = 0x0604;	//PD15 CS2_1  	9250
 	SIU.PCR[74].R = 0x0A04;	//PE10 CS3_1	
 	SIU.PCR[75].R = 0x0A04;	//PE11 CS4_1
 #endif
