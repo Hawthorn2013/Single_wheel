@@ -43,9 +43,11 @@ void init_serial_port_1(void)
 #if 1
 void serial_port_1_TX(unsigned char data)
 {
+	LINFLEX_1.LINIER.B.DRIE=0;	//关中断
 	LINFLEX_1.BDRL.B.DATA0=data;	//发送语句
 	while(!LINFLEX_1.UARTSR.B.DTF){}	//等待数据发送完成
 	LINFLEX_1.UARTSR.B.DTF=1;	//清空标志位
+	LINFLEX_1.LINIER.B.DRIE=1;	//开中断
 }
 #endif
 
@@ -60,18 +62,19 @@ void serial_port_1_TX_array(const BYTE data[], BYTE n)
 }
 
 
-void intc_serial_port_1_RX()//中断后未恢复
+void intc_serial_port_1_RX()
 {
 	BYTE rev_ch;
+	
+	D3=~D3;
 	
 	while(!LINFLEX_1.UARTSR.B.DRF){}
 	rev_ch = (BYTE)LINFLEX_1.BDRM.B.DATA4;
 	g_serial_port_1_f = 1;
 	g_serial_port_1_data = rev_ch;
 	rev_remote_frame_2(rev_ch);
-	LINFLEX_1.UARTSR.B.DRF=1;
 	LINFLEX_1.UARTSR.B.RMB=1;		//Release Message Buffer !!!
-	//LCD_Write_Num(80,1,rev_ch,5);
+	LINFLEX_1.UARTSR.B.DRF=1;
 }
 
 

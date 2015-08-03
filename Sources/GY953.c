@@ -7,19 +7,21 @@
 void init_GY953(void)
 {
 	GY953_Write(SET_A,0x7D);		//开启磁场计 陀螺仪 加速度计 设置输出速率200HZ
-	GY953_Write(CONTROL_B,0x1D);		//自检 校准 高位置1可恢复出厂设置
-	GY953_Write(STATE_D,0x0D);		//设置模块精度
+	GY953_Write(CONTROL_B,0x11);		//自检 校准 高位置1可恢复出厂设置
+	GY953_Write(STATE_D,0x0D);		//设置模块量程
 }
 
 /*------------------------------------------------------------------------------*/
 /* 读取三计校准精度
 /* 有数据更新返回1 无新数据返回0 
-/* Data[0]加速度计	Data[1]陀螺计	Data[2]磁场计	(低0~3高)
+/* Data[0]加速度计	Data[1]陀螺计	Data[2]磁场计 Data[3]数据输出速率	(低0~4高)
 /*------------------------------------------------------------------------------*/
 int Read_Precision(BYTE* Data)
 {
 	BYTE state;
+	BYTE set;
 	while(!GY953_Read(STATE_C,&state)){};
+	while(!GY953_Read(SET_A,&set)){};
 	if(state>>7)
 	{
 		Data[0]=state&0x30;
@@ -27,6 +29,7 @@ int Read_Precision(BYTE* Data)
 		Data[1]=state&0x0C;
 		Data[1]>>=2;
 		Data[2]=state&0x03;
+		Data[3]=set&0x07;
 		return 1;
 	}
 	else

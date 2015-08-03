@@ -61,6 +61,7 @@ extern int g_remote_frame_state;
 extern BYTE g_device_NO;
 extern int g_start_PCcontrol;
 extern SWORD ans;
+extern uint8_t GY953_Data[41];
 
 
 

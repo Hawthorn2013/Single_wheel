@@ -1,7 +1,7 @@
 #define __BLUETOOTH_C_
 #include "includes.h"
 
-
+uint8_t GY953_Data[41];
 int g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
 int g_remote_frame_cnt = 0;
 int g_start_PCcontrol=0;
@@ -122,39 +122,60 @@ void execute_remote_cmd(const BYTE *data)
 /*-----------------------------------------------------------------------*/
 int rev_remote_frame_2(BYTE rev)
 {
-	BYTE Data[3];
+	uint8_t sum;
+	uint8_t num[4]={0};
 	if (g_remote_frame_cnt == 0)
 	{
-		Data[0]=rev;
 		if(rev==0xA5)
-			D0=~D0;
-		g_remote_frame_cnt++;
+		{
+			remote_frame_data[0]=rev;
+			g_remote_frame_cnt++;
+		}
 	}
 	else if(g_remote_frame_cnt==1)
 	{
-		Data[1]=rev;
-		if(rev==0x57)
-			D1=~D1;
+		remote_frame_data[1]=rev;
 		g_remote_frame_cnt++;
 	}
 	else if(g_remote_frame_cnt==2)
 	{
-		Data[2]=rev;
-		if(rev==0xFC)
-			D2=~D2;
+		remote_frame_data[2]=rev;
 		g_remote_frame_cnt=0;
-		LCD_Write_Num(80,1,Data[0],5);
-		LCD_Write_Num(80,3,Data[1],5);
-		LCD_Write_Num(80,5,Data[2],5);
+//		LCD_Write_Num(80,1,remote_frame_data[0],5);
+//		LCD_Write_Num(80,2,remote_frame_data[1],5);
+//		LCD_Write_Num(80,3,remote_frame_data[2],5);
+		sum=(uint8_t)(remote_frame_data[0]+remote_frame_data[1]);
+		if(sum==remote_frame_data[2])
+		{
+			if(remote_frame_data[1]==0x57)//加陀校准
+				{
+					GY953_Write(0x02,0x15);
+					g_remote_frame_state=REMOTE_FRAME_STATE_OK;
+				}
+			else if(remote_frame_data[1]==0x58)//磁力计较准
+			{
+				D2=~D2;
+				GY953_Write(0x02,0x19);
+			}
+			else if(remote_frame_data[1]==0x75)//三轴传感器精度
+			{
+				Read_Precision(num);
+				generate_remote_frame_2(PREC_TYPE,4,num);
+//				send_data2PC(3,PREC_TYPE,GY953_Data);
+			}
+			D0=~D0;
+		}
 	}
 	
 	return 1;
-//	BYTE Data[3];
+	
+
 //	uint8_t sum;
 //	if (g_remote_frame_cnt == 0)	//接受起始位
 //	{
 //		if (rev == 0x5A)
 //		{
+//			D0=~D0;
 //			remote_frame_data[g_remote_frame_cnt++] = 0x5A;
 //		}
 //	}
@@ -165,20 +186,20 @@ int rev_remote_frame_2(BYTE rev)
 //			D1=~D1;
 //			remote_frame_data[g_remote_frame_cnt++] = 0x57;
 //		}
-//		else if(rev==0x58)	//磁力校准
-//		{
-//			D2=~D2;
-//			remote_frame_data[g_remote_frame_cnt++] = 0x58;
-//		}
-//		else if(rev==0x85)//读取量程
-//		{
-//			D3=~D3;
-//			remote_frame_data[g_remote_frame_cnt++] = 0x85;
-//		}
-//		else if(rev==0x75)//精度，频率
-//		{
-//			remote_frame_data[g_remote_frame_cnt++] = 0x75;
-//		}
+////		else if(rev==0x58)	//磁力校准
+////		{
+////			D2=~D2;
+////			remote_frame_data[g_remote_frame_cnt++] = 0x58;
+////		}
+////		else if(rev==0x85)//读取量程
+////		{
+////			D3=~D3;
+////			remote_frame_data[g_remote_frame_cnt++] = 0x85;
+////		}
+////		else if(rev==0x75)//精度，频率
+////		{
+////			remote_frame_data[g_remote_frame_cnt++] = 0x75;
+////		}
 //		else
 //		{
 //			g_remote_frame_cnt=0;
@@ -195,19 +216,20 @@ int rev_remote_frame_2(BYTE rev)
 //			{
 //				GY953_Write(0x02,0x13);
 //			}
-//			else if(remote_frame_data[1]==0x58)	
-//			{
-//				send_data2PC(3, PREC_TYPE, Data);
-//				GY953_Write(0x02,0x13);
-//			}
-//			else if(remote_frame_data[1]==0x75)
-//			{
-//				Read_Precision(Data);
-//				send_data2PC(3, PREC_TYPE, Data);
-//			}
+////			else if(remote_frame_data[1]==0x58)	
+////			{
+////				send_data2PC(3, PREC_TYPE, Data);
+////				GY953_Write(0x02,0x13);
+////			}
+////			else if(remote_frame_data[1]==0x75)
+////			{
+////				Read_Precision(Data);
+////				send_data2PC(3, PREC_TYPE, Data);
+////			}
 //		}
 //		g_remote_frame_cnt=0;
 //	}
+//	
 //
 //	return g_remote_frame_state;
 }
@@ -273,6 +295,8 @@ void send_data2PC(BYTE sensor, BYTE type, BYTE data[])
 				generate_remote_frame_2( type, 6, (const BYTE *)(&data[14]));
 			else if(type==FOUR_TYPE)
 				generate_remote_frame_2( type, 8, (const BYTE *)(&data[26]));
+			else if(type==PREC_TYPE)
+				generate_remote_frame_2(type,1, (const BYTE *)(&data[35]));
 		}
 	
 }

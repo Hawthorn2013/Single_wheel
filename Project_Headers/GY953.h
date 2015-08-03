@@ -5,7 +5,7 @@
 #define SET_A 0x01//配置寄存器A
 #define CONTROL_B 0x02//控制寄存器B
 #define STATE_D 0x23//状态寄存器D
-#define STATE_C 0x24//三计精度状态寄存器 
+#define STATE_C 0x24//三计量程状态寄存器 
 #define ACC_X_H 0x03
 #define ACC_X_L 0x04
 
