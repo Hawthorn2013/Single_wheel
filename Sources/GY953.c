@@ -6,9 +6,16 @@
 /*------------------------------------------------------------------------------*/
 void init_GY953(void)
 {
+	BYTE Precision[3];
 	GY953_Write(SET_A,0x7D);		//开启磁场计 陀螺仪 加速度计 设置输出速率200HZ
 	GY953_Write(CONTROL_B,0x11);		//自检 校准 高位置1可恢复出厂设置
 	GY953_Write(STATE_D,0x0D);		//设置模块量程
+	
+	GY953_Write(CONTROL_B,0x15);		//加陀校准
+	Read_Precision(Precision);
+	serial_port_1_TX_array(Precision,3);
+	
+
 }
 
 /*------------------------------------------------------------------------------*/

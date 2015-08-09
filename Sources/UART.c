@@ -24,8 +24,8 @@ void init_serial_port_1(void)
     LINFLEX_1.LINFBRR.B.DIV_F = 1;	//小数部分先写
 	LINFLEX_1.LINIBRR.B.DIV_M= 26; 	//38400:26&1	57600:17&6
 //#endif
-    LINFLEX_1.LINFBRR.B.DIV_F = 3;	//小数部分先写
-	LINFLEX_1.LINIBRR.B.DIV_M= 104; 	//9600
+//    LINFLEX_1.LINFBRR.B.DIV_F = 3;	//小数部分先写
+//	LINFLEX_1.LINIBRR.B.DIV_M= 104; 	//9600
 
     LINFLEX_1.UARTCR.B.UART=1;
 	LINFLEX_1.UARTCR.R=0x00000033;
@@ -46,7 +46,8 @@ void serial_port_1_TX(unsigned char data)
 	LINFLEX_1.LINIER.B.DRIE=0;	//关中断
 	LINFLEX_1.BDRL.B.DATA0=data;	//发送语句
 	while(!LINFLEX_1.UARTSR.B.DTF){}	//等待数据发送完成
-	LINFLEX_1.UARTSR.B.DTF=1;	//清空标志位
+	LINFLEX_1.UARTSR.B.DTF=1;	//清空发送标志位
+	LINFLEX_1.UARTSR.B.DRF=1;	//清空接收标志位
 	LINFLEX_1.LINIER.B.DRIE=1;	//开中断
 }
 #endif

@@ -15,7 +15,8 @@ void main(void)
 //	int i=0;
 //	int16_t dev;
 	init_all_and_POST();
-	
+	delay_ms(1000);
+
 	D0=0;
 	D1=0;
 	D2=0;
@@ -23,7 +24,7 @@ void main(void)
 	//Dev_get(&dev);
 	for(;;)
 	{
-		Read_GYalldata(GY953_Data);
+//		Read_GYalldata(GY953_Data);
 //		serial_port_1_TX(GY953_Data[1]);
 //		serial_port_1_TX(GY953_Data[2]);
 //		Wbn_get(Wbn,GY953_Data);
@@ -42,13 +43,13 @@ void main(void)
 //			snx=((int)(snx*1000+0.5))/1000;
 //			LCD_PrintoutFloat(20,5,snx);
 //		}
-		if(g_remote_frame_state)
-		{
-		//send_data2PC(3,ACC_TYPE,GY953_Data);
-//		send_data2PC(3,MAG_TYPE, Data);
+//		if(g_remote_frame_state)
+//		{
+//		send_data2PC(3,ACC_TYPE,GY953_Data);
+//		send_data2PC(3,MAG_TYPE,GY953_Data);
 //		send_data2PC(3,ANGLE_TYPE,GY953_Data);
 //		send_data2PC(3,FOUR_TYPE,GY953_Data);
-		}
+//		}
 //		i++;
 		delay_ms(20);
 	}

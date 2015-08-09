@@ -479,6 +479,7 @@ void init_all_and_POST(void)
 	init_led();
 	//init_DIP();				/* 拨码开关 */
 	init_serial_port_1();	/* BlueTooth */
+	delay_ms(1000);
 
 	//init_ADC();				/* 陀螺仪读值 - 其中一路ADC与MPU9250片选冲突，不要同时打开*/
 	//init_optical_encoder();	/* 光编 */
@@ -494,13 +495,13 @@ void init_all_and_POST(void)
 	enable_irq();
 	
 	/* 初始化显示屏 */
-	initLCD();
-
-	LCD_DISPLAY();
-	LCD_Fill(0xFF);	/* 亮屏 */
-	delay_ms(50);
-	LCD_Fill(0x00);	/* 黑屏 */
-	delay_ms(50);
+//	initLCD();
+//
+//	LCD_DISPLAY();
+//	LCD_Fill(0xFF);	/* 亮屏 */
+//	delay_ms(50);
+//	LCD_Fill(0x00);	/* 黑屏 */
+//	delay_ms(50);
 	
 	/* 初始化TF卡 */
 	//test_init_TF();

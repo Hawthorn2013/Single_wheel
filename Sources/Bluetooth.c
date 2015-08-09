@@ -150,12 +150,13 @@ int rev_remote_frame_2(BYTE rev)
 			if(remote_frame_data[1]==0x57)//加陀校准
 				{
 					GY953_Write(0x02,0x15);
-					g_remote_frame_state=REMOTE_FRAME_STATE_OK;
 				}
 			else if(remote_frame_data[1]==0x58)//磁力计较准
 			{
 				D2=~D2;
 				GY953_Write(0x02,0x19);
+				g_remote_frame_state=REMOTE_FRAME_STATE_OK;
+
 			}
 			else if(remote_frame_data[1]==0x75)//三轴传感器精度
 			{
