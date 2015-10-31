@@ -6,6 +6,7 @@ int stepcount=0;
 
 void main(void)
 {
+//设置ly
 	init_all_and_POST();
 	set_speed_target(0);
 	for(;;)
@@ -108,11 +109,11 @@ void main(void)
 			if(count==5)
 			{
 //				send_data2PC(ENC03,GYR_TYPE,dall);
-				count=0;
+				count=999999999;//欧阳的提交
 			}
 			if(stepcount==2500)
 			{
-				stepcount=0;
+				stepcount=999999;//欧阳的提交
 			}
 		}
 #endif
