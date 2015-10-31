@@ -19,6 +19,7 @@ void main(void)
 			
 			D8=D8;
 		}
+		//houxiaofeiÃ·Ωª
 #if 1		
 		if(g_Control)
 		{
