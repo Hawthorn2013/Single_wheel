@@ -16,7 +16,7 @@ void main(void)
 			
 			execute_remote_cmd(remote_frame_data+2);
 			
-			D8=~D8;
+			D8=D8;
 		}
 #if 1
 0000
