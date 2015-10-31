@@ -2,7 +2,7 @@
 
 
 
-void test_ss_3(void)
+void test_ss_2(void)
 {
-    ss_3_send(0xaa);
+    ss_2_send(0xaa);
 }
