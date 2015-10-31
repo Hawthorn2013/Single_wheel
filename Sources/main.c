@@ -18,7 +18,9 @@ void main(void)
 			
 			D8=~D8;
 		}
-#if 1		
+#if 1
+0000
+//这不是焦剑的提交		
 		if(g_Control)
 		{
 			g_Control=0;
