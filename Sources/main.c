@@ -6,6 +6,7 @@ int stepcount=0;
 
 void main(void)
 {
+//设置ly
 	init_all_and_POST();
 	set_speed_target(0);
 	for(;;)
