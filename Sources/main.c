@@ -10,6 +10,7 @@ void main(void)
 	set_speed_target(0);
 	for(;;)
 	{
+//这是焦剑的提交
 		if (REMOTE_FRAME_STATE_OK == g_remote_frame_state)
 		{
 			g_remote_frame_state = REMOTE_FRAME_STATE_NOK;
@@ -18,6 +19,7 @@ void main(void)
 			
 			D8=D8;
 		}
+		//houxiaofei�ύ
 #if 1		
 		if(g_Control)
 		{
